@@ -1,7 +1,7 @@
-version: "3.9"
 services:
   api:
     build: .
+    image: grocery_api:latest  
     container_name: grocery_api
     env_file: .env
     ports:
@@ -9,6 +9,7 @@ services:
     depends_on:
       - db
       - redis
+
   db:
     image: postgres:16
     container_name: grocery_db
@@ -20,10 +21,12 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
   redis:
     image: redis:7
     container_name: grocery_redis
     ports:
       - "6379:6379"
+
 volumes:
   pgdata:

@@ -34,7 +34,7 @@ class OnboardingScreen extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // Logo en haut
+            //Logo
             Positioned.fill(
               top: 8,
               child: Align(

@@ -34,6 +34,7 @@ class _OnboardingSliderState extends State<OnboardingSlider> {
     super.dispose();
   }
 
+  //go to next slide
   void _hanlePressNext() {
     if (currentIndex < widget.slides.length - 1) {
       _controller.nextPage(

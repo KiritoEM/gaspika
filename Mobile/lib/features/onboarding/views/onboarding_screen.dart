@@ -8,7 +8,7 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Data for onboarding slider
+    // data for onboarding slider
     final List<SliderModel> slides = [
       SliderModel(
         title: 'Planifie mieux tes courses',
@@ -31,6 +31,8 @@ class OnboardingScreen extends StatelessWidget {
     ];
 
     return Scaffold(
+      backgroundColor: Colors.white,
+
       body: SafeArea(
         child: Stack(
           children: [

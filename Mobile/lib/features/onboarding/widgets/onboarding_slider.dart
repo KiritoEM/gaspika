@@ -92,7 +92,7 @@ class _OnboardingSliderState extends State<OnboardingSlider> {
                   style: TextStyle(
                     fontSize: theme.textTheme.headlineLarge!.fontSize,
                     fontWeight: FontWeight.w700,
-                    height: 1,
+                    height: 1.1,
                   ),
                 ),
 

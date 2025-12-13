@@ -8,7 +8,9 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
+        primary: AppColors.primary,
         brightness: Brightness.light,
+        onSurface: AppColors.foreground,
       ),
       textTheme: GoogleFonts.montserratTextTheme(Theme.of(context).textTheme)
           .copyWith(
@@ -16,8 +18,35 @@ class AppTheme {
               fontWeight: FontWeight.w500,
             ).copyWith(fontSize: 15),
           ),
-      iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(backgroundColor: AppColors.primary),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.background,
+        labelStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[500],
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          textStyle: GoogleFonts.montserrat(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          elevation: 0.5,
+          disabledForegroundColor: AppColors.mutedForeground,
+        ),
       ),
     );
   }

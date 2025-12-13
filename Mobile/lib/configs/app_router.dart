@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
-    initialLocation: NavigationConstant.REGISTER_ROUTE,
+    initialLocation: NavigationConstant.DEFAULT_ROUTE,
     routes: [
       GoRoute(
         path: NavigationConstant.DEFAULT_ROUTE,

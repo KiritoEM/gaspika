@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gaspika_mobile/features/onboarding/models/slider_model.dart';
 import 'package:gaspika_mobile/features/onboarding/widgets/onboarding_slider.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -50,7 +51,12 @@ class OnboardingScreen extends StatelessWidget {
             ),
 
             // Slider
-            OnboardingSlider(slides: slides, onComplete: () {}),
+            OnboardingSlider(
+              slides: slides,
+              onComplete: () {
+                context.go('/login');
+              },
+            ),
           ],
         ),
       ),

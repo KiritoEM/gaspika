@@ -1,7 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
-import 'package:gaspika_mobile/features/auth/views/widgets/login_form.dart';
 import 'package:gaspika_mobile/features/auth/views/widgets/register_form.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -12,7 +13,12 @@ class RegisterScreen extends StatelessWidget {
       backgroundColor: Colors.white,
 
       appBar: AppBar(
-        leading: Icon(Icons.chevron_left, size: 32),
+        leading: IconButton(
+          icon: Icon(Icons.chevron_left, size: 32),
+          onPressed: () {
+            context.go('/login');
+          },
+        ),
 
         backgroundColor: Colors.white,
       ),
@@ -65,6 +71,8 @@ class RegisterScreen extends StatelessWidget {
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => context.go('/login'),
                     ),
                   ],
                 ),

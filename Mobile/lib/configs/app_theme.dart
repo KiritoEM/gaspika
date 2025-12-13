@@ -17,6 +17,10 @@ class AppTheme {
             bodyMedium: GoogleFonts.montserrat(
               fontWeight: FontWeight.w500,
             ).copyWith(fontSize: 15),
+            bodyLarge: GoogleFonts.montserrat(
+              fontWeight: FontWeight.w500,
+              fontSize: 15,
+            ),
           ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -30,6 +34,22 @@ class AppTheme {
           borderSide: BorderSide.none,
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.red, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.red, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(

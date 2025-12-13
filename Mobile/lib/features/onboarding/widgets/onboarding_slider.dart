@@ -75,7 +75,7 @@ class _OnboardingSliderState extends State<OnboardingSlider> {
           ),
         ),
 
-        const SizedBox(height: 50),
+        const SizedBox(height: 45),
 
         // Slider Content
         SizedBox(

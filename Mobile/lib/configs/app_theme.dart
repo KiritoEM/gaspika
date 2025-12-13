@@ -12,7 +12,9 @@ class AppTheme {
       ),
       textTheme: GoogleFonts.montserratTextTheme(Theme.of(context).textTheme)
           .copyWith(
-            bodyMedium: GoogleFonts.montserrat(fontWeight: FontWeight.w500),
+            bodyMedium: GoogleFonts.montserrat(
+              fontWeight: FontWeight.w500,
+            ).copyWith(fontSize: 15),
           ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(backgroundColor: AppColors.primary),

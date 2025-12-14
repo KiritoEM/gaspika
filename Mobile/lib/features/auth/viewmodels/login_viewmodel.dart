@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/models/auth_model.dart';
 import 'package:gaspika_mobile/models/schemas/auth_credentials.dart';
 import 'package:gaspika_mobile/shared/snackbar.dart';
+import 'package:go_router/go_router.dart';
 import '../../../constants/enums/enums.dart';
 
 class LoginViewModel extends ChangeNotifier {
@@ -40,6 +41,8 @@ class LoginViewModel extends ChangeNotifier {
       _formkey.currentState!.reset();
       _isSubmitting = false;
       notifyListeners();
+
+      context.go('/home');
     }
   }
 

@@ -20,11 +20,11 @@ class LoginViewModel extends ChangeNotifier {
 
   //submit the login form
   Future submitLoginForm(BuildContext context) async {
-    _isSubmitting = true;
-    notifyListeners();
-
     if (_formkey.currentState!.validate()) {
       _formkey.currentState!.save();
+      _isSubmitting = true;
+      notifyListeners();
+
       final response = await _authModel.login(_credentials);
 
       if (response.hasError == true) {

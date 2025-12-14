@@ -4,12 +4,14 @@ library;
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/auth/views/login_screen.dart';
 import 'package:gaspika_mobile/features/auth/views/register_screen.dart';
+import 'package:gaspika_mobile/features/home/views/home_screen.dart';
 import 'package:gaspika_mobile/features/onboarding/views/onboarding_screen.dart';
+import 'package:gaspika_mobile/shared/scaffold_navigation_bar.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
-    initialLocation: NavigationConstant.DEFAULT_ROUTE,
+    initialLocation: NavigationConstant.HOME_ROUTE,
     routes: [
       GoRoute(
         path: NavigationConstant.DEFAULT_ROUTE,
@@ -22,6 +24,15 @@ class AppRouter {
       GoRoute(
         path: NavigationConstant.REGISTER_ROUTE,
         builder: (_, state) => RegisterScreen(),
+      ),
+      ShellRoute(
+        builder: (context, state, child) => ScaffoldNavigationBar(child: child),
+        routes: [
+          GoRoute(
+            path: NavigationConstant.HOME_ROUTE,
+            builder: (_, state) => HomeScreen(),
+          ),
+        ],
       ),
     ],
   );

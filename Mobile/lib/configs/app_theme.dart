@@ -68,6 +68,25 @@ class AppTheme {
           disabledForegroundColor: AppColors.mutedForeground,
         ),
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white,
+        indicatorColor: Colors.transparent,
+        labelTextStyle: MaterialStateProperty.resolveWith((state) {
+          if (state.contains(MaterialState.selected)) {
+            return GoogleFonts.montserrat(
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              color: AppColors.primary,
+            );
+          }
+
+          return TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            color: AppColors.mutedForeground,
+          );
+        }),
+      ),
     );
   }
 }

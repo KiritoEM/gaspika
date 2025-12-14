@@ -19,11 +19,11 @@ class RegisterViewModel extends ChangeNotifier {
 
   /// Submit the registration form
   Future<void> submitRegisterForm(BuildContext context) async {
-    _isSubmitting = true;
-    notifyListeners();
-
     if (_formkey.currentState!.validate()) {
       _formkey.currentState!.save();
+
+      _isSubmitting = true;
+      notifyListeners();
 
       final response = await _authModel.register(_credentials);
 

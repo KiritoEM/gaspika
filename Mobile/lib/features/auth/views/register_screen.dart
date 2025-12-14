@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/features/auth/views/widgets/linear_bg.dart';
 import 'package:gaspika_mobile/features/auth/views/widgets/register_form.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,6 +13,7 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
+      extendBodyBehindAppBar: true,
 
       appBar: AppBar(
         leading: IconButton(
@@ -20,67 +22,72 @@ class RegisterScreen extends StatelessWidget {
             context.go('/login');
           },
         ),
-
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
       ),
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: .spaceBetween,
+      body: Stack(
+        children: [
+          AuthLinearBg(),
 
-            children: [
-              Column(
-                spacing: 40,
+          SafeArea(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(24, 8, 24, 24),
+              child: Column(
+                mainAxisAlignment: .spaceBetween,
+
                 children: [
-                  // Header
                   Column(
-                    spacing: 12,
-                    crossAxisAlignment: .start,
+                    spacing: 40,
                     children: [
-                      Text(
-                        'Créer un compte',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: Theme.of(
-                            context,
-                          ).textTheme.headlineLarge?.fontSize!,
-                          height: 1.1,
-                        ),
+                      // Header
+                      Column(
+                        spacing: 12,
+                        crossAxisAlignment: .start,
+                        children: [
+                          Text(
+                            'Créer un compte',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: Theme.of(
+                                context,
+                              ).textTheme.headlineLarge?.fontSize!,
+                              height: 1.1,
+                            ),
+                          ),
+                          Text(
+                            'Renseignez vos informations pour créer votre compte Gaspika.',
+                            style: TextStyle(color: AppColors.mutedForeground),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Renseignez vos informations pour créer votre compte Gaspika.',
-                        style: TextStyle(color: AppColors.mutedForeground),
-                      ),
+
+                      // Form
+                      RegisterForm(),
                     ],
                   ),
 
-                  // Form
-                  RegisterForm(),
+                  //Signup link
+                  RichText(
+                    text: TextSpan(
+                      text: 'Vous avez déja un compte?  ',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      children: [
+                        TextSpan(
+                          text: 'Se connecter',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => context.go('/login'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-
-              //Signup link
-              RichText(
-                text: TextSpan(
-                  text: 'Vous avez déja un compte?  ',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  children: [
-                    TextSpan(
-                      text: 'Se connecter',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => context.go('/login'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

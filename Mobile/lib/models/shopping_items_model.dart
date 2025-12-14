@@ -33,7 +33,6 @@ class ShoppingItemsModel {
     }
   }
 
-  // 🔥 NOUVEAU
   Future<ApiResponse<List<ShoppingListItem>>> getShoppingWeekItems() async {
     try {
       final response = await _shoppingService.getShoppingWeekItems();

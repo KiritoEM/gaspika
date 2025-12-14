@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
@@ -54,19 +53,7 @@ class WeeklyShoppingSection extends StatelessWidget {
         isLoading
             ? _weeklyShoppingSkeleton()
             : !isListEmpty
-            ? Column(
-                spacing: 14,
-                children: shoppingListItems
-                    .map(
-                      (item) => ShoppingItemCard(
-                        productName: item.productName,
-                        price: item.price,
-                        quantity: item.estimatedQuantity.toDouble(),
-                        quantityUnit: item.quantityUnit!,
-                      ),
-                    )
-                    .toList(),
-              )
+            ? _buildShoppingList()
             : Container(),
 
         // Empty state
@@ -93,6 +80,20 @@ class WeeklyShoppingSection extends StatelessWidget {
     );
   }
 
+  Widget _buildShoppingList() {
+    return Column(
+      spacing: 14,
+      children: shoppingListItems.map((item) {
+        return ShoppingItemCard(
+          productName: item.productName,
+          price: item.price,
+          quantity: item.estimatedQuantity.toDouble(),
+          quantityUnit: item.quantityUnit!,
+        );
+      }).toList(),
+    );
+  }
+
   Widget _emptyState(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 32),
@@ -110,8 +111,8 @@ class WeeklyShoppingSection extends StatelessWidget {
 
           ElevatedButton.icon(
             onPressed: () {},
-            label: Text('Créer une liste', style: TextStyle(fontSize: 14)),
-            icon: Icon(Icons.add),
+            label: Text('Consulter la liste', style: TextStyle(fontSize: 14)),
+            icon: Icon(Icons.arrow_right_alt, size: 20),
           ),
         ],
       ),

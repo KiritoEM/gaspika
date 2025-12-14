@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/widgets/avalaible_product_card.dart';
-import 'package:gaspika_mobile/features/home/widgets/main_appbar.dart';
+import 'package:gaspika_mobile/features/home/widgets/home_appbar.dart';
 import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_section.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(72),
-        child: MainAppbar(
+        child: HomeAppbar(
           userName:
               Provider.of<HomeViewModel>(context).userName ?? 'Utilisateur',
         ),
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.fromLTRB(23, 28, 23, 23),
             child: Column(
               children: [
-                // Avalaible product
+                // Available product
                 homeVm.isLoadingShopping
                     ? SkeletonLine(
                         style: SkeletonLineStyle(

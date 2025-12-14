@@ -19,4 +19,9 @@ class ShoppingService {
     );
     return response.data as List<dynamic>;
   }
+
+  Future<List<dynamic>> getShoppingList() async {
+    final response = await _dio.get(ApiConstant.SHOPPING_LIST_ENDPOINT);
+    return response.data as List<dynamic>;
+  }
 }

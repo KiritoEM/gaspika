@@ -6,6 +6,7 @@ class NavigationConstant {
   static const String LOGIN_ROUTE = '/login';
   static const String REGISTER_ROUTE = '/register';
   static const String HOME_ROUTE = '/home';
+  static const String SHOPPING_LIST_ROUTE = '/shopping-list';
 
   // Bottom Navigation Routes
   static const List<Map<String, dynamic>> BOTTOM_NAVIGATION_ROUTES = [

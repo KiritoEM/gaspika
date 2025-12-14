@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/user_model.dart';
 import 'package:gaspika_mobile/models/shopping_items_model.dart';
-import 'package:gaspika_mobile/utils/app_loger.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  // MODELS
+  // Models
   final UserModel _userModel = UserModel();
   final ShoppingItemsModel _shoppingItemsModel = ShoppingItemsModel();
 

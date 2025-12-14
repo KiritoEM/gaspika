@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 
-class MainAppbar extends StatelessWidget implements PreferredSizeWidget {
+class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
 
-  const MainAppbar({super.key, required this.userName});
+  const HomeAppbar({super.key, required this.userName});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

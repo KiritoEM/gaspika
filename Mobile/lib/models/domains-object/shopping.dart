@@ -1,5 +1,6 @@
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 
+// ========= ShoppingListItem =========
 class ShoppingListItem {
   final int? id;
   final String productName;
@@ -38,6 +39,7 @@ class ShoppingListItem {
       notes: json['notes'] as String?,
       storageTips: json['storage_tips'] as String?,
       categoryId: json['category_id'] as int?,
+      category: json['category'] as String?,
       quantityUnit: json['unit'] != null
           ? _mapIntoQuantityUnit(json['unit'])
           : null,
@@ -61,7 +63,7 @@ class ShoppingListItem {
     }
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'product_name': productName,
@@ -73,11 +75,90 @@ class ShoppingListItem {
       'storage_tips': storageTips,
       'category_id': categoryId,
       'category': category,
+      'unit': quantityUnit != null
+          ? _mapQuantityUnitToString(quantityUnit!)
+          : null,
     };
+  }
+
+  static String _mapQuantityUnitToString(QuantityUnit unit) {
+    switch (unit) {
+      case QuantityUnit.piece:
+        return 'unit';
+      case QuantityUnit.kilogram:
+        return 'kg';
+      case QuantityUnit.liter:
+        return 'l';
+      case QuantityUnit.gram:
+        return 'g';
+      case QuantityUnit.milliliter:
+        return 'ml';
+    }
   }
 
   @override
   String toString() {
-    return 'ShoppingListItem{id: $id, productName: $productName, shoppingListId: $shoppingListId, estimatedQuantity: $estimatedQuantity, price: $price, isPurchased: $isPurchased, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, category: $category}';
+    return 'ShoppingListItem{id: $id, productName: $productName, shoppingListId: $shoppingListId, estimatedQuantity: $estimatedQuantity, price: $price, isPurchased: $isPurchased, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, category: $category, unit: $quantityUnit}';
+  }
+}
+
+// ========= ShoppingList =========
+class ShoppingList {
+  final int? id;
+  final int weekNumber;
+  final String? name;
+  final String? status;
+  final int totalEstimatedCost;
+  final int? userId;
+  final bool isCompleted;
+  final List<ShoppingListItem>? items;
+
+  ShoppingList({
+    this.id,
+    required this.weekNumber,
+    this.name,
+    this.status,
+    this.totalEstimatedCost = 0,
+    this.userId,
+    this.isCompleted = false,
+    this.items,
+  });
+
+  factory ShoppingList.fromJson(Map<String, dynamic> json) {
+    return ShoppingList(
+      id: json['id'] as int?,
+      weekNumber: json['week_number'] as int,
+      name: json['name'] as String?,
+      status: json['status'] as String?,
+      totalEstimatedCost: (json['total_estimated_cost'] as int?) ?? 0,
+      userId: json['user_id'] as int?,
+      isCompleted: json['is_completed'] ?? false,
+      items: json['items'] != null
+          ? (json['items'] as List)
+                .map((item) => ShoppingListItem.fromJson(item))
+                .toList()
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'week_number': weekNumber,
+      'name': name,
+      'status': status,
+      'total_estimated_cost': totalEstimatedCost,
+      'user_id': userId,
+      'is_completed': isCompleted,
+      'items': items?.map((item) => item.toJson()).toList(),
+    };
+  }
+
+  // Return the number of items in the shopping list
+  int get itemCount => items?.length ?? 0;
+
+  @override
+  String toString() {
+    return 'ShoppingList{id: $id, weekNumber: $weekNumber, name: $name, status: $status, totalEstimatedCost: $totalEstimatedCost, userId: $userId, isCompleted: $isCompleted, itemCount: $itemCount}';
   }
 }

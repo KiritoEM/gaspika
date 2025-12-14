@@ -64,7 +64,7 @@ class LoginScreen extends StatelessWidget {
                     ],
                   ),
 
-                  //Login link
+                  //Register link
                   RichText(
                     text: TextSpan(
                       text: 'Pas encore inscrit?  ',

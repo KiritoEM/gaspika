@@ -65,7 +65,7 @@ class RegisterScreen extends StatelessWidget {
                     ],
                   ),
 
-                  //Signup link
+                  //Login link
                   RichText(
                     text: TextSpan(
                       text: 'Vous avez déja un compte?  ',

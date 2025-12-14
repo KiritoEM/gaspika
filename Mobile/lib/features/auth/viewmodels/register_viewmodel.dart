@@ -3,9 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/models/auth_model.dart';
 import 'package:gaspika_mobile/models/schemas/auth_credentials.dart';
-import 'package:gaspika_mobile/shared/snackbar.dart';
-import 'package:go_router/go_router.dart';
-import '../../../constants/enums/enums.dart';
 
 class RegisterViewModel extends ChangeNotifier {
   final AuthModel _authModel = AuthModel();
@@ -18,41 +15,29 @@ class RegisterViewModel extends ChangeNotifier {
   GlobalKey<FormState> get formkey => _formkey;
 
   /// Submit the registration form
-  Future<void> submitRegisterForm(BuildContext context) async {
+  Future<String?> submitRegisterForm() async {
     _isSubmitting = true;
     notifyListeners();
 
-    if (_formkey.currentState!.validate()) {
-      _formkey.currentState!.save();
-
-      final response = await _authModel.register(_credentials);
-
-      if (response.hasError == true) {
-        _isSubmitting = false;
-        SnackbarUtils.showInSnackBar(
-          context,
-          response.message!,
-          type: SnackbarType.error,
-        );
-        notifyListeners();
-        return;
-      }
-
-      SnackbarUtils.showInSnackBar(
-        context,
-        response.message!,
-        type: SnackbarType.success,
-      );
-
-      context.go('/login');
-
-      _formkey.currentState!.reset();
+    if (!_formkey.currentState!.validate()) {
       _isSubmitting = false;
       notifyListeners();
-    } else {
-      _isSubmitting = false;
-      notifyListeners();
+      return null;
     }
+
+    _formkey.currentState!.save();
+
+    final response = await _authModel.register(_credentials);
+
+    _isSubmitting = false;
+    notifyListeners();
+
+    if (response.hasError == true) {
+      return response.message!;
+    }
+
+    _formkey.currentState!.reset();
+    return null;
   }
 
   void setFullname(String fullname) => _credentials.fullname = fullname;

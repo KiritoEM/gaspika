@@ -54,7 +54,7 @@ class OnboardingScreen extends StatelessWidget {
             OnboardingSlider(
               slides: slides,
               onComplete: () {
-                context.go('/login');
+                context.push('/login');
               },
             ),
           ],

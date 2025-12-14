@@ -32,5 +32,5 @@ async def login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):
     user = result.scalar_one_or_none()
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
-    token = create_access_token(user.email)
+    token = create_access_token(user.id)
     return TokenOut(access_token=token)

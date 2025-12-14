@@ -1,11 +1,15 @@
-from sqlalchemy import Column, BigInteger, Integer, String, Boolean, ForeignKey, Date, Text
+from sqlalchemy import Column, BigInteger, Integer, String, Boolean, ForeignKey, Text, DateTime, Enum
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from app.utils.enums import UnitEnum
 from app.database import Base
 
 class Preferences(Base):
     __tablename__ = "preferences"
     id = Column(BigInteger, primary_key=True, index=True)
     preference_type = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     users = relationship("User", back_populates="preferences")
 
@@ -20,6 +24,8 @@ class User(Base):
     email_verified = Column(Boolean, default=False)
     password_hash = Column(String, nullable=False)
     preference_id = Column(BigInteger, ForeignKey("preferences.id"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     preferences = relationship("Preferences", back_populates="users")
     shopping_lists = relationship("ShoppingList", back_populates="user")
@@ -30,6 +36,8 @@ class FoodCategory(Base):
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     icon_url = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     products = relationship("FoodProduct", back_populates="category")
 
@@ -44,6 +52,8 @@ class FoodProduct(Base):
     unit = Column(String, nullable=False, default="unit")
     image_url = Column(String, nullable=True)
     category_id = Column(BigInteger, ForeignKey("food_category.id"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     category = relationship("FoodCategory", back_populates="products")
 
@@ -56,6 +66,8 @@ class ShoppingList(Base):
     total_estimated_cost = Column(Integer, nullable=True, default=0)
     user_id = Column(BigInteger, ForeignKey("user.id"), nullable=False)
     is_completed = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship("User", back_populates="shopping_lists")
     items = relationship("ShoppingListItem", back_populates="shopping_list", cascade="all, delete-orphan")
@@ -70,8 +82,14 @@ class ShoppingListItem(Base):
     is_purchased = Column(Boolean, default=False)
     notes = Column(Text, nullable=True)
     storage_tips = Column(Text, nullable=True)
-    created_at = Column(Date, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())  # Changé de Date à DateTime
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())  # Nouveau
     category_id = Column(BigInteger, ForeignKey("food_category.id"), nullable=True)
 
     shopping_list = relationship("ShoppingList", back_populates="items")
     category = relationship("FoodCategory")
+    unit = Column(
+        Enum(UnitEnum, name="unit"),
+        nullable=False,
+        default=UnitEnum.UNIT
+    )

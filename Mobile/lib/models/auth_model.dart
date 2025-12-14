@@ -8,10 +8,11 @@ import 'package:gaspika_mobile/services/api/auth_service.dart';
 import 'package:gaspika_mobile/services/secure_storage_service.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/network_error_handler.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AuthModel {
   final AuthService _authService = AuthService();
-
+  // Login
   Future<ApiResponse<dynamic>> login(LoginCredentials credentials) async {
     try {
       final loginResponse = await _authService.login(credentials);
@@ -56,6 +57,7 @@ class AuthModel {
     }
   }
 
+  /// Register
   Future<ApiResponse<dynamic>> register(SignupCredentials credentials) async {
     try {
       await _authService.register(credentials);
@@ -74,5 +76,20 @@ class AuthModel {
         message: 'Impossible de créer votre compte. Veuillez réessayer.',
       );
     }
+  }
+
+  // Check if user is authenticated
+  Future<bool> isAuthenticated() async {
+    final token = await SecureStorageService.read('access_token');
+    AppLogger.logger.i('Auth token: $token');
+
+    if (token != null) {
+      if (JwtDecoder.isExpired(token)) {
+        await SecureStorageService.delete('access_token');
+        return false;
+      }
+    }
+
+    return token != null;
   }
 }

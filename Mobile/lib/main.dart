@@ -4,6 +4,7 @@ import 'package:gaspika_mobile/configs/app_theme.dart';
 import 'package:gaspika_mobile/configs/dotenv_config.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/login_viewmodel.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
+import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -17,6 +18,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
+        ChangeNotifierProvider(create: (_) => HomeViewModel()),
       ],
       child: const MyApp(),
     ),

@@ -1,6 +1,7 @@
-from sqlalchemy import Column, BigInteger, Integer, String, Boolean, ForeignKey, Text, DateTime
+from sqlalchemy import Column, BigInteger, Integer, String, Boolean, ForeignKey, Text, DateTime, Enum
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from app.utils.enums import UnitEnum
 from app.database import Base
 
 class Preferences(Base):
@@ -87,3 +88,8 @@ class ShoppingListItem(Base):
 
     shopping_list = relationship("ShoppingList", back_populates="items")
     category = relationship("FoodCategory")
+    unit = Column(
+        Enum(UnitEnum, name="unit"),
+        nullable=False,
+        default=UnitEnum.UNIT
+    )

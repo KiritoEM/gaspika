@@ -12,6 +12,8 @@ async def generate_weekly_list(db: AsyncSession, user_id: int, week_number: int,
     user = result_user.scalar_one_or_none()
     household_size = user.household_size if user else 1
 
+    items = []
+
     for pid in product_ids:
         result_p = await db.execute(select(FoodProduct).where(FoodProduct.id == pid))
         p = result_p.scalar_one_or_none()
@@ -33,7 +35,8 @@ async def generate_weekly_list(db: AsyncSession, user_id: int, week_number: int,
             category_id=cat.id if cat else None
         )
         db.add(item)
+        items.append(item)
 
     await db.flush()
-    sl.total_estimated_cost = sum([(item.price or 0) for item in sl.items]) if sl.items else 0
+    sl.total_estimated_cost = sum([(item.price or 0) for item in items])
     return sl

@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       await homeVm.fetchUserInfo();
       await homeVm.fetchAvailableFoodCount();
-      // await homeVm.fetchShoppingWeekItems();
+      await homeVm.fetchShoppingWeekItems();
     });
   }
 
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Weekly shopping
                 WeeklyShoppingSection(
                   isLoading: homeVm.isLoadingShopping,
-                  isListEmpty: true,
+                  shoppingListItems: homeVm.shoppingWeekItems,
                 ),
               ],
             ),

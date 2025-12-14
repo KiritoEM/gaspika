@@ -1,6 +1,8 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 
+from app.utils.enums import UnitEnum
+
 # --- Preferences ---
 class PreferencesBase(BaseModel):
     preference_type: str
@@ -68,6 +70,7 @@ class ProductOut(ProductBase):
 class ShoppingListItemBase(BaseModel):
     product_name: str
     estimated_quantity: int
+    unit: UnitEnum = UnitEnum.UNIT
     price: Optional[int] = 0
     is_purchased: bool = False
     notes: Optional[str] = None

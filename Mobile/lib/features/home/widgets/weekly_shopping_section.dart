@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 
 class WeeklyShoppingSection extends StatelessWidget {
   bool isLoading;
-  bool isListEmpty;
+  List<ShoppingListItem> shoppingListItems;
 
   WeeklyShoppingSection({
     super.key,
     this.isLoading = false,
-    this.isListEmpty = false,
+    this.shoppingListItems = const [],
   });
 
   @override
   Widget build(BuildContext context) {
+    bool isListEmpty = shoppingListItems.isEmpty;
+
     return Column(
       children: [
         // Header
@@ -53,31 +56,21 @@ class WeeklyShoppingSection extends StatelessWidget {
             : !isListEmpty
             ? Column(
                 spacing: 14,
-                children: [
-                  ShoppingItemCard(
-                    productName: 'Pommes',
-                    price: 3000,
-                    quantity: 1.5,
-                    quantityUnit: QuantityUnit.kilogram,
-                  ),
-                  ShoppingItemCard(
-                    productName: 'Bananes',
-                    price: 2000,
-                    quantity: 2.0,
-                    quantityUnit: QuantityUnit.piece,
-                  ),
-                  ShoppingItemCard(
-                    productName: 'Lait',
-                    price: 1000,
-                    quantity: 1.0,
-                    quantityUnit: QuantityUnit.liter,
-                  ),
-                ],
+                children: shoppingListItems
+                    .map(
+                      (item) => ShoppingItemCard(
+                        productName: item.productName,
+                        price: item.price,
+                        quantity: item.estimatedQuantity.toDouble(),
+                        quantityUnit: item.quantityUnit!,
+                      ),
+                    )
+                    .toList(),
               )
             : Container(),
 
         // Empty state
-        isListEmpty ? _emptyState(context) : Container(),
+        !isLoading && isListEmpty ? _emptyState(context) : Container(),
       ],
     );
   }

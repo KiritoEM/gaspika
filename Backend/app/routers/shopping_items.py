@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, extract
 from app.database import get_db
 from app.deps import require_user
-from app.models import ShoppingList, ShoppingListItem, User
+from app.models import ShoppingList, ShoppingListItem
 from app.schemas import ShoppingListItemOut, ShoppingListItemBase
 
 router = APIRouter(prefix="/shopping-items", tags=["shopping_items"], dependencies=[Depends(require_user)])
@@ -17,13 +17,13 @@ router = APIRouter(prefix="/shopping-items", tags=["shopping_items"], dependenci
     description="Récupère tous les items d'une liste de courses avec possibilité de filtrer par catégorie"
 )
 async def items_in_list(
+    request: Request,
     list_id: int,
     category_id: int | None = None,
     db: AsyncSession = Depends(get_db),
-    user: User = Depends(require_user)
 ):
     sl = (await db.execute(
-        select(ShoppingList).where(ShoppingList.id == list_id, ShoppingList.user_id == user.id)
+        select(ShoppingList).where(ShoppingList.id == list_id, ShoppingList.user_id == request.state.user.id)
     )).scalar_one_or_none()
     if not sl:
         raise HTTPException(status_code=404, detail="List not found")
@@ -112,18 +112,22 @@ async def shopping_week_items(
     status_code=201
 )
 async def add_item(
+    request: Request,
     list_id: int,
     payload: ShoppingListItemBase,
     db: AsyncSession = Depends(get_db),
-    user: User = Depends(require_user)
 ):
     sl = (await db.execute(
-        select(ShoppingList).where(ShoppingList.id == list_id, ShoppingList.user_id == user.id)
+        select(ShoppingList).where(ShoppingList.id == list_id, ShoppingList.user_id == request.state.user.id)
     )).scalar_one_or_none()
     if not sl:
         raise HTTPException(status_code=404, detail="List not found")
+    
+    # Add item
     item = ShoppingListItem(shopping_list_id=list_id, **payload.model_dump())
     db.add(item)
+    
     await db.commit()
     await db.refresh(item)
+
     return item

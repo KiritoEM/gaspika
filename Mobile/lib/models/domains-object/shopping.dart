@@ -1,51 +1,64 @@
+import 'package:gaspika_mobile/constants/enums/enums.dart';
+
 class ShoppingListItem {
-  final int id;
+  final int? id;
   final String productName;
-  final int shoppingListId;
+  final int? shoppingListId;
   final int estimatedQuantity;
   final int price;
   final bool isPurchased;
   final String? notes;
   final String? storageTips;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
   final int? categoryId;
   final String? category;
+  final QuantityUnit? quantityUnit;
 
   ShoppingListItem({
-    required this.id,
+    this.id,
     required this.productName,
-    required this.shoppingListId,
+    this.shoppingListId,
     required this.estimatedQuantity,
     required this.price,
     required this.isPurchased,
     this.notes,
     this.storageTips,
-    this.createdAt,
-    this.updatedAt,
     this.categoryId,
     this.category,
+    this.quantityUnit,
   });
 
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
     return ShoppingListItem(
-      id: json['id'],
-      productName: json['product_name'],
-      shoppingListId: json['shopping_list_id'],
-      estimatedQuantity: json['estimated_quantity'] ?? 1,
-      price: json['price'] ?? 0,
-      isPurchased: json['is_purchased'],
-      notes: json['notes'],
-      storageTips: json['storage_tips'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
+      id: json['id'] as int?,
+      productName: json['product_name'] ?? '',
+      shoppingListId: json['shopping_list_id'] as int?,
+      estimatedQuantity: (json['estimated_quantity'] as int?) ?? 1,
+      price: (json['price'] as int?) ?? 0,
+      isPurchased: json['is_purchased'] ?? false,
+      notes: json['notes'] as String?,
+      storageTips: json['storage_tips'] as String?,
+      categoryId: json['category_id'] as int?,
+      quantityUnit: json['unit'] != null
+          ? _mapIntoQuantityUnit(json['unit'])
           : null,
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
-      categoryId: json['category_id'],
-      category: json['category'],
     );
+  }
+
+  static QuantityUnit _mapIntoQuantityUnit(String? quantityUnit) {
+    switch (quantityUnit) {
+      case 'unit':
+        return QuantityUnit.piece;
+      case 'kg':
+        return QuantityUnit.kilogram;
+      case 'l':
+        return QuantityUnit.liter;
+      case 'g':
+        return QuantityUnit.gram;
+      case 'ml':
+        return QuantityUnit.milliliter;
+      default:
+        return QuantityUnit.piece;
+    }
   }
 
   Map<String, dynamic> toMap() {
@@ -58,8 +71,6 @@ class ShoppingListItem {
       'is_purchased': isPurchased,
       'notes': notes,
       'storage_tips': storageTips,
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
       'category_id': categoryId,
       'category': category,
     };
@@ -67,6 +78,6 @@ class ShoppingListItem {
 
   @override
   String toString() {
-    return 'ShoppingListItem{id: $id, productName: $productName, shoppingListId: $shoppingListId, estimatedQuantity: $estimatedQuantity, price: $price, isPurchased: $isPurchased, notes: $notes, storageTips: $storageTips, createdAt: $createdAt, updatedAt: $updatedAt, categoryId: $categoryId, category: $category}';
+    return 'ShoppingListItem{id: $id, productName: $productName, shoppingListId: $shoppingListId, estimatedQuantity: $estimatedQuantity, price: $price, isPurchased: $isPurchased, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, category: $category}';
   }
 }

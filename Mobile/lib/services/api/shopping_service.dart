@@ -13,10 +13,10 @@ class ShoppingService {
     return response.data;
   }
 
-  Future<List<Map<String, dynamic>>> getShoppingWeekItems() async {
+  Future<List<dynamic>> getShoppingWeekItems() async {
     final response = await _dio.get(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/shopping-week',
     );
-    return response.data;
+    return response.data as List<dynamic>;
   }
 }

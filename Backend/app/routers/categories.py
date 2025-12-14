@@ -27,4 +27,4 @@ async def create_category(payload: CategoryBase, db: AsyncSession = Depends(get_
     await db.commit()
     await db.refresh(c)
     redis_client.delete("categories:all")
-    return 
+    return  CategoryOut.model_validate(c)

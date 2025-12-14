@@ -45,8 +45,6 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> fetchAvailableFoodCount() async {
     final response = await _shoppingItemsModel.getAvalaibleFoodCount();
 
-    AppLogger.logger.i('Available food count response: ${response.data}');
-
     if (response.hasError == true) {
       _isLoadingShopping = false;
       notifyListeners();
@@ -64,8 +62,6 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
 
     final response = await _shoppingItemsModel.getShoppingWeekItems();
-
-    AppLogger.logger.i('Shopping week items response: $response');
 
     if (response.hasError == true) {
       _isLoadingShopping = false;

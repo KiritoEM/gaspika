@@ -40,8 +40,8 @@ class ShoppingItemsModel {
 
       await Future.delayed(const Duration(seconds: 2));
 
-      final items = (response as List)
-          .map((e) => ShoppingListItem.fromJson(e))
+      final items = response
+          .map((e) => ShoppingListItem.fromJson(e as Map<String, dynamic>))
           .toList();
 
       return ApiResponse(

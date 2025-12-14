@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/regex_pattern.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
+import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/shared/password_input_field.dart';
 import 'package:provider/provider.dart';
 
@@ -14,10 +15,10 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
-    RegisterViewModel loginVm = Provider.of<RegisterViewModel>(context);
+    RegisterViewModel registerVm = Provider.of<RegisterViewModel>(context);
 
     return Form(
-      key: loginVm.formkey,
+      key: registerVm.formkey,
       child: Column(
         spacing: 32,
         children: [
@@ -31,7 +32,7 @@ class _RegisterFormState extends State<RegisterForm> {
               return null;
             },
             onSaved: (value) => {
-              if (value != null) {loginVm.setFullname(value)},
+              if (value != null) {registerVm.setFullname(value)},
             },
           ),
 
@@ -50,7 +51,7 @@ class _RegisterFormState extends State<RegisterForm> {
               return null;
             },
             onSaved: (value) => {
-              if (value != null) {loginVm.setEmail(value)},
+              if (value != null) {registerVm.setEmail(value)},
             },
           ),
 
@@ -67,16 +68,18 @@ class _RegisterFormState extends State<RegisterForm> {
             },
             onSaved: (value) {
               if (value != null) {
-                loginVm.setPassword(value);
+                registerVm.setPassword(value);
               }
             },
           ),
 
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => loginVm.submitLoginForm(),
-              child: Text('S\'inscrire'),
+            child: ButtonWithLoader(
+              isLoading: registerVm.isSubmitting,
+              text: 'S\'inscrire',
+              loadingText: 'Inscription en cours...',
+              onPressed: () => registerVm.submitRegisterForm(context),
             ),
           ),
         ],

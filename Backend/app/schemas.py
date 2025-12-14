@@ -15,9 +15,9 @@ class UserCreate(BaseModel):
     first_name: str
     last_name: str
     phone_number: Optional[str] = None
-    household_size: int = Field(ge=1)
+    household_size: int = Field(default=1, ge=1)
     email: EmailStr
-    password: str
+    password: str = Field(min_length=6, max_length=128)
     preference_id: Optional[int] = None
 
 class UserOut(BaseModel):
@@ -92,3 +92,8 @@ class ShoppingListOut(ShoppingListBase):
     items: List[ShoppingListItemOut] = []
     class Config:
         from_attributes = True
+
+# --- Auth ---
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str

@@ -1,10 +1,13 @@
 /// Auth usecases
 library;
 
+import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
-import 'package:gaspika_mobile/models/schemas/login_credentials.dart';
+import 'package:gaspika_mobile/models/schemas/auth_credentials.dart';
 import 'package:gaspika_mobile/services/api/auth_service.dart';
 import 'package:gaspika_mobile/services/secure_storage_service.dart';
+import 'package:gaspika_mobile/utils/app_loger.dart';
+import 'package:gaspika_mobile/utils/network_error_handler.dart';
 
 class AuthModel {
   final AuthService _authService = AuthService();
@@ -29,12 +32,46 @@ class AuthModel {
         );
       }
 
-      return ApiResponse(data: loginResponse, hasError: false);
+      return ApiResponse(data: loginResponse);
+    } on DioException catch (err) {
+      if (err.type == DioExceptionType.badResponse) {
+        if (err.response?.statusCode == 401) {
+          return ApiResponse(
+            hasError: true,
+            message: 'Email ou mot de passe incorrect. Veuillez réessayer.',
+          );
+        }
+      }
+
+      throw NetworkErrorHandler.handleError(err).isNotEmpty
+          ? NetworkErrorHandler.handleError(err)
+          : err;
     } catch (err) {
+      AppLogger.logger.e('Error while logging in: $err');
       return ApiResponse(
         hasError: true,
         message:
-            'Impossible de se connecter à votre compte. Veillez réessayer plus tard.',
+            'Impossible de se connecter à votre compte. Veuillez réessayer.',
+      );
+    }
+  }
+
+  Future<ApiResponse<dynamic>> register(SignupCredentials credentials) async {
+    try {
+      await _authService.register(credentials);
+
+      return ApiResponse(
+        message: 'Inscription réussie ! Veuillez vous connecter aprés.',
+      );
+    } on DioException catch (err) {
+      throw NetworkErrorHandler.handleError(err).isNotEmpty
+          ? NetworkErrorHandler.handleError(err)
+          : err;
+    } catch (err) {
+      AppLogger.logger.e('Error while registering: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de créer votre compte. Veuillez réessayer.',
       );
     }
   }

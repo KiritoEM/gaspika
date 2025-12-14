@@ -21,16 +21,12 @@ class NetworkErrorHandler {
 
   static String _handleStatusCode(Response? response) {
     switch (response?.statusCode) {
-      case 400:
-        return response?.data['message'] ?? 'Requête invalide';
       case 401:
-        return 'Non autorisé. Veuillez vous reconnecter';
+        return 'Unauthorized, no access';
       case 403:
-        return 'Accès refusé';
-      case 404:
-        return 'Ressource introuvable';
+        return 'Access forbidden';
       case 500:
-        return 'Erreur serveur';
+        return 'Server error, please try again later';
       default:
         return response?.data['message'] ?? 'Une erreur est survenue';
     }

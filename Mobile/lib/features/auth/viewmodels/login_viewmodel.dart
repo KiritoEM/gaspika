@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/models/auth_model.dart';
-import 'package:gaspika_mobile/models/schemas/login_credentials.dart';
+import 'package:gaspika_mobile/models/schemas/auth_credentials.dart';
 import 'package:gaspika_mobile/shared/snackbar.dart';
 import '../../../constants/enums/enums.dart';
 

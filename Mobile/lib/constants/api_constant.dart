@@ -14,4 +14,5 @@ class ApiConstant {
 
   // Endpoints
   static const String LOGIN_ENDPOINT = '/auth/login';
+  static const String REGISTER_ENDPOINT = '/auth/register';
 }

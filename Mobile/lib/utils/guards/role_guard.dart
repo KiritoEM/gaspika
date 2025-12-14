@@ -3,6 +3,7 @@ import 'package:gaspika_mobile/models/auth_model.dart';
 class RoleGuard {
   final _authModel = AuthModel();
 
+  // Check access to a route
   Future<String?> checkAccess() async {
     if (await isUserAuthentificated()) {
       return Future.value(null);
@@ -11,6 +12,7 @@ class RoleGuard {
     }
   }
 
+  // Redirect if user is already authenticated
   Future<String?> redirectIfAuthentificated() async {
     if (await isUserAuthentificated()) {
       return Future.value('/home');

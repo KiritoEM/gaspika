@@ -24,7 +24,7 @@ class AppTheme {
           ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: AppColors.surface,
         labelStyle: TextStyle(
           fontWeight: FontWeight.w600,
           color: Colors.grey[500],
@@ -71,6 +71,8 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
         indicatorColor: Colors.transparent,
+        elevation: 8,
+        shadowColor: Colors.black.withOpacity(0.1),
         labelTextStyle: MaterialStateProperty.resolveWith((state) {
           if (state.contains(MaterialState.selected)) {
             return GoogleFonts.montserrat(

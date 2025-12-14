@@ -12,7 +12,7 @@ def hash_password(p: str) -> str:
 def verify_password(p: str, hashed: str) -> bool:
     return pwd_context.verify(p, hashed)
 
-def create_access_token(subject: str, expires_minutes: int | None = None) -> str:
+def create_access_token(userId: str, expires_minutes: int | None = None) -> str:
     expire = datetime.utcnow() + timedelta(minutes=expires_minutes or settings.access_token_expire_minutes)
-    payload = {"sub": subject, "exp": expire}
+    payload = {"userId": userId, "exp": expire}
     return jwt.encode(payload, settings.app_secret, algorithm=ALGORITHM)

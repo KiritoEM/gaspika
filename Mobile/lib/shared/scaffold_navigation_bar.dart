@@ -25,33 +25,48 @@ class _ScaffoldNavigationBarState extends State<ScaffoldNavigationBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: widget.child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: _handleChangeTab,
-        backgroundColor: Colors.white,
-        indicatorColor: Colors.transparent,
-        destinations: NavigationConstant.BOTTOM_NAVIGATION_ROUTES
-            .asMap()
-            .entries
-            .map((entry) {
-              final index = entry.key;
-              final route = entry.value;
-              final isSelected = _currentIndex == index;
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              offset: Offset(0, -2),
+              blurRadius: 8,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: _handleChangeTab,
+          backgroundColor: Colors.white,
+          indicatorColor: Colors.transparent,
+          destinations: NavigationConstant.BOTTOM_NAVIGATION_ROUTES
+              .asMap()
+              .entries
+              .map((entry) {
+                final index = entry.key;
+                final route = entry.value;
+                final isSelected = _currentIndex == index;
 
-              return NavigationDestination(
-                icon: SvgPicture.asset(
-                  route['icon'],
-                  width: 26,
-                  height: 26,
-                  colorFilter: ColorFilter.mode(
-                    isSelected ? AppColors.primary : AppColors.mutedForeground,
-                    BlendMode.srcIn,
+                return NavigationDestination(
+                  icon: SvgPicture.asset(
+                    route['icon'],
+                    width: 26,
+                    height: 26,
+                    colorFilter: ColorFilter.mode(
+                      isSelected
+                          ? AppColors.primary
+                          : AppColors.mutedForeground,
+                      BlendMode.srcIn,
+                    ),
                   ),
-                ),
-                label: route['label'],
-              );
-            })
-            .toList(),
+                  label: route['label'],
+                );
+              })
+              .toList(),
+        ),
       ),
     );
   }

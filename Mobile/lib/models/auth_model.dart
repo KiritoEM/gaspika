@@ -12,7 +12,6 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AuthModel {
   final AuthService _authService = AuthService();
-
   // Login
   Future<ApiResponse<dynamic>> login(LoginCredentials credentials) async {
     try {
@@ -82,6 +81,7 @@ class AuthModel {
   // Check if user is authenticated
   Future<bool> isAuthenticated() async {
     final token = await SecureStorageService.read('access_token');
+    AppLogger.logger.i('Auth token: $token');
 
     if (token != null) {
       if (JwtDecoder.isExpired(token)) {

@@ -76,7 +76,7 @@ class _RegisterFormState extends State<RegisterForm> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => loginVm.submitLoginForm(),
-              child: Text('Se connecter'),
+              child: Text('S\'inscrire'),
             ),
           ),
         ],

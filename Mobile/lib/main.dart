@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_router.dart';
 import 'package:gaspika_mobile/configs/app_theme.dart';
+import 'package:gaspika_mobile/configs/dotenv_config.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/login_viewmodel.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize environment variables
+  await DotenvConfig.initDotenv();
+
   runApp(
     MultiProvider(
       providers: [

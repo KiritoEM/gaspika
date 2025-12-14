@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from app.database import Base, engine
 from app.routers import auth, users, categories, products, shopping_lists, shopping_items
 
@@ -13,13 +13,15 @@ async def startup_event():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-# Inclusion des routes avec tags pour Swagger
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(users.router, prefix="/users", tags=["Users"])
-app.include_router(categories.router, prefix="/categories", tags=["Categories"])
-app.include_router(products.router, prefix="/products", tags=["Products"])
-app.include_router(shopping_lists.router, prefix="/shopping-lists", tags=["Shopping Lists"])
-app.include_router(shopping_items.router, prefix="/shopping-items", tags=["Shopping Items"])
+api_router = APIRouter(prefix="/api")
+api_router.include_router(auth.router)
+api_router.include_router(users.router)
+api_router.include_router(categories.router)
+api_router.include_router(products.router)
+api_router.include_router(shopping_lists.router)
+api_router.include_router(shopping_items.router)
+
+app.include_router(api_router)
 
 @app.get("/", tags=["Root"])
 async def root():

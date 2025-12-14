@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-
-// Form data model
-class LoginCredentials {
-  String email = '';
-  String password = '';
-  LoginCredentials({required this.email, required this.password});
-}
+import 'package:gaspika_mobile/models/schemas/login_credentials.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final _formkey = GlobalKey<FormState>();

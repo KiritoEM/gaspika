@@ -6,6 +6,7 @@ import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/widgets/avalaible_product_card.dart';
 import 'package:gaspika_mobile/features/home/widgets/main_appbar.dart';
 import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_section.dart';
+import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,12 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
       await homeVm.fetchUserInfo();
       await homeVm.fetchAvailableFoodCount();
-      await homeVm.fetchShoppingWeekItems();
+      // await homeVm.fetchShoppingWeekItems();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final HomeViewModel homeVm = Provider.of<HomeViewModel>(context);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
@@ -47,11 +50,26 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.fromLTRB(23, 28, 23, 23),
             child: Column(
               children: [
-                AvalaibleProductCard(productCount: 10),
+                // Avalaible product
+                homeVm.isLoadingShopping
+                    ? SkeletonLine(
+                        style: SkeletonLineStyle(
+                          height: 100,
+                          width: double.infinity,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      )
+                    : AvalaibleProductCard(
+                        productCount: homeVm.availableFoodCount,
+                      ),
 
                 SizedBox(height: 28),
 
-                WeeklyShoppingSection(),
+                // Weekly shopping
+                WeeklyShoppingSection(
+                  isLoading: homeVm.isLoadingShopping,
+                  isListEmpty: true,
+                ),
               ],
             ),
           ),
@@ -60,5 +78,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-class UserViewModel {}

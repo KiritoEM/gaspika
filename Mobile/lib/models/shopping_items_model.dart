@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
@@ -8,12 +10,14 @@ import 'package:gaspika_mobile/utils/network_error_handler.dart';
 class ShoppingItemsModel {
   final ShoppingService _shoppingService = ShoppingService();
 
-  Future<ApiResponse<int>> getAvalaibleFoodCount() async {
+  Future<ApiResponse<int?>> getAvalaibleFoodCount() async {
     try {
       final response = await _shoppingService.getAvalaibleFoodCount();
 
+      await Future.delayed(const Duration(seconds: 2));
+
       return ApiResponse(
-        data: response,
+        data: jsonDecode(response['count'].toString()) as int,
         message: 'Données récupérées avec succès.',
       );
     } on DioException catch (err) {
@@ -30,10 +34,11 @@ class ShoppingItemsModel {
   }
 
   // 🔥 NOUVEAU
-  Future<ApiResponse<List<ShoppingListItem>>> getShoppingWeekItems(
-  ) async {
+  Future<ApiResponse<List<ShoppingListItem>>> getShoppingWeekItems() async {
     try {
       final response = await _shoppingService.getShoppingWeekItems();
+
+      await Future.delayed(const Duration(seconds: 2));
 
       final items = (response as List)
           .map((e) => ShoppingListItem.fromJson(e))

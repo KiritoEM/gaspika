@@ -166,6 +166,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  flutter_skeleton_ui:
+    dependency: "direct main"
+    description:
+      name: flutter_skeleton_ui
+      sha256: "2585c4af785dbdf38be3d8489c80e5a42798b720a4e9524cda05eb762abef39b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.6"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -525,6 +533,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  week_number:
+    dependency: "direct main"
+    description:
+      name: week_number
+      sha256: "4479f6c9bed5240e66d4e14150023edbaee39394797bb1a087cc48f06b1dd96f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   win32:
     dependency: transitive
     description:
@@ -550,5 +566,5 @@ packages:
     source: hosted
     version: "6.6.1"
 sdks:
-  dart: ">=3.10.0 <4.0.0"
+  dart: ">=3.10.0 <3.22.0"
   flutter: ">=3.35.0"

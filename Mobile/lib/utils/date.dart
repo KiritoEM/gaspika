@@ -1,8 +1,9 @@
-import 'package:intl/intl.dart';
+import 'package:week_number/iso.dart';
 
-class DateUtils {
+class DateUtilities {
   static int getCurrentWeekNumberISO() {
     final now = DateTime.now();
-    return int.parse(DateFormat('w').format(now));
+    print(now.weekNumber);
+    return now.weekNumber;
   }
 }

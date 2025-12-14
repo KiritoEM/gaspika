@@ -10,11 +10,11 @@ class HomeViewModel extends ChangeNotifier {
   final ShoppingItemsModel _shoppingItemsModel = ShoppingItemsModel();
 
   // User states
-  bool _isLoadingUser = false;
+  bool _isLoadingUser = true;
   String? _userName;
 
   // Shopping states
-  bool _isLoadingShopping = false;
+  bool _isLoadingShopping = true;
   int _availableFoodCount = 0;
   List<ShoppingListItem> _shoppingWeekItems = [];
 
@@ -28,11 +28,7 @@ class HomeViewModel extends ChangeNotifier {
 
   // get user info
   Future<void> fetchUserInfo() async {
-    _isLoadingUser = true;
-    notifyListeners();
-
     final response = await _userModel.getUserInfo();
-    AppLogger.logger.i('User info response: $response');
 
     if (response.hasError == true) {
       _isLoadingUser = false;
@@ -47,12 +43,9 @@ class HomeViewModel extends ChangeNotifier {
 
   // get available food count
   Future<void> fetchAvailableFoodCount() async {
-    _isLoadingShopping = true;
-    notifyListeners();
-
     final response = await _shoppingItemsModel.getAvalaibleFoodCount();
 
-    AppLogger.logger.i('Available food count response: $response');
+    AppLogger.logger.i('Available food count response: ${response.data}');
 
     if (response.hasError == true) {
       _isLoadingShopping = false;

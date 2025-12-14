@@ -5,16 +5,17 @@ import 'package:gaspika_mobile/utils/date.dart';
 class ShoppingService {
   final _dio = DioConfig.instance;
 
-  Future<int> getAvalaibleFoodCount() async {
+  Future<Map<String, dynamic>> getAvalaibleFoodCount() async {
     final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtils.getCurrentWeekNumberISO()}/available-products-count',
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/available-products-count',
     );
+
     return response.data;
   }
 
   Future<List<Map<String, dynamic>>> getShoppingWeekItems() async {
     final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtils.getCurrentWeekNumberISO()}/shopping-week',
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/shopping-week',
     );
     return response.data;
   }

@@ -3,8 +3,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
 
 class DioConfig {
-  static Dio? _dio;
   static final String _baseUrl = dotenv.env['API_BASE_URL']!;
+
+  // Singleton
+  static final DioConfig _instance = DioConfig._internal();
+  factory DioConfig() => _instance;
+  DioConfig._internal();
+
+  static Dio? _dio;
 
   static Dio get instance {
     _dio ??= _createDio();
@@ -18,6 +24,7 @@ class DioConfig {
         baseUrl: _baseUrl,
         connectTimeout: ApiConstant.CONNECT_TIMEOUT,
         receiveTimeout: ApiConstant.RECEIVE_TIMEOUT,
+        sendTimeout: ApiConstant.SEND_TIMEOUT,
         responseType: ResponseType.json,
         headers: ApiConstant.HEADERS,
       ),

@@ -4,6 +4,7 @@ class ApiConstant {
   // Timeouts
   static const Duration CONNECT_TIMEOUT = Duration(seconds: 30);
   static const Duration RECEIVE_TIMEOUT = Duration(seconds: 30);
+  static const Duration SEND_TIMEOUT = Duration(seconds: 30);
 
   // Headers
   static const Map<String, String> HEADERS = {
@@ -12,5 +13,5 @@ class ApiConstant {
   };
 
   // Endpoints
-  static const String LOGIN = '/auth/login';
+  static const String LOGIN_ENDPOINT = '/auth/login';
 }

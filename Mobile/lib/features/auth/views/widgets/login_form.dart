@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/regex_pattern.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/login_viewmodel.dart';
+import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/shared/password_input_field.dart';
 import 'package:provider/provider.dart';
 
@@ -60,9 +61,11 @@ class _LoginFormState extends State<LoginForm> {
 
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => loginVm.submitLoginForm(),
-              child: Text('Se connecter'),
+            child: ButtonWithLoader(
+              isLoading: loginVm.isSubmitting,
+              text: 'Se connecter',
+              loadingText: 'Connexion en cours...',
+              onPressed: () => loginVm.submitLoginForm(context),
             ),
           ),
         ],

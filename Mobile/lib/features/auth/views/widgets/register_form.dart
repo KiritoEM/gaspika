@@ -1,8 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/constants/regex_pattern.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/shared/password_input_field.dart';
+import 'package:gaspika_mobile/shared/snackbar.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -15,7 +20,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
-    RegisterViewModel registerVm = Provider.of<RegisterViewModel>(context);
+    RegisterViewModel registerVm = context.watch<RegisterViewModel>();
 
     return Form(
       key: registerVm.formkey,
@@ -79,7 +84,22 @@ class _RegisterFormState extends State<RegisterForm> {
               isLoading: registerVm.isSubmitting,
               text: 'S\'inscrire',
               loadingText: 'Inscription en cours...',
-              onPressed: () => registerVm.submitRegisterForm(context),
+              onPressed: () async {
+                final message = await registerVm.submitRegisterForm();
+
+                if (!mounted) return;
+
+                if (message != null) {
+                  SnackbarUtils.showInSnackBar(
+                    context,
+                    message,
+                    type: SnackbarType.error,
+                  );
+                  return;
+                }
+
+                context.go('/login');
+              },
             ),
           ),
         ],

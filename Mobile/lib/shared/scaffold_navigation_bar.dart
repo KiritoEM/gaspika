@@ -53,8 +53,8 @@ class _ScaffoldNavigationBarState extends State<ScaffoldNavigationBar> {
                 return NavigationDestination(
                   icon: SvgPicture.asset(
                     route['icon'],
-                    width: 26,
-                    height: 26,
+                    width: 24,
+                    height: 24,
                     colorFilter: ColorFilter.mode(
                       isSelected
                           ? AppColors.primary

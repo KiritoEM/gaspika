@@ -1,9 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
+import 'package:gaspika_mobile/features/home/widgets/avalaible_product_card.dart';
+import 'package:gaspika_mobile/features/home/widgets/main_appbar.dart';
+import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_section.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,7 +21,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     Future.microtask(() async {
-      await Provider.of<HomeViewModel>(context, listen: false).fetchUserInfo();
+      final homeVm = Provider.of<HomeViewModel>(context, listen: false);
+
+      await homeVm.fetchUserInfo();
+      await homeVm.fetchAvailableFoodCount();
+      await homeVm.fetchShoppingWeekItems();
     });
   }
 
@@ -28,41 +34,29 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: Padding(
-          padding: const EdgeInsets.all(4),
-          child: SvgPicture.asset('assets/icons/gaspika-logo.svg'),
-        ),
-        titleSpacing: 6,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Bonjour, ',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.mutedForeground,
-              ),
-            ),
-            Text(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(72),
+        child: MainAppbar(
+          userName:
               Provider.of<HomeViewModel>(context).userName ?? 'Utilisateur',
-              style: TextStyle(
-                fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset('assets/icons/bell.svg', width: 26),
-          ),
-        ],
       ),
-      body: Center(child: Text('Home Screen')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.fromLTRB(23, 28, 23, 23),
+            child: Column(
+              children: [
+                AvalaibleProductCard(productCount: 10),
+
+                SizedBox(height: 28),
+
+                WeeklyShoppingSection(),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

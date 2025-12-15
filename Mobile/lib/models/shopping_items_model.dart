@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
+import 'package:gaspika_mobile/models/schemas/createItem.dart';
 import 'package:gaspika_mobile/services/api/shopping_service.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/network_error_handler.dart';
@@ -82,6 +83,29 @@ class ShoppingItemsModel {
       return ApiResponse(
         hasError: true,
         message: 'Impossible de récupérer les aliments.',
+      );
+    }
+  }
+
+  Future<ApiResponse<List<ShoppingListItem>>> createShoppingItem(
+    CreateShoppingItemSchema item,
+    int listId,
+  ) async {
+    try {
+      await _shoppingService.createShoppingItem(item, listId);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      return ApiResponse(message: 'Aliment ajouté.');
+    } on DioException catch (err) {
+      throw NetworkErrorHandler.handleError(err).isNotEmpty
+          ? NetworkErrorHandler.handleError(err)
+          : err;
+    } catch (err) {
+      AppLogger.logger.e('Error while creating shopping item: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de créer l\'aliment.',
       );
     }
   }

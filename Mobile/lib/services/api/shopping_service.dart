@@ -1,5 +1,6 @@
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
+import 'package:gaspika_mobile/models/schemas/createItem.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 
 class ShoppingService {
@@ -40,5 +41,17 @@ class ShoppingService {
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId',
     );
     return response.data as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> createShoppingItem(
+    CreateShoppingItemSchema item,
+    int listId,
+  ) async {
+    print(item.toJson());
+    final response = await _dio.post(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',
+      data: item.toJson(),
+    );
+    return response.data;
   }
 }

@@ -100,3 +100,33 @@ class ShoppingListOut(ShoppingListBase):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+# --- Predictions ---
+class QuantityPredictionRequest(BaseModel):
+    nb_persons: int = Field(..., ge=1, le=50)
+    duration_days: int = Field(..., ge=1, le=365)
+    category: str
+    qty_per_person_per_day: float = Field(..., ge=0)
+    meal_frequency: float = Field(default=1.0, ge=0, le=3)
+    unit_kg: bool = True
+
+    class Config:
+        json_schema_extra = {
+        "example": {
+        "nb_persons": 4,
+        "duration_days": 7,
+        "category": "riz",
+        "qty_per_person_per_day": 0.08,
+        "meal_frequency": 1.0,
+        "unit_kg": True
+        }
+    }
+
+
+
+
+class QuantityPredictionResponse(BaseModel):
+    quantity: float
+    unit: str
+    nb_persons: int
+    duration_days: int

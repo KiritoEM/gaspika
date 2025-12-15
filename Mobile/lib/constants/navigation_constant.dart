@@ -8,7 +8,8 @@ class NavigationConstant {
   static const String HOME_ROUTE = '/home';
   static const String SHOPPING_LIST_ROUTE = '/shopping-list';
   static const String SHOPPING_LIST_ITEMS_ROUTE = '/shopping-list-items';
-  static const String ADD_SHOPPING_FOOD_ROUTE = '/add-shopping-food';
+  static const String CREATE_SHOPPING_ITEM_ROUTE = '/create-shopping-item';
+  static const String FINALIZE_CREATE_SHOPPING_ITEM_ROUTE = 'finalize';
 
   // Bottom Navigation Routes
   static const List<Map<String, dynamic>> BOTTOM_NAVIGATION_ROUTES = [

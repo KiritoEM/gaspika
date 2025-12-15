@@ -4,6 +4,7 @@ library;
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/auth/views/login_screen.dart';
 import 'package:gaspika_mobile/features/auth/views/register_screen.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/views/create_shopping_item_screen.dart';
 import 'package:gaspika_mobile/features/home/views/home_screen.dart';
 import 'package:gaspika_mobile/features/onboarding/views/onboarding_screen.dart';
 import 'package:gaspika_mobile/features/shopping_list/views/shop_list_screen.dart';
@@ -53,10 +54,10 @@ class AppRouter {
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),
       GoRoute(
-        path: NavigationConstant.ADD_SHOPPING_FOOD_ROUTE,
+        path: '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/:id',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return ShoppingListItemsScreen(id: id);
+          return CreateShoppingItemScreen(id: int.parse(id));
         },
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),

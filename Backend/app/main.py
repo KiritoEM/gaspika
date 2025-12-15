@@ -1,6 +1,6 @@
 from fastapi import FastAPI, APIRouter
 from app.database import Base, engine
-from app.routers import auth, users, categories, products, shopping_lists, shopping_items
+from app.routers import auth, users, categories, products, shopping_lists, shopping_items, predictions
 
 app = FastAPI(
     title="Grocery Planner API",
@@ -20,6 +20,7 @@ api_router.include_router(categories.router)
 api_router.include_router(products.router)
 api_router.include_router(shopping_lists.router)
 api_router.include_router(shopping_items.router)
+api_router.include_router(predictions.router)
 
 app.include_router(api_router)
 

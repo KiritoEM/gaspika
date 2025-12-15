@@ -89,7 +89,8 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
                       padding: const EdgeInsets.only(top: 16),
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () =>
+                            context.push('/create-shopping-item/${widget.id}'),
                         label: const Text('Ajouter un aliment'),
                         icon: const Icon(Icons.add),
                       ),

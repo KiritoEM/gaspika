@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
+import 'package:go_router/go_router.dart';
 
 class ScaffoldNavigationBar extends StatefulWidget {
   final Widget child;
@@ -15,10 +16,36 @@ class ScaffoldNavigationBar extends StatefulWidget {
 class _ScaffoldNavigationBarState extends State<ScaffoldNavigationBar> {
   int _currentIndex = 0;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateCurrentIndex();
+  }
+
+  void _updateCurrentIndex() {
+    final location = GoRouterState.of(context).uri.toString();
+
+    final routeIndexMap = {'/home': 0, '/shopping-list': 1};
+
+    int newIndex = 0;
+    routeIndexMap.forEach((route, index) {
+      if (location.startsWith(route)) {
+        newIndex = index;
+      }
+    });
+
+    if (_currentIndex != newIndex) {
+      setState(() => _currentIndex = newIndex);
+    }
+  }
+
   void _handleChangeTab(int index) {
-    setState(() => _currentIndex = index);
-    // final routes = ['/home', '/cart', '/profile'];
-    // context.go(routes[index]);
+    if (index < 3) {
+      setState(() => _currentIndex = index);
+
+      final routes = ['/home', '/shopping-list'];
+      context.go(routes[index]);
+    }
   }
 
   @override

@@ -3,9 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_appbar.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_card.dart';
+import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
+import 'package:gaspika_mobile/shared/button_with_loader.dart';
+import 'package:gaspika_mobile/shared/date_picker.dart';
+import 'package:gaspika_mobile/shared/snackbar.dart';
 import 'package:provider/provider.dart';
 
 class ShopListScreen extends StatefulWidget {
@@ -52,13 +57,81 @@ class _ShopListScreenState extends State<ShopListScreen> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.primary,
-        shape: const CircleBorder(),
-        elevation: 0.4,
-        child: Icon(Icons.add, color: Colors.white),
-      ),
+      floatingActionButton: _buildFloatingActionButton(shoppingListVm),
+    );
+  }
+
+  Widget _buildFloatingActionButton(ShoppingListViewModel shoppingListVm) {
+    return FloatingActionButton(
+      onPressed: () {
+        DateTime modalDate = shoppingListVm.selectedDate;
+
+        AppBottomSheet.show(
+          context: context,
+          builder: (context, setModalState) {
+            return [
+              Column(
+                children: [
+                  Text(
+                    'Générer une liste',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.fontSize,
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      const Text('Choisissez une semaine(cliquer sur la date)'),
+                      DatePicker(
+                        value: modalDate,
+                        onSelectDate: (date) {
+                          setModalState(() {
+                            modalDate = date;
+                          });
+
+                          shoppingListVm.setSelectedDate(date);
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ButtonWithLoader(
+                      isLoading: shoppingListVm.isGeneratingList,
+                      text: 'Générer',
+                      loadingText: 'Genération en cours...',
+                      onPressed: () async {
+                        final response = await shoppingListVm
+                            .generateShoppingList();
+
+                        SnackbarUtils.showInSnackBar(
+                          context,
+                          response.message!,
+                          type: response.success!
+                              ? SnackbarType.success
+                              : SnackbarType.error,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ];
+          },
+        );
+      },
+      shape: const CircleBorder(),
+      backgroundColor: AppColors.primary,
+      child: const Icon(Icons.add, color: Colors.white),
     );
   }
 
@@ -68,6 +141,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
       children: shoppingListVm.shoppingWeekItems
           .map(
             (item) => ShoppingListCard(
+              id: item.id!,
               listName: item.name ?? '',
               itemsCount: item.itemCount,
               isCompleted: item.isCompleted,

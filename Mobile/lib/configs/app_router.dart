@@ -7,13 +7,14 @@ import 'package:gaspika_mobile/features/auth/views/register_screen.dart';
 import 'package:gaspika_mobile/features/home/views/home_screen.dart';
 import 'package:gaspika_mobile/features/onboarding/views/onboarding_screen.dart';
 import 'package:gaspika_mobile/features/shopping_list/views/shop_list_screen.dart';
+import 'package:gaspika_mobile/features/shopping_list_items/views/shopping_list_items_screen.dart';
 import 'package:gaspika_mobile/shared/scaffold_navigation_bar.dart';
 import 'package:gaspika_mobile/utils/guards/role_guard.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
-    initialLocation: NavigationConstant.SHOPPING_LIST_ROUTE,
+    initialLocation: NavigationConstant.DEFAULT_ROUTE,
     routes: [
       GoRoute(
         path: NavigationConstant.DEFAULT_ROUTE,
@@ -42,6 +43,22 @@ class AppRouter {
             redirect: (context, state) => RoleGuard().checkAccess(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '${NavigationConstant.SHOPPING_LIST_ROUTE}/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ShoppingListItemsScreen(id: id);
+        },
+        redirect: (context, state) => RoleGuard().checkAccess(),
+      ),
+      GoRoute(
+        path: NavigationConstant.ADD_SHOPPING_FOOD_ROUTE,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ShoppingListItemsScreen(id: id);
+        },
+        redirect: (context, state) => RoleGuard().checkAccess(),
       ),
     ],
   );

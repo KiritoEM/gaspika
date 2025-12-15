@@ -18,7 +18,7 @@ class ShoppingItemsModel {
 
       return ApiResponse(
         data: jsonDecode(response['count'].toString()) as int,
-        message: 'Données récupérées avec succès.',
+        message: 'Aliments récupérées avec succès.',
       );
     } on DioException catch (err) {
       throw NetworkErrorHandler.handleError(err).isNotEmpty
@@ -28,7 +28,7 @@ class ShoppingItemsModel {
       AppLogger.logger.e('Error while fetching avalaible food: $err');
       return ApiResponse(
         hasError: true,
-        message: 'Impossible de récuperer le nombre de produits disponibles.',
+        message: 'Impossible de récuperer le nombre d\'aliments disponibles.',
       );
     }
   }
@@ -45,7 +45,7 @@ class ShoppingItemsModel {
 
       return ApiResponse(
         data: items,
-        message: 'Produits de la semaine récupérés.',
+        message: 'Aliments de la semaine récupérés.',
       );
     } on DioException catch (err) {
       throw NetworkErrorHandler.handleError(err).isNotEmpty
@@ -55,7 +55,33 @@ class ShoppingItemsModel {
       AppLogger.logger.e('Error while fetching shopping week items: $err');
       return ApiResponse(
         hasError: true,
-        message: 'Impossible de récupérer les produits de la semaine.',
+        message: 'Impossible de récupérer les aliments de la semaine.',
+      );
+    }
+  }
+
+  Future<ApiResponse<List<ShoppingListItem>>> getShoppingItemsById(
+    int listId,
+  ) async {
+    try {
+      final response = await _shoppingService.getShoppingItemsById(listId);
+
+      final items = response
+          .map((e) => ShoppingListItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      return ApiResponse(data: items, message: 'Aliments recuperés.');
+    } on DioException catch (err) {
+      throw NetworkErrorHandler.handleError(err).isNotEmpty
+          ? NetworkErrorHandler.handleError(err)
+          : err;
+    } catch (err) {
+      AppLogger.logger.e('Error while fetching shopping items: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de récupérer les aliments.',
       );
     }
   }

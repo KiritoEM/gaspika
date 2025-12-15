@@ -6,7 +6,9 @@ import 'package:gaspika_mobile/features/auth/viewmodels/login_viewmodel.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
+import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +23,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
         ChangeNotifierProvider(create: (_) => ShoppingListViewModel()),
+        ChangeNotifierProvider(create: (_) => ShoppingItemsViewModel()),
       ],
       child: const MyApp(),
     ),
@@ -33,6 +36,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+
+      locale: const Locale('fr'),
+
+      supportedLocales: const [Locale('fr'), Locale('en')],
+
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
       title: 'Flutter Demo',
       theme: AppTheme.theme(context),
       routerConfig: AppRouter.router,

@@ -30,7 +30,7 @@ class RegisterScreen extends StatelessWidget {
 
           SafeArea(
             child: Container(
-              padding: EdgeInsets.fromLTRB(24, 8, 24, 24),
+              padding: EdgeInsets.fromLTRB(23, 8, 23, 23),
               child: Column(
                 mainAxisAlignment: .spaceBetween,
 

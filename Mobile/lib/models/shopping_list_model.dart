@@ -34,4 +34,26 @@ class ShoppingListModel {
       );
     }
   }
+
+  Future<ApiResponse<List<ShoppingList>>> generateShoppingList(
+    int weekNumber,
+  ) async {
+    try {
+      await _shoppingService.generateShoppingList(weekNumber);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      return ApiResponse(message: 'Liste de courses générée avec succès.');
+    } on DioException catch (err) {
+      throw NetworkErrorHandler.handleError(err).isNotEmpty
+          ? NetworkErrorHandler.handleError(err)
+          : err;
+    } catch (err) {
+      AppLogger.logger.e('Error while generating shopping list: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de générer la liste de courses.',
+      );
+    }
+  }
 }

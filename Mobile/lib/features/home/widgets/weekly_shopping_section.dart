@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class WeeklyShoppingSection extends StatelessWidget {
   bool isLoading;
@@ -110,9 +111,12 @@ class WeeklyShoppingSection extends StatelessWidget {
           SizedBox(height: 16),
 
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              context.go('/shopping-list');
+            },
             label: Text('Consulter la liste', style: TextStyle(fontSize: 14)),
             icon: Icon(Icons.arrow_right_alt, size: 20),
+            iconAlignment: IconAlignment.end,
           ),
         ],
       ),

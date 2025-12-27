@@ -36,7 +36,7 @@ def test_conservation_model():
     
     # Charger le modèle
     print("\n Chargement du modèle...")
-    model = load_model('models/model_conservation_FINAL.pkl')
+    model = load_model('../models/model_conservation_optimized.pkl')
     print("    Modèle chargé avec succès")
     
     # Cas de test réalistes
@@ -44,66 +44,34 @@ def test_conservation_model():
     
     test_cases = [
         {
-            'nom': 'Lait frais au frigo',
+            'nom': 'Lait',
             'features': {
-                'temperature_stockage': 4,
                 'humidite_relative': 80,
-                'temp_humidite_interaction': 4 * 80,
-                'temp_humidite_ratio': 4 / 81,
-                'risque_perissabilite': 4 / 4,
-                'distance_conditions_optimales': np.sqrt((4-4)**2 + ((80-85)/10)**2),
-                'categorie_encoded': 50,  # Laitier
-                'traitement_ordinal': 1,  # Pasteurisé
-                'emb_ouvert': 1,
-                'emb_sous_vide': 0
+                'categorie_encoded': 50  # Laitier
             },
             'expected_range': (5, 15)  # Attendu: 7-14 jours
         },
         {
-            'nom': 'Pomme à température ambiante',
+            'nom': 'Pomme',
             'features': {
-                'temperature_stockage': 20,
                 'humidite_relative': 85,
-                'temp_humidite_interaction': 20 * 85,
-                'temp_humidite_ratio': 20 / 86,
-                'risque_perissabilite': 20 / 4,
-                'distance_conditions_optimales': np.sqrt((20-4)**2 + ((85-85)/10)**2),
-                'categorie_encoded': 25,  # Fruit
-                'traitement_ordinal': 0,  # Frais
-                'emb_ouvert': 0,
-                'emb_sous_vide': 0
+                'categorie_encoded': 25  # Fruit
             },
             'expected_range': (10, 30)  # Attendu: 14-30 jours
         },
         {
-            'nom': 'Poulet frais au frigo',
+            'nom': 'Poulet',
             'features': {
-                'temperature_stockage': 2,
                 'humidite_relative': 80,
-                'temp_humidite_interaction': 2 * 80,
-                'temp_humidite_ratio': 2 / 81,
-                'risque_perissabilite': 2 / 4,
-                'distance_conditions_optimales': np.sqrt((2-4)**2 + ((80-85)/10)**2),
-                'categorie_encoded': 10,  # Viande
-                'traitement_ordinal': 0,  # Frais
-                'emb_ouvert': 1,
-                'emb_sous_vide': 0
+                'categorie_encoded': 10  # Viande
             },
             'expected_range': (1, 5)  # Attendu: 2-4 jours
         },
         {
-            'nom': 'Riz sec à température ambiante',
+            'nom': 'Riz sec',
             'features': {
-                'temperature_stockage': 20,
                 'humidite_relative': 60,
-                'temp_humidite_interaction': 20 * 60,
-                'temp_humidite_ratio': 20 / 61,
-                'risque_perissabilite': 20 / 4,
-                'distance_conditions_optimales': np.sqrt((20-4)**2 + ((60-85)/10)**2),
                 'categorie_encoded': 500,  # Céréale
-                'traitement_ordinal': 0,  # Frais
-                'emb_ouvert': 1,
-                'emb_sous_vide': 0
             },
             'expected_range': (300, 730)  # Attendu: 365-730 jours
         }
@@ -148,7 +116,7 @@ def test_aliments_model():
     
     # Charger le modèle
     print("\n Chargement du modèle...")
-    model = load_model('models/model_aliments_FINAL.pkl')
+    model = load_model('../models/model_aliments_FINAL.pkl')
     print("    Modèle chargé avec succès")
     
     # Cas de test réalistes
@@ -257,8 +225,8 @@ def test_model_robustness():
     print(" TESTS DE ROBUSTESSE")
     print("="*80)
     
-    model_cons = load_model('models/model_conservation_FINAL.pkl')
-    model_alim = load_model('models/model_aliments_FINAL.pkl')
+    model_cons = load_model('../models/model_conservation_optimized.pkl')
+    model_alim = load_model('../models/model_aliments_FINAL.pkl')
     
     tests_passed = True
     
@@ -266,16 +234,8 @@ def test_model_robustness():
     print("\n Test valeurs extrêmes (Conservation)...")
     try:
         X_extreme = pd.DataFrame([{
-            'temperature_stockage': 50,  # Très chaud
             'humidite_relative': 100,
-            'temp_humidite_interaction': 5000,
-            'temp_humidite_ratio': 0.5,
-            'risque_perissabilite': 12.5,
-            'distance_conditions_optimales': 50,
-            'categorie_encoded': 1000,
-            'traitement_ordinal': 3,
-            'emb_ouvert': 1,
-            'emb_sous_vide': 0
+            'categorie_encoded': 1000
         }])
         pred = model_cons.predict(X_extreme)[0]
         pred_days = np.expm1(pred)
@@ -321,11 +281,7 @@ def test_model_robustness():
     try:
         # Les prédictions ne doivent jamais être négatives
         X_test_cons = pd.DataFrame([{
-            'temperature_stockage': 4, 'humidite_relative': 85,
-            'temp_humidite_interaction': 340, 'temp_humidite_ratio': 0.047,
-            'risque_perissabilite': 1.0, 'distance_conditions_optimales': 0,
-            'categorie_encoded': 50, 'traitement_ordinal': 1,
-            'emb_ouvert': 1, 'emb_sous_vide': 0
+            'humidite_relative': 85, 'categorie_encoded': 50
         }])
         X_test_alim = pd.DataFrame([{
             'nombre_personnes': 3, 'duree_jours': 5, 'personnes_x_duree': 15,
@@ -355,7 +311,7 @@ def main():
     print(" SUITE DE TESTS - MODÈLES MVP GASPIK")
     print("="*80)
     print("\nCe script teste les modèles de prédiction:")
-    print("   model_conservation_FINAL.pkl")
+    print("   model_conservation_optimized.pkl")
     print("   model_aliments_FINAL.pkl")
     print("\n" + "="*80)
     

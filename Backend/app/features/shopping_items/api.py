@@ -3,10 +3,11 @@ import random
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, extract
-from app.database import get_db
-from app.deps import require_user
-from app.models import ShoppingList, ShoppingListItem
-from app.schemas import ShoppingListItemOut, ShoppingListItemBase
+from app.core.database import get_db  # CORRIGÉ
+from app.core.dependencies import require_user  # CORRIGÉ
+from app.features.shopping_lists.models import ShoppingList  # CORRIGÉ
+from app.features.shopping_items.models import ShoppingListItem  # CORRIGÉ
+from app.features.shopping_items.schemas import ShoppingListItemOut, ShoppingListItemBase  # CORRIGÉ
 
 router = APIRouter(prefix="/shopping-items", tags=["shopping_items"], dependencies=[Depends(require_user)])
 
@@ -58,7 +59,10 @@ async def available_products_count(
         return {"count": 0}
     
     # Count available products
-    q = select(ShoppingListItem).where(ShoppingListItem.shopping_list_id == sl.id, ShoppingListItem.is_purchased == False)
+    q = select(ShoppingListItem).where(
+        ShoppingListItem.shopping_list_id == sl.id, 
+        ShoppingListItem.is_purchased == False
+    )
 
     # Filter by category
     if category_id:
@@ -95,7 +99,10 @@ async def shopping_week_items(
         return []
     
     # Get all items
-    q = select(ShoppingListItem).where(ShoppingListItem.shopping_list_id == sl.id, ShoppingListItem.is_purchased == False)
+    q = select(ShoppingListItem).where(
+        ShoppingListItem.shopping_list_id == sl.id, 
+        ShoppingListItem.is_purchased == False
+    )
     rows = (await db.execute(q)).scalars().all()
 
     if len(rows) <= 5:

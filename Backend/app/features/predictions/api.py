@@ -1,7 +1,7 @@
-from app.schemas import QuantityPredictionRequest, QuantityPredictionResponse
 from fastapi import APIRouter, Depends, HTTPException
-from app.deps import require_user
-from app.services.ml_predictions import ml_service
+from app.core.dependencies import require_user  # CORRIGÉ
+from app.features.predictions.schemas import QuantityPredictionRequest, QuantityPredictionResponse  # CORRIGÉ
+from app.features.predictions.service import ml_service  # CORRIGÉ
 
 router = APIRouter(prefix="/predictions", tags=["predictions"], dependencies=[Depends(require_user)])
 

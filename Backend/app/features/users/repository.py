@@ -1,13 +1,14 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import Select
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import User
 from app.core.utils.hashing import hash_string
 
 class UserRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
     
     #create new user
-    def create(self, email: str, first_name:str, last_name: str, password: str) -> User:
+    async def create(self, email: str, first_name:str, last_name: str, password: str) -> User:
         user = User(
             first_name = first_name,
             last_name = last_name,
@@ -15,14 +16,14 @@ class UserRepository:
             password= hash_string(password)  
         )
         
-        self.db.add(user)
-        self.db.commit()
+        await self.db.add(user)
+        await self.db.commit()
         
         return user
     
     #find if email already exist
-    def get_user_by_email(self, email: str) -> User | None:
-        user = self.db.query(User).filter(User.email == email).first()
+    async def get_user_by_email(self, email: str) -> User | None:
+        user = await self.db.execute(Select(User).where(User.email == email))
         
         return user
         

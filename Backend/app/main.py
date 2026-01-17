@@ -1,31 +1,28 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.config import settings
+
+from app.features.auth.router import authRouter
 
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    version=settings.VERSION,
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None,
+    title="Gaspika API",
+    description="API pour l'application Gaspika",
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
+
+api_router = APIRouter(prefix="/api")
+api_router.include_router(authRouter)
+
+app.include_router(api_router)
 
 @app.get("/")
 async def root():
-    return {"message": "API Restructurée", "version": settings.VERSION}
+    return {"message": "Server is running !!!"}
 
 @app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
-
-# Les imports des routeurs seront ajoutés ici progressivement
-# from app.features.auth.api import router as auth_router
-# app.include_router(auth_router, prefix="/auth", tags=["auth"])
+async def root():
+  return {"status": "healthy"}

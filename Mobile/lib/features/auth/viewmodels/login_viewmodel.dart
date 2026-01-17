@@ -35,7 +35,7 @@ class LoginViewModel extends ChangeNotifier {
     }
 
     _formkey.currentState!.reset();
-    return null; 
+    return null;
   }
 
   void setEmail(String email) => _credentials.email = email;

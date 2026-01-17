@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
@@ -12,6 +15,8 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final homeVm = context.watch<HomeViewModel>();
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
       child: AppBar(
@@ -45,8 +50,11 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset('assets/icons/bell.svg', width: 26),
+            onPressed: () {
+              homeVm.logout();
+              context.go('/login');
+            },
+            icon: Icon(Icons.logout),
           ),
         ],
       ),

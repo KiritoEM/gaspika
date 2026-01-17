@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, r2_score
 import warnings
+import os
 warnings.filterwarnings('ignore')
 
 def load_model(model_path):
@@ -36,7 +37,10 @@ def test_conservation_model():
     
     # Charger le modèle
     print("\n Chargement du modèle...")
-    model = load_model('../models/model_conservation_optimized.pkl')
+    
+    MODEL_DIR = os.path.join(os.path.dirname(__file__), "../models")
+    model_path = os.path.join(MODEL_DIR, "model_conservation_optimized.pkl")
+    model = load_model(model_path)
     print("    Modèle chargé avec succès")
     
     # Cas de test réalistes
@@ -116,7 +120,9 @@ def test_aliments_model():
     
     # Charger le modèle
     print("\n Chargement du modèle...")
-    model = load_model('../models/model_aliments_FINAL.pkl')
+    MODEL_DIR = os.path.join(os.path.dirname(__file__), "../models")
+    model_path = os.path.join(MODEL_DIR, "model_aliments_FINAL.pkl")
+    model = load_model(model_path)
     print("    Modèle chargé avec succès")
     
     # Cas de test réalistes
@@ -225,8 +231,12 @@ def test_model_robustness():
     print(" TESTS DE ROBUSTESSE")
     print("="*80)
     
-    model_cons = load_model('../models/model_conservation_optimized.pkl')
-    model_alim = load_model('../models/model_aliments_FINAL.pkl')
+
+    MODEL_DIR = os.path.join(os.path.dirname(__file__), "../models")
+    model_cons_path = os.path.join(MODEL_DIR, "model_conservation_optimized.pkl")
+    model_alim_path = os.path.join(MODEL_DIR, "model_aliments_FINAL.pkl")
+    model_cons = load_model(model_cons_path)
+    model_alim = load_model(model_alim_path)
     
     tests_passed = True
     

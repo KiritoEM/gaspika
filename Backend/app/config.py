@@ -7,12 +7,6 @@ class Settings(BaseSettings):
     database_url: str = Field(alias="DATABASE_URL")
     redis_url: str = Field(alias="REDIS_URL")
     access_token_expire_minutes: int = Field(default=60, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
-    
-    # Ajoutez ces champs pour main.py
-    PROJECT_NAME: str = "Gaspika API"
-    VERSION: str = "1.0.0"
-    DEBUG: bool = True
-    CORS_ORIGINS: list = ["*"]
 
     class Config:
         env_file = ".env"

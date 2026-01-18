@@ -26,7 +26,7 @@ async def generate_weekly_list(db: AsyncSession, user_id: int, week_number: int,
 
         item = ShoppingListItem(
             product_name=p.name,
-            shopping_list_id=sl.id,
+            shopping_lists_id=sl.id,
             estimated_quantity=qty,
             price=0,
             is_purchased=False,

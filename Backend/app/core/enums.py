@@ -3,7 +3,6 @@ import enum
 class ShoppingListStatusEnum(enum.Enum):
     COMPLETED = "COMPLETED"
     UNFINISHED = "UNFINISHED"
-    ONGOING = "ONGOING"
     
 class ShoppingListIntervalDateEnum(enum.Enum):
     LAST_YEAR="LAST_YEAR"

@@ -1,23 +1,34 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 from pydantic import BaseModel, Field
-from app.core.schemas import PageParams
 from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 
-# Create ShoppingListOut schema
-class ShoppingListOutDTO(BaseModel): 
+# ShoppingListIn schema
+class CreateShoppingListDTO(BaseModel):
+    week_number: int = Field(..., ge=1, le=53, description="Numéro de semaine")
+    name: Optional[str] = Field(None, max_length=200, description="Nom de la liste")
+
+#  ShoppingListOut schema
+class ShoppingListOut(BaseModel): 
     id: int
     week_number: int
     name: str
     total_estimated_cost: float
     status: str
     created_at: str
-    user_id: str
+    user_id: UUID
     created_at: datetime
     updated_at: datetime
     
     class Config:
         from_attributes = True
+        
+#  Create SHhopping list schema
+class CreateShoppingListDTO(BaseModel): 
+    list: ShoppingListOut
+    message: str
+        
         
 # Get all shopping lists filter params
 class GetAllListsFilterParams(BaseModel):

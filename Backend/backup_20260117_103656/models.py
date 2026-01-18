@@ -28,7 +28,7 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     preferences = relationship("Preferences", back_populates="users")
-    shopping_lists = relationship("ShoppingList", back_populates="user")
+    shopping_listss = relationship("ShoppingList", back_populates="user")
 
 class FoodCategory(Base):
     __tablename__ = "food_category"
@@ -58,7 +58,7 @@ class FoodProduct(Base):
     category = relationship("FoodCategory", back_populates="products")
 
 class ShoppingList(Base):
-    __tablename__ = "shopping_list"
+    __tablename__ = "shopping_lists"
     id = Column(BigInteger, primary_key=True, index=True)
     week_number = Column(Integer, nullable=False)
     name = Column(String, nullable=True)
@@ -69,14 +69,14 @@ class ShoppingList(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    user = relationship("User", back_populates="shopping_lists")
-    items = relationship("ShoppingListItem", back_populates="shopping_list", cascade="all, delete-orphan")
+    user = relationship("User", back_populates="shopping_listss")
+    items = relationship("ShoppingListItem", back_populates="shopping_lists", cascade="all, delete-orphan")
 
 class ShoppingListItem(Base):
-    __tablename__ = "shopping_list_item"
+    __tablename__ = "shopping_lists_item"
     id = Column(BigInteger, primary_key=True, index=True)
     product_name = Column(String, nullable=False)
-    shopping_list_id = Column(BigInteger, ForeignKey("shopping_list.id"), nullable=False)
+    shopping_lists_id = Column(BigInteger, ForeignKey("shopping_lists.id"), nullable=False)
     estimated_quantity = Column(Integer, nullable=False, default=1)
     price = Column(Integer, nullable=True, default=0)
     is_purchased = Column(Boolean, default=False)
@@ -86,7 +86,7 @@ class ShoppingListItem(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())  # Nouveau
     category_id = Column(BigInteger, ForeignKey("food_category.id"), nullable=True)
 
-    shopping_list = relationship("ShoppingList", back_populates="items")
+    shopping_lists = relationship("ShoppingList", back_populates="items")
     category = relationship("FoodCategory")
     unit = Column(
         Enum(UnitEnum, name="unit"),

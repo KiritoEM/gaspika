@@ -1,6 +1,6 @@
 from fastapi import HTTPException 
 from app.features.users.user_repository import UserRepository
-from app.features.users.schemas import UserCreateDTO
+from app.features.users.user_schemas import UserCreateDTO
 
 class UserServices:
     def __init__(self, repot: UserRepository):

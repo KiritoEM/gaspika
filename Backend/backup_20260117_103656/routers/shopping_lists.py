@@ -8,7 +8,7 @@ from app.schemas import ShoppingListOut
 from app.models import ShoppingList, User
 from app.services.list_generator import generate_weekly_list
 
-router = APIRouter(prefix="/shopping-lists", tags=["shopping_lists"], dependencies=[Depends(require_user)])
+router = APIRouter(prefix="/shopping-lists", tags=["shopping_listss"], dependencies=[Depends(require_user)])
 
 @router.get("/", response_model=list[ShoppingListOut])
 async def my_lists(request: Request, db: AsyncSession = Depends(get_db)):

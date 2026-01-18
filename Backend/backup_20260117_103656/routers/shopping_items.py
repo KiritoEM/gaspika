@@ -27,7 +27,7 @@ async def items_in_list(
     )).scalar_one_or_none()
     if not sl:
         raise HTTPException(status_code=404, detail="List not found")
-    q = select(ShoppingListItem).where(ShoppingListItem.shopping_list_id == list_id)
+    q = select(ShoppingListItem).where(ShoppingListItem.shopping_lists_id == list_id)
     if category_id:
         q = q.where(ShoppingListItem.category_id == category_id)
     rows = (await db.execute(q)).scalars().all()
@@ -58,7 +58,7 @@ async def available_products_count(
         return {"count": 0}
     
     # Count available products
-    q = select(ShoppingListItem).where(ShoppingListItem.shopping_list_id == sl.id, ShoppingListItem.is_purchased == False)
+    q = select(ShoppingListItem).where(ShoppingListItem.shopping_lists_id == sl.id, ShoppingListItem.is_purchased == False)
 
     # Filter by category
     if category_id:
@@ -95,7 +95,7 @@ async def shopping_week_items(
         return []
     
     # Get all items
-    q = select(ShoppingListItem).where(ShoppingListItem.shopping_list_id == sl.id, ShoppingListItem.is_purchased == False)
+    q = select(ShoppingListItem).where(ShoppingListItem.shopping_lists_id == sl.id, ShoppingListItem.is_purchased == False)
     rows = (await db.execute(q)).scalars().all()
 
     if len(rows) <= 5:
@@ -124,7 +124,7 @@ async def add_item(
         raise HTTPException(status_code=404, detail="List not found")
     
     # Add item
-    item = ShoppingListItem(shopping_list_id=list_id, **payload.model_dump())
+    item = ShoppingListItem(shopping_lists_id=list_id, **payload.model_dump())
     db.add(item)
     
     await db.commit()

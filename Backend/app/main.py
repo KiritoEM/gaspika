@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.features.auth.router import authRouter
+from app.features.auth.auth_router import authRouter
+from app.features.shopping_list.shopping_list_router import shoppingListRouter
 
 app = FastAPI(
     title="Gaspika API",
@@ -16,6 +16,7 @@ app.add_middleware(
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(authRouter)
+api_router.include_router(shoppingListRouter)
 
 app.include_router(api_router)
 

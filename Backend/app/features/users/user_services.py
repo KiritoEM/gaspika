@@ -1,5 +1,5 @@
 from fastapi import HTTPException 
-from app.features.users.repository import UserRepository
+from app.features.users.user_repository import UserRepository
 from app.features.users.schemas import UserCreateDTO
 
 class UserServices:

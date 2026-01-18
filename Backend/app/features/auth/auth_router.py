@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import db_session
-from app.features.users.repository import UserRepository
+from app.features.users.user_repository import UserRepository
 from app.features.users.schemas import UserCreateDTO, UserOut
-from app.features.auth.schemas import UserOutDTO
-from app.features.users.services import UserServices
-from app.features.auth.schemas import LoginDTO
-from app.features.auth.services import AuthServices
+from app.features.auth.auth_schemas import UserOutDTO
+from app.features.users.user_services import UserServices
+from app.features.auth.auth_schemas import LoginDTO  
+from app.features.auth.auth_services import AuthServices
 from app.core.utils.jwt import create_JWT
 
 authRouter = APIRouter(prefix="/auth", tags=["auth"])

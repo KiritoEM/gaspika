@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from app.core.utils.hashing import verify_hash
-from app.features.auth.schemas import LoginDTO
-from app.features.users.repository import UserRepository
+from app.features.auth.auth_schemas import LoginDTO
+from app.features.users.user_repository import UserRepository
 
 
 class AuthServices:

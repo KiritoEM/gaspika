@@ -2,8 +2,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import db_session
 from app.features.users.repository import UserRepository
-from app.features.users.schemas import UserCreate, UserOut
+from app.features.users.schemas import UserCreateDTO, UserOut
+from app.features.auth.schemas import UserOutDTO
 from app.features.users.services import UserServices
+from app.features.auth.schemas import LoginDTO
+from app.features.auth.services import AuthServices
+from app.core.utils.jwt import create_JWT
 
 authRouter = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -11,9 +15,13 @@ def get_user_services(db: AsyncSession = Depends(db_session)):
     repo = UserRepository(db)
     return UserServices(repo)
 
+def get_auth_services(db: AsyncSession = Depends(db_session)):
+    repo = UserRepository(db)
+    return AuthServices(repo)
+
 @authRouter.post(
 "/register", 
-response_model=UserOut,
+response_model=UserOutDTO,
 summary="Créer un compte utilisateur",
 responses={
     201: {"description": "Utilisateur créé avec succès"},
@@ -23,7 +31,45 @@ responses={
 status_code=201
 )
 async def register(
-    payload: UserCreate,
+    payload: UserCreateDTO,
     service: UserServices = Depends(get_user_services),
 ):
-    return await service.create_user(payload)
+    user =  await service.create_user(payload)
+    user_out = UserOut.model_validate(user)
+    
+    return {
+        "data": user_out.model_dump(),
+        "access_token": create_JWT({
+            "id":str(user.id),
+            "email":user.email     
+        }),
+        "message": "Utilisateur créé avec succès"
+    }
+
+@authRouter.post(
+"/login",
+response_model=UserOutDTO,
+summary="Connecter un compte utilisateur",
+responses={
+    201: {"description": "Utilisateur connecté avec succès"},
+    404: {"description": "Adresse email invalide ou inexistante"},
+    401: {"description": "mot de passe incorrect"},
+    422: {"description": "Données invalides"},
+},  
+status_code=200
+)
+async def register( 
+    payload: LoginDTO,
+    service: AuthServices = Depends(get_auth_services),
+):
+    user = await service.login(payload)
+    user_out = UserOut.model_validate(user)
+    
+    return {
+        "data": user_out.model_dump(),
+         "access_token": create_JWT({
+            "id":str(user.id),
+            "email":user.email     
+        }),
+        "message": "Utilisateur connecté avec succès"
+    }

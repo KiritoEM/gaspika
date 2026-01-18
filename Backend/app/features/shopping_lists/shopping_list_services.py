@@ -17,7 +17,7 @@ class ShoppingListServices:
             raise HTTPException(status_code=404, detail="Utilisateur introuvable.")
         
         return await self.shoppingListRepo.get_all(
-            user_id, 
+            user.id, 
             query.model_dump()["page"], 
             query.model_dump()["limit"], 
             query.model_dump()["status"],

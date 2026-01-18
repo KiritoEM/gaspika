@@ -54,57 +54,80 @@ class ShoppingListRepository:
         # Pagination
         return await paginate(self.db, PageParams(page=page, size=limit), query, ShoppingListOut)
     
-    async def create(self, week_number: int, user_id: str, name: str) -> ShoppingList:
-        new_shopping_lists = ShoppingList(user_id=user_id, week_number=week_number, name=name)
+    async def get_by_id(self, list_id: int, user_id: int) -> ShoppingList:
+        """Get shopping list by Id"""
+        shopping_list = await self.db.execute(
+            select(ShoppingList).where(
+                ShoppingList.user_id == user_id,
+                ShoppingList.id == list_id
+            )
+        )
         
-        self.db.add(new_shopping_lists)
+        return shopping_list.scalar_one_or_none()
+    
+    async def create(self, week_number: int, user_id: str, name: str) -> ShoppingList:
+        """Create new shopping list"""
+        new_shopping_list = ShoppingList(user_id=user_id, week_number=week_number, name=name)
+        
+        self.db.add(new_shopping_list)
         await self.db.commit()
-        await self.db.refresh(new_shopping_lists) 
-        return new_shopping_lists
+        await self.db.refresh(new_shopping_list) 
+        return new_shopping_list
         
     async def get_list_by_week(self, week_number: int, user_id: str) -> Optional[ShoppingList]:
         """Get List by specific week"""
-        query = select(ShoppingList).where(
+        shopping_list = await self.db.execute(select(ShoppingList).where(
             ShoppingList.user_id == user_id,
             ShoppingList.week_number == week_number
-        )
-        result = await self.db.execute(query)
+        ))
         
-        return result.scalar_one_or_none()
+        return shopping_list.scalar_one_or_none()
     
     async def update_list(self, shopping_lists_id: int, user_id: str, 
                      name: Optional[str] = None, 
                      week_number: Optional[int] = None) -> Optional[ShoppingList]:
         """Update shopping list name or week_number"""
-        query = select(ShoppingList).where(
+        result = await self.db.execute(select(ShoppingList).where(
             ShoppingList.id == shopping_lists_id,
             ShoppingList.user_id == user_id
-        )
-        result = await self.db.execute(query)
-        shopping_lists = result.scalar_one_or_none()
+        )).scalar_one_or_none()
+        shopping_list = result.scalar_one_or_none()
         
-        if shopping_lists:
+        if shopping_list:
             if name is not None:
-                shopping_lists.name = name
+                shopping_list.name = name
             if week_number is not None:
-                shopping_lists.week_number = week_number
-            shopping_lists.updated_at = datetime.now(timezone.utc)
+                shopping_list.week_number = week_number
+            
+            shopping_list.updated_at = datetime.now(timezone.utc)
             
             await self.db.commit()
-            await self.db.refresh(shopping_lists)
+            await self.db.refresh(shopping_list)
         
-        return shopping_lists
+        return shopping_list
+    
+    async def update_total_cost(self, list_id: int, cost: float) -> Optional[ShoppingList]:
+        result = await self.db.execute(select(ShoppingList).where(ShoppingList.id == list_id))
+        shopping_list = result.scalar_one_or_none()
+
+        if shopping_list:
+            shopping_list.total_estimated_cost += cost
+            shopping_list.updated_at = datetime.now(timezone.utc)
+            await self.db.commit()
+            await self.db.refresh(shopping_list)
+            return shopping_list
+        return None
 
     async def delete_list(self, shopping_lists_id: int, user_id: str) -> bool:
         """Delete shopping list and cascade items"""
         result = await self.db.execute(select(ShoppingList).where(
             ShoppingList.id == shopping_lists_id,
             ShoppingList.user_id == user_id
-        ))
-        shopping_lists = result.scalar_one_or_none()
+        )).scalar_one_or_none()
+        shopping_list = result.scalar_one_or_none()
         
-        if shopping_lists:
-            await self.db.delete(shopping_lists)
+        if shopping_list:
+            await self.db.delete(shopping_list)
             await self.db.commit()
             return True
         

@@ -29,7 +29,7 @@ class User(Base):
     )
     
     # Relations
-    shopping_listss: Mapped[List["ShoppingList"]] = relationship(back_populates="user", cascade="all, delete-orphan", lazy="selectin")
+    shopping_lists: Mapped[List["ShoppingList"]] = relationship(back_populates="user", cascade="all, delete-orphan", lazy="selectin")
 
 
 class FoodCategory(Base):
@@ -78,7 +78,7 @@ class Food(Base):
     shopping_items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="food", cascade="all, delete-orphan", lazy="selectin")
     
 class ShoppingListItem(Base):
-    __tablename__ = "shopping_lists_items"
+    __tablename__ = "shopping_list_items"
     
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     recommanded_quantity: Mapped[float] = mapped_column(Float, nullable=False)
@@ -86,7 +86,7 @@ class ShoppingListItem(Base):
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     person_number: Mapped[int] = mapped_column(Integer, nullable=False)
     unit:Mapped[UnitEnum] = mapped_column(Enum(UnitEnum), nullable=False, default=UnitEnum.UNIT)
-    shopping_lists_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("shopping_listss.id"), nullable=False)
+    shopping_list_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("shopping_lists.id"), nullable=False)
     food_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("foods.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
@@ -101,11 +101,11 @@ class ShoppingListItem(Base):
     )
     
     # Relations
-    shopping_lists: Mapped["ShoppingList"] = relationship(back_populates="items", lazy="selectin")
+    shopping_list: Mapped["ShoppingList"] = relationship(back_populates="items", lazy="selectin")
     food: Mapped["Food"] = relationship(back_populates="shopping_items", lazy="selectin")
 
 class ShoppingList(Base):
-    __tablename__ = "shopping_listss"
+    __tablename__ = "shopping_lists"
     
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     week_number: Mapped[int] = mapped_column(SmallInteger, nullable=False)
@@ -126,5 +126,5 @@ class ShoppingList(Base):
     )
     
     # Relations
-    user: Mapped["User"] = relationship(back_populates="shopping_listss", lazy="selectin")
-    items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="shopping_lists", cascade="all, delete-orphan", lazy="selectin")   
+    user: Mapped["User"] = relationship(back_populates="shopping_lists", lazy="selectin")
+    items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="shopping_list", cascade="all, delete-orphan", lazy="selectin")   

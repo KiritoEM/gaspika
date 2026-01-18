@@ -4,7 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 
-# ShoppingListIn schema
+# Create Shopping list schema
 class CreateShoppingListDTO(BaseModel):
     week_number: int = Field(..., ge=1, le=53, description="Numéro de semaine")
     name: Optional[str] = Field(None, max_length=200, description="Nom de la liste")
@@ -24,8 +24,8 @@ class ShoppingListOut(BaseModel):
     class Config:
         from_attributes = True
         
-#  Create SHhopping list schema
-class CreateShoppingListDTO(BaseModel): 
+#  Create Shopping list response schema
+class CreateShoppingListOutDTO(BaseModel): 
     list: ShoppingListOut
     message: str
         

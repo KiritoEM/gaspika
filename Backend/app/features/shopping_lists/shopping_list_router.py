@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.middlewares.auth_middleware import require_user
 from app.core.schemas import PagedResponseSchema
 from app.features.users.user_repository import UserRepository
-from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, GetAllListsFilterParams, ShoppingListOut
+from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, CreateShoppingListOutDTO, GetAllListsFilterParams, ShoppingListOut
 from app.features.shopping_lists.shopping_list_services import ShoppingListServices
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.core.database import db_session
@@ -37,7 +37,7 @@ async def get_shopping_listss(
 @shoppingListRouter.post(
 "/generate", 
 tags=["Shopping Lists"], 
-response_model=CreateShoppingListDTO,
+response_model=CreateShoppingListOutDTO,
 summary="Générer une liste de courses",
 responses={
     200: {"description": "Liste de courses générée avec succés"},

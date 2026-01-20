@@ -18,10 +18,10 @@ class ShoppingListServices:
         
         return await self.shoppingListRepo.get_all(
             user.id, 
-            query.model_dump()["page"], 
-            query.model_dump()["limit"], 
-            query.model_dump()["status"],
-            query.model_dump()["dateInterval"],
+            query.page, 
+            query.limit, 
+            query.status,
+            query.dateInterval,
         )
         
     async def generate_list(self, week_number: int, user_id: str, name: Optional[str] = None):
@@ -60,6 +60,6 @@ class ShoppingListServices:
         
         deleted = await self.shoppingListRepo.delete_list(shopping_lists_id, user_id)
         if not deleted:
-            raise HTTPException(status_code=404, detail="Liste introuvable.")
+            raise HTTPException(status_code=400, detail="Impossible de supprimer la liste de courses.")
         
         return {"message": "Liste supprimée avec succès"}

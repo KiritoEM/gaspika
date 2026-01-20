@@ -103,8 +103,11 @@ class ShoppingListRepository:
             
             await self.db.commit()
             await self.db.refresh(shopping_list)
+            
+            return shopping_list
         
-        return shopping_list
+        return None
+        
     
     async def update_total_cost(self, list_id: int, cost: float) -> Optional[ShoppingList]:
         result = await self.db.execute(select(ShoppingList).where(ShoppingList.id == list_id))

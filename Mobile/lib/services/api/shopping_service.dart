@@ -22,13 +22,13 @@ class ShoppingService {
   }
 
   Future<List<dynamic>> getShoppingList() async {
-    final response = await _dio.get(ApiConstant.SHOPPING_LIST_ENDPOINT);
+    final response = await _dio.get(ApiConstant.shopping_lists_ENDPOINT);
     return response.data as List<dynamic>;
   }
 
   Future<Map<String, dynamic>> generateShoppingList(int weekNumber) async {
     final response = await _dio.post(
-      ApiConstant.SHOPPING_LIST_GENERATE_ENDPOINT,
+      ApiConstant.shopping_lists_GENERATE_ENDPOINT,
       queryParameters: {'week_number': weekNumber},
       data: [],
     );

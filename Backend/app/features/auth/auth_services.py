@@ -9,12 +9,12 @@ class AuthServices:
         self.repot = repot
         
     async def login(self, data: LoginDTO):
-        user = await self.repot.get_user_by_email(data.model_dump()['email'])
+        user = await self.repot.get_user_by_email(data.email)
         
         if not user:
             raise HTTPException(status_code=404, detail="Adresse email invalide ou inexistante.")
         
-        if not verify_hash(data.model_dump()['password'], user.password):
+        if not verify_hash(data.password, user.password):
             raise HTTPException(status_code=401, detail="Mot de passe incorrect.")
         
         return user

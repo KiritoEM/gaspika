@@ -3,7 +3,7 @@ from typing import List, Optional
 import uuid
 from sqlalchemy import UUID, BigInteger, Float, ForeignKey, Integer, SmallInteger, String, Boolean, DateTime, Enum, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.core.enums import ShoppingListStatusEnum, UnitEnum
+from app.core.enums import ShoppingListItemEnum, ShoppingListStatusEnum, UnitEnum
 from app.core.database import Base
 
 class User(Base):
@@ -85,6 +85,7 @@ class ShoppingListItem(Base):
     price: Mapped[float] = mapped_column(Float, nullable=False)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     person_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[ShoppingListItemEnum] = mapped_column(Enum(ShoppingListItemEnum), nullable=False, default=ShoppingListItemEnum.UNPURCHASED)
     unit:Mapped[UnitEnum] = mapped_column(Enum(UnitEnum), nullable=False, default=UnitEnum.UNIT)
     shopping_list_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("shopping_lists.id"), nullable=False)
     food_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("foods.id"), nullable=False)

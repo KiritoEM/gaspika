@@ -18,16 +18,23 @@ async def get_current_user(
     userRepo : UserRepository = Depends(get_user_repository)
 ) -> User | None:
     """Get current user based on token credentials"""
+    
+    if not credentials:
+            raise HTTPException(
+            status_code=401,
+            detail="Token d'authentification requis",
+            headers={"WWW-Authenticate": "Bearer"},
+    )
+    
     try:
-        print(credentials.credentials)
-        payload = decode_JWT(credentials.credentials)
+        token = credentials.credentials
+        
+        payload = decode_JWT(token)
         if not payload or "id" not in payload:
             return None
         
         user_id = payload["id"]
-        
-        print(user_id)
-        
+                
         if not user_id:
             return None
         result = await userRepo.get_user_by_id(user_id)

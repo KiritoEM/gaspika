@@ -38,7 +38,7 @@ async def register(
     user_out = UserOut.model_validate(user)
     
     return {
-        "data": user_out.model_dump(),
+        "user": user_out.model_dump(),
         "access_token": create_JWT({
             "id":str(user.id),
             "email":user.email     

@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.middlewares.auth_middleware import require_user
@@ -52,7 +53,7 @@ async def create_shopping_lists(
     payload: CreateShoppingListDTO,
     service: ShoppingListServices = Depends(get_shopping_lists_services)
 ):
-    created_list =  await service.generate_list(payload.model_dump()["week_number"], request.state.user.id, payload.model_dump()["name"])
+    created_list =  await service.generate_list(payload.week_number, request.state.user.id, payload.name)
     
     return {
         "list": created_list,
@@ -67,7 +68,7 @@ async def create_shopping_lists(
 )
 async def delete_shopping_lists(
     request: Request,
-    list_id: int = Path(..., ge=1),
+    list_id: Annotated[int, Path(..., ge=1)],
     service: ShoppingListServices = Depends(get_shopping_lists_services)
 ):
     success = await service.delete_list(request.state.user.id, list_id)

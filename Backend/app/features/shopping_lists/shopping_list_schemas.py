@@ -9,7 +9,7 @@ class CreateShoppingListDTO(BaseModel):
     week_number: int = Field(..., ge=1, le=53, description="Numéro de semaine")
     name: Optional[str] = Field(None, max_length=200, description="Nom de la liste")
 
-#  ShoppingListOut schema
+#  ShoppingList base schema
 class ShoppingListOut(BaseModel): 
     id: int
     week_number: int

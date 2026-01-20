@@ -8,7 +8,7 @@ class UserServices:
         self.repot = repot
         
     def create_user(self, data: UserCreate):
-        if (self.repot.get_user_by_email(data.model_dump()['email'])):
+        if (self.repot.get_user_by_email(data.email)):
             raise HTTPException(status_code=409, detail="Un compte avec cet email existe deja.")
         
         return self.repot.create(**data.model_dump())

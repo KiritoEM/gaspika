@@ -32,7 +32,7 @@ class ShoppingListItem {
     return ShoppingListItem(
       id: json['id'] as int?,
       productName: json['product_name'] ?? '',
-      shoppingListId: json['shopping_list_id'] as int?,
+      shoppingListId: json['shopping_lists_id'] as int?,
       estimatedQuantity: (json['estimated_quantity'] as int?) ?? 1,
       price: (json['price'] as int?) ?? 0,
       isPurchased: json['is_purchased'] ?? false,
@@ -67,7 +67,7 @@ class ShoppingListItem {
     return {
       'id': id,
       'product_name': productName,
-      'shopping_list_id': shoppingListId,
+      'shopping_lists_id': shoppingListId,
       'estimated_quantity': estimatedQuantity,
       'price': price,
       'is_purchased': isPurchased,

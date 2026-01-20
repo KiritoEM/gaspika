@@ -92,4 +92,9 @@ class AuthModel {
 
     return token != null;
   }
+
+  // Check if user is authenticated
+  Future<void> logout() async {
+    await SecureStorageService.delete('access_token');
+  }
 }

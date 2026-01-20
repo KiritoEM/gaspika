@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
-import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
+import 'package:gaspika_mobile/features/shopping_lists_items/viewmodels/shopping_lists_items_viewmodel.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';

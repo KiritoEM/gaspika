@@ -1,29 +1,33 @@
 from fastapi import FastAPI, APIRouter
-from app.database import Base, engine
-from app.routers import auth, users, categories, products, shopping_lists, shopping_items, predictions
+from fastapi.middleware.cors import CORSMiddleware
+from app.features.auth.auth_router import authRouter
+from app.features.shopping_lists.shopping_list_router import shoppingListRouter
+from app.features.categories.category_router import categoryRouter
+from app.features.shopping_items.shopping_items_router import shoppingItemsRouter
 
 app = FastAPI(
-    title="Grocery Planner API",
-    description="API pour gérer les courses : utilisateurs, catégories, produits, listes et items."
+    title="Gaspika API",
+    description="API pour l'application Gaspika",
 )
 
-# Création des tables au démarrage
-@app.on_event("startup")
-async def startup_event():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+)
 
 api_router = APIRouter(prefix="/api")
-api_router.include_router(auth.router)
-api_router.include_router(users.router)
-api_router.include_router(categories.router)
-api_router.include_router(products.router)
-api_router.include_router(shopping_lists.router)
-api_router.include_router(shopping_items.router)
-api_router.include_router(predictions.router)
+api_router.include_router(authRouter)
+api_router.include_router(shoppingListRouter)
+api_router.include_router(categoryRouter)
+api_router.include_router(shoppingItemsRouter)
 
 app.include_router(api_router)
 
-@app.get("/", tags=["Root"])
+@app.get("/")
 async def root():
-    return {"message": "Bienvenue sur ton API de gestion des courses 🚀"}
+    return {"message": "Server is running !!!"}
+
+@app.get("/health")
+async def root():
+  return {"status": "healthy"}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaspika_mobile/models/auth_model.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/user_model.dart';
 import 'package:gaspika_mobile/models/shopping_items_model.dart';
@@ -6,6 +7,7 @@ import 'package:gaspika_mobile/models/shopping_items_model.dart';
 class HomeViewModel extends ChangeNotifier {
   // Models
   final UserModel _userModel = UserModel();
+  final AuthModel _authModel = AuthModel();
   final ShoppingItemsModel _shoppingItemsModel = ShoppingItemsModel();
 
   // User states
@@ -71,5 +73,9 @@ class HomeViewModel extends ChangeNotifier {
     _shoppingWeekItems = response.data ?? [];
     _isLoadingShopping = false;
     notifyListeners();
+  }
+
+  Future logout() {
+    return _authModel.logout();
   }
 }

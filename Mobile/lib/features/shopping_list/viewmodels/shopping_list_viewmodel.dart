@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
-import 'package:gaspika_mobile/models/shopping_list_model.dart';
+import 'package:gaspika_mobile/models/shopping_lists_model.dart';
 import 'package:gaspika_mobile/utils/app_Loger.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 

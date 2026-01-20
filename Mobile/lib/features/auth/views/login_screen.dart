@@ -30,7 +30,7 @@ class LoginScreen extends StatelessWidget {
 
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(23, 8, 23, 23),
+              padding: EdgeInsets.fromLTRB(23, 8, 23, 23),  
               child: Column(
                 mainAxisAlignment: .spaceBetween,
                 children: [

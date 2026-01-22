@@ -25,7 +25,7 @@ class ShoppingListServices:
         )
         
     async def generate_list(self, week_number: int, user_id: str, name: Optional[str] = None):
-        existing_list = await self.shoppingListRepo.get_list_by_week(week_number, user_id)
+        existing_list = await self.shoppingListRepo.get_list_by_week(week_number, user_id, None)
         
         if existing_list:
             raise HTTPException(409, "Une liste existe deja pour cette semaine")

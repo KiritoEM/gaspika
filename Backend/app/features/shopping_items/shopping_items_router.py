@@ -3,21 +3,19 @@ from fastapi import APIRouter, Depends, Path, Request
 from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.shopping_items.shopping_items_repository import ShoppingItemsRepository
-from app.features.foods.food_repository import FoodRepository
 from app.core.database import db_session
 from app.features.shopping_items.shopping_items_services import ShoppingItemsServices
 from app.core.middlewares.auth_middleware import require_user
-from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, GetAllShoppingItemsDTO, ShoppingListItemOutDTO, UpdateShoppingItemDTO
+from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, GetAllShoppingItemsDTO, ShoppingListItemOut, UpdateShoppingItemDTO
 from sqlalchemy.ext.asyncio import AsyncSession
 
 shoppingItemsRouter = APIRouter(prefix="/shopping-items", tags=["Shopping Items"], dependencies=[Depends(require_user)])
 
 async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) -> ShoppingItemsServices:
     shoppingListRepo = ShoppingListRepository(db)  
-    foodRep = FoodRepository(db)
     shoppingItemsRepo = ShoppingItemsRepository(db)
     userRepo = UserRepository(db)  
-    return ShoppingItemsServices(shoppingListRepo, foodRep, shoppingItemsRepo, userRepo)
+    return ShoppingItemsServices(shoppingListRepo, shoppingItemsRepo, userRepo)
 
 @shoppingItemsRouter.post(
 "/{list_id}/add", 
@@ -70,7 +68,7 @@ async def get_shopping_list_items(
 @shoppingItemsRouter.get(
 "/{list_id}/items/{item_id}", 
 tags=["Shopping Items"], 
-response_model=ShoppingListItemOutDTO,
+response_model=ShoppingListItemOut,
 summary="Obtenir un aliment specifique dans une liste de courses",
 responses={
     200: {"description": "Aliment récupéré avec succés"},
@@ -90,7 +88,7 @@ async def get_shopping_item(
 @shoppingItemsRouter.patch(
 "/{list_id}/items/{item_id}", 
 tags=["Shopping Items"],
-response_model=ShoppingListItemOutDTO,
+response_model=ShoppingListItemOut,
 summary="Mettre a jour certaines informations d'un element dans une liste",
 responses={
     200: {"description": "Aliment mis a jour avec succés"},
@@ -99,7 +97,7 @@ responses={
 },  
 status_code=200
 )
-async def markItemAsComplete(
+async def update_shopping_item(
     request: Request,
     list_id: Annotated[int, Path(description="Id de la la liste")],
     item_id: Annotated[int, Path(description="Id de la l'aliment")],
@@ -112,7 +110,7 @@ async def markItemAsComplete(
 @shoppingItemsRouter.patch(
 "/{list_id}/items/{item_id}/complete", 
 tags=["Shopping Items"], 
-response_model=ShoppingListItemOutDTO,
+response_model=ShoppingListItemOut,
 summary="Marquer un aliment comme acheté",
 responses={
     200: {"description": "Aliment marqué comme acheté"},
@@ -121,10 +119,11 @@ responses={
 },  
 status_code=200
 )
-async def markItemAsComplete(
+async def mark_item_as_complete(
     request: Request,
     list_id: Annotated[int, Path(description="Id de la la liste")],
     item_id: Annotated[int, Path(description="Id de la l'aliment")],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
     return await service.complete_shopping_item(item_id, list_id, request.state.user.id)
+

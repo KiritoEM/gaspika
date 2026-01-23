@@ -43,9 +43,25 @@ class UpdateShoppingItemDTO(BaseModel):
     unit: Optional[UnitEnum] = Field(None, description="Unité de mesure")
     notes: Optional[str] = Field(None, description="Notes additionnelles")    
     
+# Update shopping item response schema
+class UpdateShoppingItemOutDTO(BaseModel):
+    item: ShoppingListItemOut  
+       
+    class Config:
+        from_attributes = True  
+    
+    
 # Create shopping item response schema  
 class CreateShoppingItemOutDTO(BaseModel):
     message: str = Field(str, description="Message de confirmation")
+    item: ShoppingListItemOut  
+        
+    class Config:
+        from_attributes = True
+        
+    
+# Get shopping item response schema  
+class GetShoppingItemOutDTO(BaseModel):
     item: ShoppingListItemOut  
         
     class Config:

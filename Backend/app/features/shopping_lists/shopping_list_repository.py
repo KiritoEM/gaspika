@@ -132,7 +132,6 @@ class ShoppingListRepository:
             await self.db.commit()
             await self.db.refresh(shopping_list)
             return shopping_list
-        
         return None
     
     async def replace_total_cost(self, list_id: int, cost: float) -> Optional[ShoppingList]:

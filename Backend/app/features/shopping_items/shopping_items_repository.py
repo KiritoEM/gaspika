@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 from sqlalchemy.orm import joinedload, selectinload
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, extract, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, UpdateShoppingItemDTO
 from app.core.enums import ShoppingListItemEnum
@@ -14,7 +14,7 @@ class ShoppingItemsRepository:
     async def create(
         self,
         list_id: int,
-        user_id: str, 
+        user_id: str,
         item_data: CreateShoppingItemDTO
     ) -> ShoppingListItem:
         """Create new shopping item"""
@@ -40,7 +40,8 @@ class ShoppingItemsRepository:
         """Get all shopping items of an user"""                
         all_items = await self.db.execute(
             select(ShoppingListItem)
-            .where(ShoppingListItem.shopping_list_id == list_id)
+            .join(ShoppingListItem.shopping_list)
+            .where(ShoppingList.id == list_id)
             .options(joinedload(ShoppingListItem.category))
             .order_by(ShoppingListItem.created_at.desc())
         )
@@ -63,7 +64,23 @@ class ShoppingItemsRepository:
         
         return shopping_item.scalar_one_or_none()
     
-    async def get_by_food_name(self, name: str, user_id: str) -> list[ShoppingListItem] :
+    async def get_items_count(self, user_id: str, list_id: int) -> int :
+        """Get available shopping items of an list"""   
+        
+        items_count = await self.db.execute(
+            select(func.coalesce(func.count(ShoppingListItem.id), 0))
+            .join(ShoppingListItem.shopping_list)
+            .where(
+                and_(
+                    ShoppingList.user_id == user_id,
+                    ShoppingList.id == list_id,
+                )
+            )
+        )     
+        
+        return items_count.scalar()
+    
+    async def search_by_food_name(self, name: str, user_id: str) -> list[ShoppingListItem] :
         """Get all items by food name in a list or global items or by item_id"""
         query = select(ShoppingListItem).join(ShoppingListItem.shopping_list).where(ShoppingListItem.food_name.ilike(f"%{name}%"))
         
@@ -73,6 +90,22 @@ class ShoppingItemsRepository:
         shopping_item = await self.db.execute(query)
         
         return shopping_item.scalars().all()
+    
+    async def get_total_price(self, user_id: str, list_id: int) -> float :
+        """get total price of an items for a list"""
+        total_price = await self.db.execute(
+            select(func.coalesce(func.sum(ShoppingListItem.price * ShoppingListItem.recommended_quantity), 0))
+            .join(ShoppingListItem.shopping_list)
+            .where(
+                and_(
+                    ShoppingList.user_id == user_id,
+                    ShoppingList.id == list_id
+                )
+           )
+        )
+        
+        return total_price.scalar()
+        
         
     
     async def complete_item(self, item_id: int, user_id: str, list_id: int) -> Optional[ShoppingListItem]:
@@ -136,27 +169,3 @@ class ShoppingItemsRepository:
             return shopping_item
         
         return None
-    
-    async def get_total_items_price(self, user_id: str, list_id: int) -> float :
-        """get total price of an items for a list"""
-        total_price = await self.db.execute(
-            select(func.coalesce(func.sum(ShoppingListItem.price * ShoppingListItem.recommended_quantity), 0))
-            .join(ShoppingListItem.shopping_list)
-            .where(
-                and_(
-                    ShoppingList.user_id == user_id,
-                    ShoppingList.id == list_id
-                )
-           )
-        )
-        
-        return total_price.scalar()
-    
-    
-    # async def get_avalaible_items(self, week_number: int, shopping_id: int) -> list[ShoppingListItem]:
-    #     """Get available shopping items of an user for a specific week"""   
-        
-    #     available_items = await self.db.execute(
-    #         select(Where(ShoppingListItem.shopping_list_id == ))
-    #     )     
-        

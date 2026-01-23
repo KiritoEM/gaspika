@@ -1,5 +1,6 @@
 from datetime import datetime
 from fastapi import HTTPException
+from app.core.enums import ShoppingListItemEnum
 from app.features.users.user_repository import UserRepository
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, UpdateShoppingItemDTO
 from app.features.shopping_items.shopping_items_repository import ShoppingItemsRepository
@@ -46,7 +47,7 @@ class ShoppingItemsServices:
         if not shopping_list:
             raise HTTPException(status_code=404, detail="Liste introuvable.")
         
-        all_items =  await self.shoppingItemRepo.get_all_items(shopping_list.id)
+        all_items =  await self.shoppingItemRepo.get_all(shopping_list.id)
         
         return all_items
         
@@ -68,7 +69,7 @@ class ShoppingItemsServices:
         if not shopping_list:
             return 0
         
-        return await self.shoppingItemRepo.get_items_count(user_id, shopping_list.id)
+        return await self.shoppingItemRepo.get_items_count(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
             
     
     async def complete_shopping_item(self, item_id: int, list_id:int, user_id: str):

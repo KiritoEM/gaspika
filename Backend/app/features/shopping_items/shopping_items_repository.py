@@ -36,7 +36,7 @@ class ShoppingItemsRepository:
         
         return shopping_item
     
-    async def get_all_items(self, list_id: int) -> list[ShoppingListItem]:
+    async def get_all(self, list_id: int) -> list[ShoppingListItem]:
         """Get all shopping items of an user"""                
         all_items = await self.db.execute(
             select(ShoppingListItem)
@@ -64,11 +64,11 @@ class ShoppingItemsRepository:
         
         return shopping_item.scalar_one_or_none()
     
-    async def get_items_count(self, user_id: str, list_id: int) -> int :
-        """Get available shopping items of an list"""   
+    async def get_items_count(self, user_id: str, list_id: int, status: Optional[str]) -> int :
+        """Get available shopping items count of an list"""   
         
-        items_count = await self.db.execute(
-            select(func.coalesce(func.count(ShoppingListItem.id), 0))
+        query = (
+             select(func.coalesce(func.count(ShoppingListItem.id), 0))
             .join(ShoppingListItem.shopping_list)
             .where(
                 and_(
@@ -76,8 +76,13 @@ class ShoppingItemsRepository:
                     ShoppingList.id == list_id,
                 )
             )
-        )     
+        )
+                
+        if status:
+            query = query.where(ShoppingListItem.status == status)
         
+        items_count = await self.db.execute(query)     
+
         return items_count.scalar()
     
     async def search_by_food_name(self, name: str, user_id: str) -> list[ShoppingListItem] :

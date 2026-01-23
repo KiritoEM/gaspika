@@ -76,15 +76,18 @@ class ShoppingListRepository:
         
     async def get_list_by_week(self, week_number: int, user_id: str, year: Optional[int]) -> Optional[ShoppingList]:
         """Get List by specific week"""
-        query = select(ShoppingList).where(
+        query = (
+            select(ShoppingList)
+            .where(
                 and_(
                     ShoppingList.user_id == user_id,
                     ShoppingList.week_number == week_number
                 )
+            )
         )     
         
         if year:
-            query = query.where(extract('year', ShoppingList.created_at) == year)          
+            query = query.where(extract('year', ShoppingList.created_at) == year)
             
         shopping_list = await self.db.execute(query)            
         

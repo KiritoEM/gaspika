@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
 from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_schemas import ShoppingListOut
-from app.core.enums import ShoppingListIntervalDateEnum
+from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 from app.core.utils.pagination import paginate
 from app.core.schemas import PageParams
 from app.models import ShoppingList
@@ -151,14 +151,39 @@ class ShoppingListRepository:
             return shopping_list
         
         return None
+    
+     
+    async def complete_list(self, list_id: int, user_id: str) -> Optional[ShoppingList]:
+        """Change status of shopping list to complete"""
+        result = await self.db.execute(
+            select(ShoppingList)
+           .where(
+                and_(                    
+                    ShoppingList.id == list_id,
+                    ShoppingList.user_id == user_id
+                )
+           )
+        )
+        
+        shopping_list = result.scalar_one_or_none()
+        
+        if shopping_list:
+            shopping_list.status = ShoppingListStatusEnum.COMPLETED
+            shopping_list.updated_at = datetime.now(timezone.utc)
+            
+            await self.db.commit()
+            
+            return shopping_list
+            
+        return None
 
-    async def delete_list(self, shopping_lists_id: int, user_id: str) -> bool:
+    async def delete_list(self, list_id: int, user_id: str) -> bool:
         """Delete shopping list and cascade items"""
         result = await self.db.execute(
             select(ShoppingList)
             .where(
                 and_(
-                    ShoppingList.id == shopping_lists_id,
+                    ShoppingList.id == list_id,
                     ShoppingList.user_id == user_id
                 )    
             )).scalar_one_or_none()

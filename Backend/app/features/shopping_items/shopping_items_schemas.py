@@ -1,22 +1,56 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+from app.features.images_upload.images_schemas import ImageSchema
 from app.features.categories.category_schemas import CategoryOutDTO
 from app.core.enums import ShoppingListItemEnum, UnitEnum
 from pydantic import AwareDatetime, UUID4
+from fastapi import File, Form, UploadFile
+from typing import Annotated
+
 # Create shopping item schema
 class CreateShoppingItemDTO(BaseModel):
-    food_name: str = Field(None, max_length=100, description="Nom du produit")
-    quantity: float = Field(float, gt=0, description="Quantité recommandée")
-    price: float = Field(float, gt=0, description="Prix unitaire")
-    person_number: int = Field(int, ge=1, description="Nombre de personnes")
-    unit: UnitEnum = Field(UnitEnum.UNIT, description="Unité de mesure")
-    notes: Optional[str] = Field(None, description="Notes")
-    storage_tips: Optional[str] = Field(None, description="Conseils de conservation")
-    default_shelf_life_day: Optional[int] = Field(None, ge=1, description="Duree de jours de conservation")
-    food_category_id: Optional[int] = Field(None, description="ID catégorie pour nouveau food")
+    food_name: str = Field(..., max_length=100)
+    quantity: float = Field(..., gt=0)
+    price: float = Field(..., gt=0)
+    person_number: int = Field(..., ge=1)
+    unit: UnitEnum = Field(UnitEnum.UNIT)
+    notes: Optional[str] = Field(None)
+    storage_tips: Optional[str] = Field(None)
+    default_shelf_life_day: Optional[int] = Field(None, ge=1)
+    food_category_id: Optional[int] = Field(None)
+    image: Optional[Annotated[UploadFile, File()]]
+
+    class Config:
+        from_attributes = True
+
+    @classmethod
+    def as_form(
+        cls,
+        food_name: Annotated[str, Form(..., max_length=100)],
+        quantity: Annotated[float, Form(..., gt=0)],
+        price: Annotated[float, Form(..., gt=0)],
+        person_number: Annotated[int, Form(..., ge=1)],
+        unit: Annotated[str, Form(UnitEnum.UNIT.value)],
+        notes: Annotated[Optional[str], Form(None)],
+        storage_tips: Annotated[Optional[str], Form(None)],
+        default_shelf_life_day: Annotated[Optional[int], Form(None)],
+        food_category_id: Annotated[Optional[int], Form(None)]
+    ) -> "CreateShoppingItemDTO":
+        return cls(
+            food_name=food_name,
+            quantity=quantity,
+            price=price,
+            person_number=person_number,
+            unit=UnitEnum(unit),
+            notes=notes,
+            storage_tips=storage_tips,
+            default_shelf_life_day=default_shelf_life_day,
+            food_category_id=food_category_id
+        )
+
 
 #  ShoppingListItem base schema
-class ShoppingListItemOut(BaseModel):
+class BaseShoppingListItem(BaseModel):
     id: int
     food_name: str
     recommended_quantity: float
@@ -30,48 +64,47 @@ class ShoppingListItemOut(BaseModel):
     shopping_list_id: int
     food_category_id: int
     user_id: UUID4
+    image: Optional[ImageSchema] 
     created_at: AwareDatetime
     updated_at: AwareDatetime
 
     class Config:
         from_attributes = True
-        
+
 # Update shopping item schema
 class UpdateShoppingItemDTO(BaseModel):
     food_name: Optional[str] = Field(None, max_length=100, description="Nom du produit")
     price: Optional[float] = Field(None, gt=0, description="Prix unitaire")
     unit: Optional[UnitEnum] = Field(None, description="Unité de mesure")
-    notes: Optional[str] = Field(None, description="Notes additionnelles")    
-    
+    notes: Optional[str] = Field(None, description="Notes additionnelles")
+
 # Update shopping item response schema
 class UpdateShoppingItemOutDTO(BaseModel):
-    item: ShoppingListItemOut  
-       
+    message: str
+        
     class Config:
-        from_attributes = True  
-    
-    
-# Create shopping item response schema  
+        from_attributes = True
+
+
+# Create shopping item response schema
 class CreateShoppingItemOutDTO(BaseModel):
     message: str = Field(str, description="Message de confirmation")
-    item: ShoppingListItemOut  
-        
+    item: Optional[BaseShoppingListItem]
+
     class Config:
         from_attributes = True
-        
-    
-# Get shopping item response schema  
+
+# Get shopping item response schema
 class GetShoppingItemOutDTO(BaseModel):
-    item: ShoppingListItemOut  
-        
+    item: BaseShoppingListItem
+
     class Config:
         from_attributes = True
-        
-    
-# Get shopping items response schema  
+
+
+# Get shopping items response schema
 class GetAllShoppingItemsDTO(BaseModel):
-    results: list[ShoppingListItemOut]  
-        
+    results: list[BaseShoppingListItem]
+
     class Config:
         from_attributes = True
-    

@@ -1,21 +1,26 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Path, Request
+from fastapi import APIRouter, Depends, Form, Path, Request
+from app.core.storages.imgbb import ImgBBProvider
+from app.features.images_upload.image_upload_repository import ImageRepository
 from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.shopping_items.shopping_items_repository import ShoppingItemsRepository
 from app.core.database import db_session
 from app.features.shopping_items.shopping_items_services import ShoppingItemsServices
 from app.core.middlewares.auth_middleware import require_user
-from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, GetAllShoppingItemsDTO, ShoppingListItemOut, UpdateShoppingItemDTO, GetShoppingItemOutDTO, UpdateShoppingItemOutDTO
+from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, GetAllShoppingItemsDTO, BaseShoppingListItem, UpdateShoppingItemDTO, GetShoppingItemOutDTO, UpdateShoppingItemOutDTO
 from sqlalchemy.ext.asyncio import AsyncSession
 
 shoppingItemsRouter = APIRouter(prefix="/shopping-items", tags=["Shopping Items"], dependencies=[Depends(require_user)])
 
 async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) -> ShoppingItemsServices:
-    shoppingListRepo = ShoppingListRepository(db)  
+    shoppingListRepo = ShoppingListRepository(db)
     shoppingItemsRepo = ShoppingItemsRepository(db)
     userRepo = UserRepository(db)
-    return ShoppingItemsServices(shoppingListRepo, shoppingItemsRepo, userRepo)
+    imageRepo = ImageRepository(db)
+    storageProvider = ImgBBProvider()
+    
+    return ShoppingItemsServices(shoppingListRepo, shoppingItemsRepo, imageRepo, userRepo, storageProvider)
 
 @shoppingItemsRouter.post(
 "/{list_id}/add", 
@@ -32,7 +37,7 @@ status_code=201
 )
 async def add_new_shopping_item(
     request: Request,
-    payload: CreateShoppingItemDTO,
+    payload: Annotated[CreateShoppingItemDTO, Form(..., media_type="multipart/form-data")],
     list_id: Annotated[int, Path(description="Id de la liste de course")],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
@@ -158,14 +163,14 @@ async def update_shopping_item(
     updated_shopping_item = await service.update_shopping_item(item_id, list_id, request.state.user.id, payload)
     
     return {
-        "item" : updated_shopping_item
+        "message" :"Aliment modifié avec succés."
     }
 
 
 @shoppingItemsRouter.patch(
 "/{list_id}/items/{item_id}/complete", 
 tags=["Shopping Items"], 
-response_model=ShoppingListItemOut,
+response_model=BaseShoppingListItem,
 summary="Marquer un aliment comme acheté",
 responses={
     200: {"description": "Aliment marqué comme acheté"},

@@ -6,13 +6,13 @@ from sqlalchemy import select, extract
 from app.database import get_db
 from app.deps import require_user
 from app.models import ShoppingList, ShoppingListItem
-from app.schemas import ShoppingListItemOut, ShoppingListItemBase
+from app.schemas import BaseShoppingListItem, ShoppingListItemBase
 
 router = APIRouter(prefix="/shopping-items", tags=["shopping_items"], dependencies=[Depends(require_user)])
 
 @router.get(
     "/{list_id}", 
-    response_model=list[ShoppingListItemOut],
+    response_model=list[BaseShoppingListItem],
     summary="Obtenir les items d'une liste",
     description="Récupère tous les items d'une liste de courses avec possibilité de filtrer par catégorie"
 )
@@ -71,7 +71,7 @@ async def available_products_count(
 
 @router.get(
     "/{week_number}/shopping-week", 
-    response_model=list[ShoppingListItemOut],
+    response_model=list[BaseShoppingListItem],
     summary="Recuperer les produits de la semaine",
     description="Retourne des produits de la liste de courses de la semaine"
 )
@@ -106,7 +106,7 @@ async def shopping_week_items(
 
 @router.post(
     "/{list_id}/add", 
-    response_model=ShoppingListItemOut,
+    response_model=BaseShoppingListItem,
     summary="Ajouter un item à la liste",
     description="Ajoute un nouveau produit à une liste de courses existante",
     status_code=201

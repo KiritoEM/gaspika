@@ -77,7 +77,7 @@ class ShoppingListItemBase(BaseModel):
     storage_tips: Optional[str] = None
     category_id: Optional[int] = None
 
-class ShoppingListItemOut(ShoppingListItemBase):
+class BaseShoppingListItem(ShoppingListItemBase):
     id: int
     class Config:
         from_attributes = True
@@ -92,7 +92,7 @@ class ShoppingListOut(ShoppingListBase):
     status: Optional[str] = None
     total_estimated_cost: Optional[int] = 0
     is_completed: bool
-    items: List[ShoppingListItemOut] = []
+    items: List[BaseShoppingListItem] = []
     class Config:
         from_attributes = True
 

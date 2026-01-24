@@ -10,7 +10,7 @@ class ShoppingItemsServices:
     def __init__(
         self,
         shoppingListRepo: ShoppingListRepository, 
-        shoppingItemRepo: ShoppingItemsRepository,                 
+        shoppingItemRepo: ShoppingItemsRepository,            
         userRepo: UserRepository
     ):
         self.shoppingListRepo = shoppingListRepo
@@ -46,10 +46,8 @@ class ShoppingItemsServices:
         
         if not shopping_list:
             raise HTTPException(status_code=404, detail="Liste introuvable.")
-        
-        all_items =  await self.shoppingItemRepo.get_all(shopping_list.id)
-        
-        return all_items
+                
+        return await self.shoppingItemRepo.get_all(shopping_list.id)
         
     async def get_shopping_item_by_id(self, item_id: int, list_id:int, user_id: str):
         shopping_list = await self.shoppingListRepo.get_by_id(list_id, user_id)

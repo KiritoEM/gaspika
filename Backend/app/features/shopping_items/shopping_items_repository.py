@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
-from sqlalchemy.orm import joinedload, selectinload
-from sqlalchemy import and_, extract, func, select
+from sqlalchemy.orm import joinedload
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, UpdateShoppingItemDTO
 from app.core.enums import ShoppingListItemEnum
@@ -33,6 +33,7 @@ class ShoppingItemsRepository:
         
         self.db.add(shopping_item)
         await self.db.commit()
+        await self.db.refresh(shopping_item, ['category', 'image', 'shopping_list', 'user'])  # AJOUT DES RELATIONS ICI
         
         return shopping_item
     
@@ -42,8 +43,8 @@ class ShoppingItemsRepository:
             select(ShoppingListItem)
             .join(ShoppingListItem.shopping_list)
             .where(ShoppingList.id == list_id)
-            .options(joinedload(ShoppingListItem.category))
             .order_by(ShoppingListItem.created_at.desc())
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
         )
         
         return all_items.scalars().all()
@@ -60,6 +61,7 @@ class ShoppingItemsRepository:
                     ShoppingListItem.id == item_id
                 )
             )
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
         )
         
         return shopping_item.scalar_one_or_none()
@@ -97,6 +99,7 @@ class ShoppingItemsRepository:
                     ShoppingList.id == list_id,
                 )
             )
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
         )
                 
         if status:
@@ -114,6 +117,7 @@ class ShoppingItemsRepository:
             .join(ShoppingListItem.shopping_list)
             .where(ShoppingListItem.food_name
             .ilike(f"%{name}%"))
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
         )
         
         if user_id:
@@ -194,8 +198,8 @@ class ShoppingItemsRepository:
             shopping_item.updated_at = datetime.now(timezone.utc)
             
             await self.db.commit()
-            await self.db.refresh(shopping_item, ['category'])
-            
+            await self.db.refresh(shopping_item, ['category', 'image', 'shopping_list', 'user'])  # AJOUT DES RELATIONS ICI
+
             return shopping_item
         
         return None

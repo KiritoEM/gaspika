@@ -6,6 +6,26 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.enums import ShoppingListItemEnum, ShoppingListStatusEnum, UnitEnum
 from app.core.database import Base
 
+class Image(Base):
+    __tablename__="images"
+    
+    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4, server_default=text("gen_random_uuid()"))
+    filename: Mapped[str] = mapped_column(String(100), nullable=False)
+    path: Mapped[str] = mapped_column(String(100), nullable=False)
+    size: Mapped[int] = mapped_column(Integer, nullable=False)
+    provider: Mapped[str] = mapped_column(String(50), nullable=False)
+    file_id : Mapped[Optional[str]] = mapped_column(String(100), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), 
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    shopping_list_item_id: Mapped[Optional[int]] = mapped_column(BigInteger, ForeignKey("shopping_list_items.id", ondelete="CASCADE"), nullable=True)
+    
+    # Relations
+    shopping_item: Mapped["ShoppingListItem"] = relationship(back_populates="image")
+    
 class User(Base):
     __tablename__ = "users" 
     
@@ -90,7 +110,12 @@ class ShoppingListItem(Base):
     shopping_list: Mapped["ShoppingList"] = relationship(back_populates="items", lazy="selectin")
     category: Mapped["FoodCategory"] = relationship(back_populates="items", lazy="selectin")
     user: Mapped["User"] = relationship(back_populates="shopping_items", lazy="selectin")
-
+    image: Mapped[Optional["Image"]] = relationship(
+        back_populates="shopping_item", 
+        cascade="all, delete-orphan", 
+        uselist=False,
+        lazy="selectin" 
+    )
 
 class ShoppingList(Base):
     __tablename__ = "shopping_lists"

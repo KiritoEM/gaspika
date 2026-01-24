@@ -14,17 +14,17 @@ shoppingItemsRouter = APIRouter(prefix="/shopping-items", tags=["Shopping Items"
 async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) -> ShoppingItemsServices:
     shoppingListRepo = ShoppingListRepository(db)  
     shoppingItemsRepo = ShoppingItemsRepository(db)
-    userRepo = UserRepository(db)  
+    userRepo = UserRepository(db)
     return ShoppingItemsServices(shoppingListRepo, shoppingItemsRepo, userRepo)
 
 @shoppingItemsRouter.post(
 "/{list_id}/add", 
-tags=["Shopping Items"], 
+tags=["Shopping Items"],
 response_model=CreateShoppingItemOutDTO,
 summary="Ajouter un nouvel aliment dans une liste",
 responses={
     200: {"description": "Nouvel aliment ajouté succés"},
-    404: {"description": "Utilisateur ou liste introuvable"},
+    404: {"description": "liste introuvable"},
     409: {"description": "L'aliment existe déja dans la liste de la semaine"},
     422: {"description": "Données invalides"},
 },  
@@ -90,9 +90,31 @@ async def get_shopping_item(
         "item" : shopping_item
     }
 
+@shoppingItemsRouter.get(
+"/{week_number}/available-product",
+tags=["Shopping Items"], 
+response_model=GetAllShoppingItemsDTO,
+summary="Récuperer les aliments disponibles d'une semaine donnée",
+responses={
+    200: {"description": "Aliments récupérés avec succés"},
+    404: {"description": "Liste de courses introuvable"},
+    422: {"description": "Données invalides"},
+},  
+status_code=200
+)
+async def get_available_shopping_items(
+    request: Request,
+    week_number: Annotated[int, Path(description="Id de la la liste")],
+    service: ShoppingItemsServices = Depends(get_shopping_items_services)
+):
+    shopping_items = await service.get_available_items(request.state.user.id, week_number)
+    
+    return {
+       "results": shopping_items
+    }
 
 @shoppingItemsRouter.get(
-"/{week_number}/available-product", 
+"/{week_number}/available-product/count", 
 tags=["Shopping Items"], 
 response_model=dict,
 summary="Récuperer le nombre total d'aliments disponibles d'une semaine donnée",
@@ -103,7 +125,7 @@ responses={
 },  
 status_code=200
 )
-async def get_shopping_item(
+async def get_available_shopping_items_count(
     request: Request,
     week_number: Annotated[int, Path(description="Id de la la liste")],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)

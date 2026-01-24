@@ -1,10 +1,10 @@
 from datetime import datetime
 from fastapi import HTTPException
+from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.core.enums import ShoppingListItemEnum
 from app.features.users.user_repository import UserRepository
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, UpdateShoppingItemDTO
 from app.features.shopping_items.shopping_items_repository import ShoppingItemsRepository
-from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 
 class ShoppingItemsServices:
     def __init__(
@@ -60,18 +60,25 @@ class ShoppingItemsServices:
         
         if not shopping_item:
             raise HTTPException(status_code=404, detail="Aliment introuvable dans cette liste.")
-        
+               
         return shopping_item
     
-    async def get_available_items_count(self, user_id: str, week_number: int):
+    async def get_available_items_count(self, user_id: str,week_number: int):
         shopping_list = await self.shoppingListRepo.get_list_by_week(week_number, user_id, datetime.now().year)
         
         if not shopping_list:
             return 0
         
         return await self.shoppingItemRepo.get_items_count(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
-            
     
+    async def get_available_items(self, user_id: str,week_number: int):
+        shopping_list = await self.shoppingListRepo.get_list_by_week(week_number, user_id, datetime.now().year)
+        
+        if not shopping_list:
+            raise HTTPException(status_code=404, detail="Pas de liste disponible pour la semaine.")
+        
+        return await self.shoppingItemRepo.get_items_of_list(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
+
     async def complete_shopping_item(self, item_id: int, list_id:int, user_id: str):
         shopping_list = await self.shoppingListRepo.get_by_id(list_id, user_id)
         if not shopping_list:

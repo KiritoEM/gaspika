@@ -65,7 +65,7 @@ class ShoppingItemsRepository:
         return shopping_item.scalar_one_or_none()
     
     async def get_items_count(self, user_id: str, list_id: int, status: Optional[str]) -> int :
-        """Get available shopping items count of an list"""   
+        """Get shopping items count of an list"""   
         
         query = (
              select(func.coalesce(func.count(ShoppingListItem.id), 0))
@@ -85,9 +85,36 @@ class ShoppingItemsRepository:
 
         return items_count.scalar()
     
+    async def get_items_of_list(self, user_id: str, list_id: int, status: Optional[str]) -> list[ShoppingListItem] :
+        """Get shopping items count of an list"""   
+        
+        query = (
+             select(ShoppingListItem)
+            .join(ShoppingListItem.shopping_list)
+            .where(
+                and_(
+                    ShoppingList.user_id == user_id,
+                    ShoppingList.id == list_id,
+                )
+            )
+        )
+                
+        if status:
+            query = query.where(ShoppingListItem.status == status)
+        
+        shopping_items = await self.db.execute(query)     
+
+        return shopping_items.scalars().all()
+    
+    
     async def search_by_food_name(self, name: str, user_id: str) -> list[ShoppingListItem] :
         """Get all items by food name in a list or global items or by item_id"""
-        query = select(ShoppingListItem).join(ShoppingListItem.shopping_list).where(ShoppingListItem.food_name.ilike(f"%{name}%"))
+        query = (
+            select(ShoppingListItem)
+            .join(ShoppingListItem.shopping_list)
+            .where(ShoppingListItem.food_name
+            .ilike(f"%{name}%"))
+        )
         
         if user_id:
             query = query.where(ShoppingList.user_id == user_id)
@@ -110,8 +137,6 @@ class ShoppingItemsRepository:
         )
         
         return total_price.scalar()
-        
-        
     
     async def complete_item(self, item_id: int, user_id: str, list_id: int) -> Optional[ShoppingListItem]:
         """Change status of shopping item to complete"""

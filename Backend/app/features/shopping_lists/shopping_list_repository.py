@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import select, and_
+from sqlalchemy import extract, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
 from app.features.users.user_repository import UserRepository
@@ -74,12 +74,22 @@ class ShoppingListRepository:
         await self.db.refresh(new_shopping_list) 
         return new_shopping_list
         
-    async def get_list_by_week(self, week_number: int, user_id: str) -> Optional[ShoppingList]:
+    async def get_list_by_week(self, week_number: int, user_id: str, year: Optional[int]) -> Optional[ShoppingList]:
         """Get List by specific week"""
-        shopping_list = await self.db.execute(select(ShoppingList).where(
-            ShoppingList.user_id == user_id,
-            ShoppingList.week_number == week_number
-        ))
+        query = (
+            select(ShoppingList)
+            .where(
+                and_(
+                    ShoppingList.user_id == user_id,
+                    ShoppingList.week_number == week_number
+                )
+            )
+        )     
+        
+        if year:
+            query = query.where(extract('year', ShoppingList.created_at) == year)
+            
+        shopping_list = await self.db.execute(query)            
         
         return shopping_list.scalar_one_or_none()
     
@@ -87,9 +97,13 @@ class ShoppingListRepository:
                      name: Optional[str] = None, 
                      week_number: Optional[int] = None) -> Optional[ShoppingList]:
         """Update shopping list name or week_number"""
-        result = await self.db.execute(select(ShoppingList).where(
-            ShoppingList.id == shopping_lists_id,
-            ShoppingList.user_id == user_id
+        result = await self.db.execute(
+            select(ShoppingList)
+            .where(
+                and_(
+                    ShoppingList.id == shopping_lists_id,
+                    ShoppingList.user_id == user_id
+                )
         )).scalar_one_or_none()
         shopping_list = result.scalar_one_or_none()
         
@@ -110,23 +124,44 @@ class ShoppingListRepository:
         
     
     async def update_total_cost(self, list_id: int, cost: float) -> Optional[ShoppingList]:
+        """Update total cost of an list"""
         result = await self.db.execute(select(ShoppingList).where(ShoppingList.id == list_id))
         shopping_list = result.scalar_one_or_none()
 
         if shopping_list:
             shopping_list.total_estimated_cost += cost
             shopping_list.updated_at = datetime.now(timezone.utc)
+            
             await self.db.commit()
             await self.db.refresh(shopping_list)
             return shopping_list
         return None
+    
+    async def replace_total_cost(self, list_id: int, cost: float) -> Optional[ShoppingList]:
+        """Replace total cost of an list"""
+        result = await self.db.execute(select(ShoppingList).where(ShoppingList.id == list_id))
+        shopping_list = result.scalar_one_or_none()
+
+        if shopping_list:
+            shopping_list.total_estimated_cost = cost
+            shopping_list.updated_at = datetime.now(timezone.utc)
+            
+            await self.db.commit()
+            await self.db.refresh(shopping_list)
+            return shopping_list
+        
+        return None
 
     async def delete_list(self, shopping_lists_id: int, user_id: str) -> bool:
         """Delete shopping list and cascade items"""
-        result = await self.db.execute(select(ShoppingList).where(
-            ShoppingList.id == shopping_lists_id,
-            ShoppingList.user_id == user_id
-        )).scalar_one_or_none()
+        result = await self.db.execute(
+            select(ShoppingList)
+            .where(
+                and_(
+                    ShoppingList.id == shopping_lists_id,
+                    ShoppingList.user_id == user_id
+                )    
+            )).scalar_one_or_none()
         shopping_list = result.scalar_one_or_none()
         
         if shopping_list:
@@ -135,3 +170,5 @@ class ShoppingListRepository:
             return True
         
         return False
+    
+  

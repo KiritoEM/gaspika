@@ -13,6 +13,7 @@ class ImageRepository:
         image_size: int,
         provider: str,
         file_id: str,
+        delete_url: str,
         shopping_item_id: Optional[str]
     ):
         image = Image(
@@ -21,6 +22,7 @@ class ImageRepository:
             size=image_size,
             provider=provider,
             file_id=file_id,
+            delete_url=delete_url,
             shopping_list_item_id = shopping_item_id
         )
         

@@ -33,7 +33,6 @@ class ShoppingItemsRepository:
         
         self.db.add(shopping_item)
         await self.db.commit()
-        await self.db.refresh(shopping_item, ['category', 'image', 'shopping_list', 'user'])  # AJOUT DES RELATIONS ICI
         
         return shopping_item
     
@@ -198,8 +197,32 @@ class ShoppingItemsRepository:
             shopping_item.updated_at = datetime.now(timezone.utc)
             
             await self.db.commit()
-            await self.db.refresh(shopping_item, ['category', 'image', 'shopping_list', 'user'])  # AJOUT DES RELATIONS ICI
+            await self.db.refresh(shopping_item, ['category', 'image', 'shopping_list', 'user'])  
 
             return shopping_item
         
         return None
+    
+    async def delete(self, item_id: int, user_id: str, list_id: int) -> bool:
+        """Delete shopping item"""
+        result = await self.db.execute(
+            select(ShoppingListItem)
+            .join(ShoppingListItem.shopping_list)
+            .where(
+                and_(
+                    ShoppingList.user_id == user_id,
+                    ShoppingList.id == list_id,
+                    ShoppingListItem.id == item_id
+                )
+            )
+        )
+        
+        shopping_item = result.scalar_one_or_none()
+        
+        if shopping_item:
+            await self.db.delete(shopping_item)
+            await self.db.commit()
+            
+            return True
+        
+        return False

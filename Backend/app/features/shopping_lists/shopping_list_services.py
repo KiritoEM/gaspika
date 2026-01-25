@@ -10,14 +10,9 @@ class ShoppingListServices:
         self.shoppingListRepo = shoppingListRepo
         self.userRepo = userRepo
         
-    async def get_all_lists(self, user_id: str, query: GetAllListsFilterParams):
-        user = await self.userRepo.get_user_by_id(user_id)
-        
-        if (not user):
-            raise HTTPException(status_code=404, detail="Utilisateur introuvable.")
-        
+    async def get_all_lists(self, user_id: str, query: GetAllListsFilterParams):  
         return await self.shoppingListRepo.get_all(
-            user.id, 
+            user_id, 
             query.page, 
             query.limit, 
             query.status,
@@ -34,13 +29,8 @@ class ShoppingListServices:
         
         return await self.shoppingListRepo.create(week_number, user_id, final_name)
     
-    async def update_list(self, user_id: str, shopping_lists_id: int, 
-                     update_data: dict) -> ShoppingList:
+    async def update_list(self, user_id: str, shopping_lists_id: int, update_data: dict):
         """Update shopping list"""
-        user = await self.userRepo.get_user_by_id(user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="Utilisateur introuvable.")
-        
         shopping_lists = await self.shoppingListRepo.update_list(
             shopping_lists_id, user_id, 
             update_data.get("name"),
@@ -52,14 +42,7 @@ class ShoppingListServices:
         
         return shopping_lists
 
-    async def delete_list(self, user_id: str, shopping_lists_id: int) -> dict:
+    async def delete_list(self, user_id: str, shopping_lists_id: int):
         """Delete shopping list"""
-        user = await self.userRepo.get_user_by_id(user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="Utilisateur introuvable.")
+        return await self.shoppingListRepo.delete_list(shopping_lists_id, user_id)
         
-        deleted = await self.shoppingListRepo.delete_list(shopping_lists_id, user_id)
-        if not deleted:
-            raise HTTPException(status_code=400, detail="Impossible de supprimer la liste de courses.")
-        
-        return {"message": "Liste supprimée avec succès"}

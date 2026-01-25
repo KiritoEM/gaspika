@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Form, Path, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Path, Request
 from app.core.storages.imgbb import ImgBBProvider
 from app.features.images_upload.image_upload_repository import ImageRepository
 from app.features.users.user_repository import UserRepository
@@ -187,3 +187,21 @@ async def mark_item_as_complete(
 ):
     return await service.complete_shopping_item(item_id, list_id, request.state.user.id)
 
+
+@shoppingItemsRouter.delete(
+    "/{list_id}/items/{item_id}",
+    tags=["Shopping Items"],    
+    summary="Supprimer un aliment de la liste",
+    status_code=204,
+)
+async def delete_shopping_lists(
+    request: Request,
+    list_id: Annotated[int, Path(..., ge=1)],
+    item_id: Annotated[int, Path(..., ge=1)],
+    service: ShoppingItemsServices = Depends(get_shopping_items_services)
+):
+    success = await service.delete_shopping_item(item_id, list_id, request.state.user.id)
+    if not success:
+        raise HTTPException(400, "Impossible de supprimer la liste.")
+    
+    return None

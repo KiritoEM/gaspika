@@ -59,6 +59,7 @@ class ShoppingItemsServices:
             payload.image.size,
             image_metadata.provider,
             image_metadata.file_id,
+            image_metadata.delete_url,
             item.id
         )
         
@@ -130,6 +131,7 @@ class ShoppingItemsServices:
     
     async def update_shopping_item(self, item_id: int, list_id:int, user_id: str, payload: UpdateShoppingItemDTO):
         shopping_list = await self.shoppingListRepo.get_by_id(list_id, user_id)
+        
         if not shopping_list:
             raise HTTPException(status_code=404, detail="Liste introuvable.")
         
@@ -145,4 +147,21 @@ class ShoppingItemsServices:
         return shopping_item
     
     
-    
+    async def delete_shopping_item(self, item_id: int, list_id:int, user_id: str):
+        shopping_list = await self.shoppingListRepo.get_by_id(list_id, user_id)
+        
+        if not shopping_list:
+            raise HTTPException(status_code=404, detail="Liste introuvable.")
+        
+        # Delete image from Storage provider
+        shopping_item = await self.shoppingItemRepo.get_by_id(item_id, user_id, list_id)
+        
+        if not shopping_item:
+            raise HTTPException(status_code=404, detail="Aliment introuvable.")
+        
+        deleted_image = await self.storageProvider.delete({"delete_url" : shopping_item.image.delete_url})
+        
+        if not deleted_image:
+            raise HTTPException(status_code=502, detail="Impossible de supprimer l'image depuis le cloud.")
+        
+        return await self.shoppingItemRepo.delete(item_id, user_id, list_id)

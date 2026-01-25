@@ -15,6 +15,7 @@ class Image(Base):
     size: Mapped[int] = mapped_column(Integer, nullable=False)
     provider: Mapped[str] = mapped_column(String(50), nullable=False)
     file_id : Mapped[Optional[str]] = mapped_column(String(100), nullable=False)
+    delete_url: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
         default=lambda: datetime.now(timezone.utc),

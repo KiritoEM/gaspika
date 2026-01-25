@@ -13,7 +13,7 @@ class StorageProvider(ABC):
         pass
     
     @abstractmethod
-    async def delete(self, file_id: str) -> bool:
+    async def delete(self, params: dict) -> bool:
         """Delete a file"""
         pass
     

@@ -73,5 +73,6 @@ async def delete_shopping_lists(
 ):
     success = await service.delete_list(request.state.user.id, list_id)
     if not success:
-        raise HTTPException(404, "Liste non trouvée")
+        raise HTTPException(400, "Impossible de supprimer la liste.")
+    
     return None

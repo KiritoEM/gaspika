@@ -89,14 +89,14 @@ class UpdateShoppingItemOutDTO(BaseModel):
 # Create shopping item response schema
 class CreateShoppingItemOutDTO(BaseModel):
     message: str = Field(str, description="Message de confirmation")
-    item: Optional[BaseShoppingListItem]
+    data: Optional[BaseShoppingListItem]
 
     class Config:
         from_attributes = True
 
 # Get shopping item response schema
 class GetShoppingItemOutDTO(BaseModel):
-    item: BaseShoppingListItem
+    data: BaseShoppingListItem
 
     class Config:
         from_attributes = True
@@ -104,7 +104,7 @@ class GetShoppingItemOutDTO(BaseModel):
 
 # Get shopping items response schema
 class GetAllShoppingItemsDTO(BaseModel):
-    results: list[BaseShoppingListItem]
+    data: list[BaseShoppingListItem]
 
     class Config:
         from_attributes = True

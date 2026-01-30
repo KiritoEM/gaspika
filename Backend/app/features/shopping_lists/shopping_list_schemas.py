@@ -10,7 +10,7 @@ class CreateShoppingListDTO(BaseModel):
     name: Optional[str] = Field(None, max_length=200, description="Nom de la liste")
 
 #  ShoppingList base schema
-class ShoppingListOut(BaseModel): 
+class BaseShoppingList(BaseModel): 
     id: int
     week_number: int
     name: str
@@ -26,7 +26,7 @@ class ShoppingListOut(BaseModel):
         
 #  Create Shopping list response schema
 class CreateShoppingListOutDTO(BaseModel): 
-    list: ShoppingListOut
+    data: BaseShoppingList
     message: str
         
         

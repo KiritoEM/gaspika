@@ -87,13 +87,8 @@ class ShoppingItemsServices:
         if not shopping_list:
             raise HTTPException(status_code=404, detail="Liste introuvable.")
         
-        shopping_item =  await self.shoppingItemRepo.get_by_id(item_id, user_id, shopping_list.id)
-        
-        if not shopping_item:
-            raise HTTPException(status_code=404, detail="Aliment introuvable dans cette liste.")
-               
-        return shopping_item
-    
+        return await self.shoppingItemRepo.get_by_id(item_id, user_id, shopping_list.id)
+                   
     async def get_available_items_count(self, user_id: str,week_number: int):
         shopping_list = await self.shoppingListRepo.get_list_by_week(week_number, user_id, datetime.now().year)
         
@@ -119,7 +114,6 @@ class ShoppingItemsServices:
         
         if not shopping_item:
             raise HTTPException(status_code=400, detail="Impossible de marquer cet aliment comme acheté.")
-        
         
         # make list complete if all items of the list is purchased
         unpurchased_items_count =  await self.shoppingItemRepo.get_items_count(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)

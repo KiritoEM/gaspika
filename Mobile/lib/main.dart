@@ -5,8 +5,8 @@ import 'package:gaspika_mobile/configs/dotenv_config.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/login_viewmodel.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
-import 'package:gaspika_mobile/features/shopping_lists/viewmodels/shopping_lists_viewmodel.dart';
-import 'package:gaspika_mobile/features/shopping_lists_items/viewmodels/shopping_lists_items_viewmodel.dart';
+import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
+import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 

@@ -31,17 +31,12 @@ class ShoppingListServices:
     
     async def update_list(self, user_id: str, shopping_lists_id: int, update_data: dict):
         """Update shopping list"""
-        shopping_lists = await self.shoppingListRepo.update_list(
+        return  await self.shoppingListRepo.update_list(
             shopping_lists_id, user_id, 
             update_data.get("name"),
             update_data.get("week_number")
         )
         
-        if not shopping_lists:
-            raise HTTPException(status_code=404, detail="Liste introuvable.")
-        
-        return shopping_lists
-
     async def delete_list(self, user_id: str, shopping_lists_id: int):
         """Delete shopping list"""
         return await self.shoppingListRepo.delete_list(shopping_lists_id, user_id)

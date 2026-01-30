@@ -3,7 +3,7 @@ from sqlalchemy import extract, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
 from app.features.users.user_repository import UserRepository
-from app.features.shopping_lists.shopping_list_schemas import ShoppingListOut
+from app.features.shopping_lists.shopping_list_schemas import BaseShoppingList
 from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 from app.core.utils.pagination import paginate
 from app.core.schemas import PageParams
@@ -52,7 +52,7 @@ class ShoppingListRepository:
         query = query.order_by(ShoppingList.created_at.desc())
         
         # Pagination
-        return await paginate(self.db, PageParams(page=page, size=limit), query, ShoppingListOut)
+        return await paginate(self.db, PageParams(page=page, size=limit), query, BaseShoppingList)
     
     async def get_by_id(self, list_id: int, user_id: int) -> ShoppingList:
         """Get shopping list by Id"""

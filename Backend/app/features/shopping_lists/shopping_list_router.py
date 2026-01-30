@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.middlewares.auth_middleware import require_user
 from app.core.schemas import PagedResponseSchema
 from app.features.users.user_repository import UserRepository
-from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, CreateShoppingListOutDTO, GetAllListsFilterParams, ShoppingListOut
+from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, CreateShoppingListOutDTO, GetAllListsFilterParams, BaseShoppingList
 from app.features.shopping_lists.shopping_list_services import ShoppingListServices
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.core.database import db_session
@@ -19,7 +19,7 @@ async def get_shopping_lists_services(db: AsyncSession = Depends(db_session)) ->
 @shoppingListRouter.get(
 "/",
 tags=["Shopping Lists"], 
-response_model=PagedResponseSchema[ShoppingListOut],
+response_model=PagedResponseSchema[BaseShoppingList],
 summary="Obtenir la liste des listes de courses",
 responses={
     200: {"description": "Liste des listes de courses"},
@@ -56,7 +56,7 @@ async def create_shopping_lists(
     created_list =  await service.generate_list(payload.week_number, request.state.user.id, payload.name)
     
     return {
-        "list": created_list,
+        "data": created_list,
         "message": "Liste créée avec succés"
     }
 

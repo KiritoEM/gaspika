@@ -81,7 +81,6 @@ class AuthModel {
   // Check if user is authenticated
   Future<bool> isAuthenticated() async {
     final token = await SecureStorageService.read('access_token');
-    AppLogger.logger.i('Auth token: $token');
 
     if (token != null) {
       if (JwtDecoder.isExpired(token)) {

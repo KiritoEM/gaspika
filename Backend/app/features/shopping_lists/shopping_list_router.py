@@ -4,22 +4,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.middlewares.auth_middleware import require_user
 from app.core.schemas import PagedResponseSchema
 from app.features.users.user_repository import UserRepository
-from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, CreateShoppingListOutDTO, GetAllListsFilterParams, ShoppingListOut
-from app.features.shopping_lists.shopping_list_services import ShoppingListServices
+from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, CreateShoppingListOutDTO, GetAllListsFilterParams, BaseShoppingList
+from app.features.shopping_lists.shopping_list_service import ShoppingListServices
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.core.database import db_session
 
-shoppingListRouter = APIRouter(prefix="/shopping-lists", tags=["Shopping Lists"], dependencies=[Depends(require_user)])
+shopping_list_router = APIRouter(prefix="/shopping-lists", tags=["Shopping Lists"], dependencies=[Depends(require_user)])
 
 async def get_shopping_lists_services(db: AsyncSession = Depends(db_session)) -> ShoppingListServices:
     shoppingListRepo = ShoppingListRepository(db)
     userRepo = UserRepository(db)
     return ShoppingListServices(shoppingListRepo, userRepo)
 
-@shoppingListRouter.get(
+@shopping_list_router.get(
 "/",
 tags=["Shopping Lists"], 
-response_model=PagedResponseSchema[ShoppingListOut],
+response_model=PagedResponseSchema[BaseShoppingList],
 summary="Obtenir la liste des listes de courses",
 responses={
     200: {"description": "Liste des listes de courses"},
@@ -35,7 +35,7 @@ async def get_shopping_listss(
 ):
     return await service.get_all_lists(request.state.user.id, query)
 
-@shoppingListRouter.post(
+@shopping_list_router.post(
 "/generate", 
 tags=["Shopping Lists"], 
 response_model=CreateShoppingListOutDTO,
@@ -56,11 +56,11 @@ async def create_shopping_lists(
     created_list =  await service.generate_list(payload.week_number, request.state.user.id, payload.name)
     
     return {
-        "list": created_list,
+        "data": created_list,
         "message": "Liste créée avec succés"
     }
 
-@shoppingListRouter.delete(
+@shopping_list_router.delete(
     "/{list_id}",
     tags=["Shopping Lists"],    
     summary="Supprimer une liste",

@@ -10,7 +10,7 @@ class UserCreateDTO(BaseModel):
     password: str = Field(min_length=8, max_length=128)
 
 # Get User schema
-class UserOut(BaseModel):
+class BaseUser(BaseModel):
     id: UUID
     first_name: str
     last_name: str
@@ -22,3 +22,12 @@ class UserOut(BaseModel):
     
     class Config:
         from_attributes = True
+        
+
+# Get user schema
+class GetUserDTO(BaseModel):
+    data: BaseUser
+
+    class Config:
+        from_attributes = True
+

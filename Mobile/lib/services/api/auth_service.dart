@@ -13,7 +13,7 @@ class AuthService {
 
     return response.data as Map<String, dynamic>;
   }
-
+  
   Future<Map<String, dynamic>> register(SignupCredentials credentials) async {
     final List<String> nameParts = credentials.fullname.split(' ');
     final String fistName = nameParts.first;

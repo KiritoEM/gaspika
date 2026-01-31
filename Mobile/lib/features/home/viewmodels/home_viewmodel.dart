@@ -16,14 +16,15 @@ class HomeViewModel extends ChangeNotifier {
 
   // Shopping states
   bool _isLoadingShopping = true;
+  bool _isLoadingFoodCount = true;
   int _availableFoodCount = 0;
   List<ShoppingListItem> _shoppingWeekItems = [];
 
   // getters
   bool get isLoadingUser => _isLoadingUser;
   bool get isLoadingShopping => _isLoadingShopping;
-
   String? get userName => _userName;
+  bool get isLoadingFoodCount => _isLoadingFoodCount;
   int get availableFoodCount => _availableFoodCount;
   List<ShoppingListItem> get shoppingWeekItems => _shoppingWeekItems;
 

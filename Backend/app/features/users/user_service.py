@@ -11,3 +11,6 @@ class UserServices:
             raise HTTPException(status_code=409, detail="Un compte avec cet email existe deja.")
         
         return await self.repot.create(**data.model_dump())
+    
+    async def get_user_by_id(self, user_id: str):
+        return await self.repot.get_user_by_id(user_id)

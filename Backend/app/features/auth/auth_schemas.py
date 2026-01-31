@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from app.features.users.user_schemas import UserOut
+from app.features.users.user_schemas import BaseUser
 
 # Login request schema
 class LoginDTO(BaseModel):
@@ -7,7 +7,7 @@ class LoginDTO(BaseModel):
     password: str
     
 # User response schema 
-class UserOutDTO(BaseModel):
-    user: UserOut        
+class BaseUserDTO(BaseModel):
+    user: BaseUser        
     access_token: str
     message: str    

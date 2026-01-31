@@ -6,6 +6,7 @@ class UserService {
 
   Future<Map<String, dynamic>> getUserInfo() async {
     final response = await _dio.get(ApiConstant.GET_USER_INFO_ENDPOINT);
-    return response.data;
+
+    return response.data['data'];
   }
 }

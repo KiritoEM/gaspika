@@ -2,16 +2,16 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import db_session
 from app.features.categories.category_schemas import CategoryOutDTO, CreateCategoryDTO
-from app.features.categories.category_services import CategoryServices
+from app.features.categories.category_service import CategoryServices
 from app.features.categories.category_repository import CategoryRepository
 
-categoryRouter = APIRouter(prefix="/categories", tags=["Categories"])
+category_router = APIRouter(prefix="/categories", tags=["Categories"])
 
 async def get_category_services(db: AsyncSession = Depends(db_session)) -> CategoryServices:
     repo = CategoryRepository(db)
     return CategoryServices(repo)
 
-@categoryRouter.get(
+@category_router.get(
     "/",
     response_model=list[CategoryOutDTO],
     summary="Obtenir toutes les catégories",
@@ -22,7 +22,7 @@ async def list_categories(
 ):
     return await service.get_all_categories()
 
-@categoryRouter.post(
+@category_router.post(
     "/",
     response_model=CategoryOutDTO,
     summary="Créer une catégorie",

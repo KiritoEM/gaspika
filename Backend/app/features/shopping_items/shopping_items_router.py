@@ -6,12 +6,12 @@ from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.shopping_items.shopping_items_repository import ShoppingItemsRepository
 from app.core.database import db_session
-from app.features.shopping_items.shopping_items_services import ShoppingItemsServices
+from app.features.shopping_items.shopping_items_service import ShoppingItemsServices
 from app.core.middlewares.auth_middleware import require_user
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, GetAllShoppingItemsDTO, BaseShoppingListItem, UpdateShoppingItemDTO, GetShoppingItemOutDTO, UpdateShoppingItemOutDTO
 from sqlalchemy.ext.asyncio import AsyncSession
 
-shoppingItemsRouter = APIRouter(prefix="/shopping-items", tags=["Shopping Items"], dependencies=[Depends(require_user)])
+shopping_items_router = APIRouter(prefix="/shopping-items", tags=["Shopping Items"], dependencies=[Depends(require_user)])
 
 async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) -> ShoppingItemsServices:
     shoppingListRepo = ShoppingListRepository(db)
@@ -22,7 +22,7 @@ async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) ->
     
     return ShoppingItemsServices(shoppingListRepo, shoppingItemsRepo, imageRepo, userRepo, storageProvider)
 
-@shoppingItemsRouter.post(
+@shopping_items_router.post(
 "/{list_id}/add", 
 tags=["Shopping Items"],
 response_model=CreateShoppingItemOutDTO,
@@ -48,7 +48,7 @@ async def add_new_shopping_item(
         "message": "Aliment  ajouté avec avec succés"
     }
 
-@shoppingItemsRouter.get(
+@shopping_items_router.get(
 "/{list_id}/items", 
 tags=["Shopping Items"], 
 response_model=GetAllShoppingItemsDTO,
@@ -71,7 +71,7 @@ async def get_shopping_list_items(
         "data": shopping_items    
     }
 
-@shoppingItemsRouter.get(
+@shopping_items_router.get(
 "/{list_id}/items/{item_id}", 
 tags=["Shopping Items"], 
 response_model=GetShoppingItemOutDTO,
@@ -98,7 +98,7 @@ async def get_shopping_item(
         "data" : shopping_item
     }
 
-@shoppingItemsRouter.get(
+@shopping_items_router.get(
 "/{week_number}/available-product",
 tags=["Shopping Items"], 
 response_model=GetAllShoppingItemsDTO,
@@ -121,7 +121,7 @@ async def get_available_shopping_items(
        "data": available_shopping_items
     }
 
-@shoppingItemsRouter.get(
+@shopping_items_router.get(
 "/{week_number}/available-product/count", 
 tags=["Shopping Items"], 
 response_model=dict,
@@ -144,7 +144,7 @@ async def get_available_shopping_items_count(
         "count" : items_count
     }
 
-@shoppingItemsRouter.patch(
+@shopping_items_router.patch(
 "/{list_id}/items/{item_id}", 
 tags=["Shopping Items"],
 response_model=UpdateShoppingItemOutDTO,
@@ -170,7 +170,7 @@ async def update_shopping_item(
     }
 
 
-@shoppingItemsRouter.patch(
+@shopping_items_router.patch(
 "/{list_id}/items/{item_id}/complete", 
 tags=["Shopping Items"], 
 response_model=BaseShoppingListItem,
@@ -191,7 +191,7 @@ async def mark_item_as_complete(
     return await service.complete_shopping_item(item_id, list_id, request.state.user.id)
 
 
-@shoppingItemsRouter.delete(
+@shopping_items_router.delete(
     "/{list_id}/items/{item_id}",
     tags=["Shopping Items"],    
     summary="Supprimer un aliment de la liste",

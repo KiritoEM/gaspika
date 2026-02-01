@@ -325,6 +325,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  my_toastify:
+    dependency: "direct main"
+    description:
+      name: my_toastify
+      sha256: c13cb0d1dc6e8fbee9596147acc05743b0a34f9f6cb6815199a2aa7a1ca715ce
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   nested:
     dependency: transitive
     description:

@@ -118,12 +118,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final item = shoppingItemsVm.shoppingItems[index];
-        return ShoppingItemCard(
-          productName: item.productName,
-          price: item.price,
-          quantity: item.estimatedQuantity.toDouble(),
-          quantityUnit: item.quantityUnit!,
-        );
+        return ShoppingItemCard(item: item);
       },
     );
   }

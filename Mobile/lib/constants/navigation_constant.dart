@@ -6,8 +6,8 @@ class NavigationConstant {
   static const String LOGIN_ROUTE = '/login';
   static const String REGISTER_ROUTE = '/register';
   static const String HOME_ROUTE = '/home';
-  static const String shopping_lists_ROUTE = '/shopping-list';
-  static const String shopping_lists_ITEMS_ROUTE = '/shopping-list-items';
+  static const String SHOPPING_LISTS_ROUTE = '/shopping-list';
+  static const String SHOPPING_LISTS_ITEMS_ROUTE = '/shopping-list-items';
   static const String CREATE_SHOPPING_ITEM_ROUTE = '/create-shopping-item';
   static const String FINALIZE_CREATE_SHOPPING_ITEM_ROUTE = 'finalize';
 

@@ -2,11 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/widgets/avalaible_product_card.dart';
 import 'package:gaspika_mobile/features/home/widgets/home_appbar.dart';
 import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_section.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
+import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,35 +46,46 @@ class _HomeScreenState extends State<HomeScreen> {
               Provider.of<HomeViewModel>(context).userName ?? 'Utilisateur',
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.fromLTRB(23, 28, 23, 23),
-            child: Column(
-              children: [
-                // Available product
-                homeVm.isLoadingShopping
-                    ? SkeletonLine(
-                        style: SkeletonLineStyle(
-                          height: 100,
-                          width: double.infinity,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      )
-                    : AvalaibleProductCard(
-                        productCount: homeVm.availableFoodCount,
-                      ),
+      body: SafeArea(child: _buildBody(homeVm)),
+    );
+  }
 
-                SizedBox(height: 28),
+  Widget _buildBody(HomeViewModel homeVm) {
+    if (homeVm.hasError && homeVm.errorType != NetworkErrorType.notFound) {
+      return SizedBox(
+        height: double.infinity,
+        width: double.infinity,
+        child: ErrorState(
+          text: homeVm.errorMessage,
+          onRefresh: () => homeVm.refreshAll(),
+        ),
+      );
+    }
 
-                // Weekly shopping
-                WeeklyShoppingSection(
-                  isLoading: homeVm.isLoadingShopping,
-                  shoppingListItems: homeVm.shoppingWeekItems,
-                ),
-              ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(23, 28, 23, 23),
+        child: Column(
+          children: [
+            // Available product
+            homeVm.isLoadingShopping
+                ? SkeletonLine(
+                    style: SkeletonLineStyle(
+                      height: 100,
+                      width: double.infinity,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  )
+                : AvalaibleProductCard(productCount: homeVm.availableFoodCount),
+
+            const SizedBox(height: 28),
+
+            // Weekly shopping
+            WeeklyShoppingSection(
+              isLoading: homeVm.isLoadingShopping,
+              shoppingListItems: homeVm.shoppingWeekItems,
             ),
-          ),
+          ],
         ),
       ),
     );

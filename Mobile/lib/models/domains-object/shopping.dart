@@ -1,104 +1,89 @@
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/domains-object/image.dart';
 
 // ========= ShoppingListItem =========
 class ShoppingListItem {
-  final int? id;
-  final String productName;
+  final String? id;
+  final String foodName;
   final int? shoppingListId;
-  final int estimatedQuantity;
-  final int price;
-  final bool isPurchased;
+  final double recommendedQuantity;
+  final double price;
+  final ShoppingItemStatus status;
+  final int personNumber;
   final String? notes;
   final String? storageTips;
+  final int? defaultShelfLifeDay;
   final int? categoryId;
-  final String? category;
-  final QuantityUnit? quantityUnit;
+  final QuantityUnit quantityUnit;
+  final Image image;
+  final String createdAt;
+  final String updatedAt;
 
   ShoppingListItem({
     this.id,
-    required this.productName,
+    required this.foodName,
     this.shoppingListId,
-    required this.estimatedQuantity,
+    required this.recommendedQuantity,
     required this.price,
-    required this.isPurchased,
+    required this.personNumber,
+    required this.status,
+    this.defaultShelfLifeDay,
     this.notes,
     this.storageTips,
     this.categoryId,
-    this.category,
-    this.quantityUnit,
+    required this.quantityUnit,
+    required this.image,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
     return ShoppingListItem(
-      id: json['id'] as int?,
-      productName: json['product_name'] ?? '',
-      shoppingListId: json['shopping_lists_id'] as int?,
-      estimatedQuantity: (json['estimated_quantity'] as int?) ?? 1,
-      price: (json['price'] as int?) ?? 0,
-      isPurchased: json['is_purchased'] ?? false,
+      id: json['id']?.toString(),
+      foodName: json['food_name'] ?? '',
+      shoppingListId: json['shopping_list_id'] as int?,
+      recommendedQuantity:
+          (json['recommended_quantity'] as num?)?.toDouble() ?? 1,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
       notes: json['notes'] as String?,
       storageTips: json['storage_tips'] as String?,
-      categoryId: json['category_id'] as int?,
-      category: json['category'] as String?,
-      quantityUnit: json['unit'] != null
-          ? _mapIntoQuantityUnit(json['unit'])
-          : null,
+      categoryId: json['food_category_id'] as int?,
+      status: ShoppingItemStatus.values.byName(
+        (json['status'] ?? 'UNPURCHASED').toLowerCase(),
+      ),
+      quantityUnit: QuantityUnit.values.byName(
+        (json['unit'] ?? 'UNIT').toLowerCase(),
+      ),
+      personNumber: (json['person_number'] as num?)?.toInt() ?? 1,
+      image: Image.fromJson(json['image'] as Map<String, dynamic>),
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
-  }
-
-  static QuantityUnit _mapIntoQuantityUnit(String? quantityUnit) {
-    switch (quantityUnit) {
-      case 'unit':
-        return QuantityUnit.piece;
-      case 'kg':
-        return QuantityUnit.kilogram;
-      case 'l':
-        return QuantityUnit.liter;
-      case 'g':
-        return QuantityUnit.gram;
-      case 'ml':
-        return QuantityUnit.milliliter;
-      default:
-        return QuantityUnit.piece;
-    }
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'product_name': productName,
-      'shopping_lists_id': shoppingListId,
-      'estimated_quantity': estimatedQuantity,
+      'food_name': foodName,
+      'shopping_list_id': shoppingListId,
+      'recommended_quantity': recommendedQuantity,
       'price': price,
-      'is_purchased': isPurchased,
+      'status': status.name.toUpperCase(),
+      'person_number': personNumber,
       'notes': notes,
       'storage_tips': storageTips,
-      'category_id': categoryId,
-      'category': category,
-      'unit': quantityUnit != null
-          ? _mapQuantityUnitToString(quantityUnit!)
-          : null,
+      'default_shelf_life_day': defaultShelfLifeDay,
+      'food_category_id': categoryId,
+      'quantity_unit': quantityUnit.name.toUpperCase(),
+      // 'image': image.toJson(),
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
-  }
-
-  static String _mapQuantityUnitToString(QuantityUnit unit) {
-    switch (unit) {
-      case QuantityUnit.piece:
-        return 'unit';
-      case QuantityUnit.kilogram:
-        return 'kg';
-      case QuantityUnit.liter:
-        return 'l';
-      case QuantityUnit.gram:
-        return 'g';
-      case QuantityUnit.milliliter:
-        return 'ml';
-    }
   }
 
   @override
   String toString() {
-    return 'ShoppingListItem{id: $id, productName: $productName, shoppingListId: $shoppingListId, estimatedQuantity: $estimatedQuantity, price: $price, isPurchased: $isPurchased, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, category: $category, unit: $quantityUnit}';
+    return 'ShoppingListItem{id: $id, foodName: $foodName, shoppingListId: $shoppingListId, recommendedQuantity: $recommendedQuantity, price: $price, status: $status, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, categoryId: $categoryId, unit: $quantityUnit}';
   }
 }
 
@@ -150,7 +135,7 @@ class ShoppingList {
       'total_estimated_cost': totalEstimatedCost,
       'user_id': userId,
       'is_completed': isCompleted,
-      'items': items?.map((item) => item.toJson()).toList(),
+      // 'items': items?.map((item) => item.toJson()).toList(),
     };
   }
 

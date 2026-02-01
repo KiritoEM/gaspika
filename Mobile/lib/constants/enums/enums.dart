@@ -1,3 +1,17 @@
 enum SnackbarType { success, error, warning, info }
 
-enum QuantityUnit { piece, kilogram, liter, gram, milliliter }
+enum QuantityUnit { unit, kilogram, liter, gram, milliliter }
+
+enum NetworkErrorType {
+  unknown,
+  network,
+  server,
+  badRequest,
+  notFound,
+  forbidden,
+  unauthorized,
+  client,
+  canceled,
+}
+
+enum ShoppingItemStatus { purchased, unpurchased }

@@ -13,20 +13,20 @@ class FinalizeShoppingItemScreen extends StatefulWidget {
 class _FinalizeShoppingItemScreenState
     extends State<FinalizeShoppingItemScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _estimatedQuantityController = TextEditingController();
+  final _recommendedQuantityController = TextEditingController();
   final _storageTipsController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     // Valeurs par défaut
-    _estimatedQuantityController.text = '1';
+    _recommendedQuantityController.text = '1';
     _storageTipsController.text = 'Conserver au frais';
   }
 
   @override
   void dispose() {
-    _estimatedQuantityController.dispose();
+    _recommendedQuantityController.dispose();
     _storageTipsController.dispose();
     super.dispose();
   }
@@ -69,7 +69,7 @@ class _FinalizeShoppingItemScreenState
                         ),
                       ),
                       TextFormField(
-                        controller: _estimatedQuantityController,
+                        controller: _recommendedQuantityController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(hintText: 'Ex: 5'),
                         validator: (value) {
@@ -133,10 +133,10 @@ class _FinalizeShoppingItemScreenState
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      final estimatedQuantity = _estimatedQuantityController.text;
+      final recommendedQuantity = _recommendedQuantityController.text;
       final storageTips = _storageTipsController.text;
 
-      print('Estimated Quantity: $estimatedQuantity');
+      print('Estimated Quantity: $recommendedQuantity');
       print('Storage Tips: $storageTips');
 
       // TODO: Appeler le ViewModel pour finaliser l'item

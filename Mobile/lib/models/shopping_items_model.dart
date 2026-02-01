@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/schemas/createItem.dart';
@@ -18,13 +17,19 @@ class ShoppingItemsModel {
       await Future.delayed(const Duration(seconds: 2));
 
       return ApiResponse(
-        data: jsonDecode(response['count'].toString()) as int,
+        data: response['count'] as int,
         message: 'Aliments récupérées avec succès.',
       );
     } on DioException catch (err) {
-      throw NetworkErrorHandler.handleError(err).isNotEmpty
-          ? NetworkErrorHandler.handleError(err)
-          : err;
+      AppLogger.logger.e(
+        'DioException while fetching available food: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
     } catch (err) {
       AppLogger.logger.e('Error while fetching avalaible food: $err');
       return ApiResponse(
@@ -49,9 +54,15 @@ class ShoppingItemsModel {
         message: 'Aliments de la semaine récupérés.',
       );
     } on DioException catch (err) {
-      throw NetworkErrorHandler.handleError(err).isNotEmpty
-          ? NetworkErrorHandler.handleError(err)
-          : err;
+      AppLogger.logger.e(
+        'DioException while fetching shopping week items: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
     } catch (err) {
       AppLogger.logger.e('Error while fetching shopping week items: $err');
       return ApiResponse(
@@ -75,9 +86,15 @@ class ShoppingItemsModel {
 
       return ApiResponse(data: items, message: 'Aliments recuperés.');
     } on DioException catch (err) {
-      throw NetworkErrorHandler.handleError(err).isNotEmpty
-          ? NetworkErrorHandler.handleError(err)
-          : err;
+      AppLogger.logger.e(
+        'DioException while fetching shopping items: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
     } catch (err) {
       AppLogger.logger.e('Error while fetching shopping items: $err');
       return ApiResponse(
@@ -98,9 +115,15 @@ class ShoppingItemsModel {
 
       return ApiResponse(message: 'Aliment ajouté.');
     } on DioException catch (err) {
-      throw NetworkErrorHandler.handleError(err).isNotEmpty
-          ? NetworkErrorHandler.handleError(err)
-          : err;
+      AppLogger.logger.e(
+        'DioException while creating shopping item: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
     } catch (err) {
       AppLogger.logger.e('Error while creating shopping item: $err');
       return ApiResponse(

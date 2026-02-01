@@ -3,9 +3,9 @@
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 
 class CreateShoppingItemSchema {
-  String productName = '';
-  double estimatedQuantity = 0.0;
-  QuantityUnit unit = QuantityUnit.piece;
+  String foodName = '';
+  double recommendedQuantity = 0.0;
+  QuantityUnit unit = QuantityUnit.unit;
   double price = 0.0;
   bool isPurchased = false;
   String notes = '';
@@ -13,9 +13,9 @@ class CreateShoppingItemSchema {
   int categoryId = 0;
 
   CreateShoppingItemSchema({
-    this.productName = '',
-    this.estimatedQuantity = 0.0,
-    this.unit = QuantityUnit.piece,
+    this.foodName = '',
+    this.recommendedQuantity = 0.0,
+    this.unit = QuantityUnit.unit,
     this.price = 0.0,
     this.isPurchased = false,
     this.notes = '',
@@ -25,8 +25,8 @@ class CreateShoppingItemSchema {
 
   Map<String, dynamic> toJson() {
     return {
-      "product_name": productName.trim(),
-      "estimated_quantity": estimatedQuantity,
+      "product_name": foodName.trim(),
+      "estimated_quantity": recommendedQuantity,
       "unit": _mapToBackendUnit(unit),
       "price": price,
       "is_purchased": isPurchased,
@@ -38,7 +38,7 @@ class CreateShoppingItemSchema {
 
   String _mapToBackendUnit(QuantityUnit unit) {
     switch (unit) {
-      case QuantityUnit.piece:
+      case QuantityUnit.unit:
         return "unit";
       case QuantityUnit.kilogram:
         return "kg";

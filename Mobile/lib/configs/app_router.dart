@@ -39,14 +39,14 @@ class AppRouter {
             redirect: (context, state) => RoleGuard().checkAccess(),
           ),
           GoRoute(
-            path: NavigationConstant.shopping_lists_ROUTE,
+            path: NavigationConstant.SHOPPING_LISTS_ROUTE,
             builder: (_, state) => ShopListScreen(),
             redirect: (context, state) => RoleGuard().checkAccess(),
           ),
         ],
       ),
       GoRoute(
-        path: '${NavigationConstant.shopping_lists_ROUTE}/:id',
+        path: '${NavigationConstant.SHOPPING_LISTS_ROUTE}/:id',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return ShoppingListItemsScreen(id: id);

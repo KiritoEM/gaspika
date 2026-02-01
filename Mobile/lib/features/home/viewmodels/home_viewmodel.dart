@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/auth_model.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/user_model.dart';
 import 'package:gaspika_mobile/models/shopping_items_model.dart';
+import 'package:gaspika_mobile/utils/app_loger.dart';
 
 class HomeViewModel extends ChangeNotifier {
   // Models
@@ -17,12 +19,18 @@ class HomeViewModel extends ChangeNotifier {
   // Shopping states
   bool _isLoadingShopping = true;
   bool _isLoadingFoodCount = true;
+  bool _hasError = false;
+  String _errorMessage = '';
+  NetworkErrorType? _errorType;
   int _availableFoodCount = 0;
   List<ShoppingListItem> _shoppingWeekItems = [];
 
   // getters
   bool get isLoadingUser => _isLoadingUser;
   bool get isLoadingShopping => _isLoadingShopping;
+  bool get hasError => _hasError;
+  String get errorMessage => _errorMessage;
+  NetworkErrorType? get errorType => _errorType;
   String? get userName => _userName;
   bool get isLoadingFoodCount => _isLoadingFoodCount;
   int get availableFoodCount => _availableFoodCount;
@@ -34,6 +42,9 @@ class HomeViewModel extends ChangeNotifier {
 
     if (response.hasError == true) {
       _isLoadingUser = false;
+      _hasError = true;
+      _errorType = response.errorType;
+      _errorMessage = response.message!;
       notifyListeners();
       return;
     }
@@ -47,14 +58,19 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> fetchAvailableFoodCount() async {
     final response = await _shoppingItemsModel.getAvalaibleFoodCount();
 
+    AppLogger.logger.i(response);
+
     if (response.hasError == true) {
-      _isLoadingShopping = false;
+      _isLoadingFoodCount = false;
+      _hasError = true;
+      _errorType = response.errorType;
+      _errorMessage = response.message!;
       notifyListeners();
       return;
     }
 
     _availableFoodCount = response.data ?? 0;
-    _isLoadingShopping = false;
+    _isLoadingFoodCount = false;
     notifyListeners();
   }
 
@@ -67,6 +83,9 @@ class HomeViewModel extends ChangeNotifier {
 
     if (response.hasError == true) {
       _isLoadingShopping = false;
+      _hasError = true;
+      _errorType = response.errorType;
+      _errorMessage = response.message!;
       notifyListeners();
       return;
     }
@@ -78,5 +97,23 @@ class HomeViewModel extends ChangeNotifier {
 
   Future logout() {
     return _authModel.logout();
+  }
+
+  // refresh all requests
+  Future refreshAll() async {
+    // reset all states
+    _isLoadingUser = true;
+    _isLoadingFoodCount = true;
+    _isLoadingShopping = true;
+    _hasError = false;
+    _errorMessage = '';
+    _errorType = null;
+    notifyListeners();
+
+    await Future.wait([
+      fetchUserInfo(),
+      fetchAvailableFoodCount(),
+      fetchShoppingWeekItems(),
+    ]);
   }
 }

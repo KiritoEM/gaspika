@@ -1,14 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/constants/regex_pattern.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/login_viewmodel.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/shared/password_input_field.dart';
-import 'package:gaspika_mobile/shared/snackbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:my_toastify/my_toastify.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -79,10 +78,10 @@ class _LoginFormState extends State<LoginForm> {
                 if (!mounted) return;
 
                 if (message != null) {
-                  SnackbarUtils.showInSnackBar(
+                  Toastify.show(
                     context,
-                    message,
-                    type: SnackbarType.error,
+                    message: message,
+                    type: ToastType.error,
                   );
                   return;
                 }

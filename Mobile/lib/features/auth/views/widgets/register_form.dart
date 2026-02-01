@@ -1,13 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/constants/regex_pattern.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/shared/password_input_field.dart';
-import 'package:gaspika_mobile/shared/snackbar.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_toastify/my_toastify.dart';
 import 'package:provider/provider.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -90,10 +89,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 if (!mounted) return;
 
                 if (message != null) {
-                  SnackbarUtils.showInSnackBar(
+                  Toastify.show(
                     context,
-                    message,
-                    type: SnackbarType.error,
+                    message: message,
+                    type: ToastType.error,
                   );
                   return;
                 }

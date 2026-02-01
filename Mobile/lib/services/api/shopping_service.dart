@@ -8,7 +8,7 @@ class ShoppingService {
 
   Future<Map<String, dynamic>> getAvalaibleFoodCount() async {
     final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/available-products-count',
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/available-product/count',
     );
 
     return response.data;
@@ -16,9 +16,9 @@ class ShoppingService {
 
   Future<List<dynamic>> getShoppingWeekItems() async {
     final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/shopping-week',
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/available-product',
     );
-    return response.data as List<dynamic>;
+    return response.data['data'] as List<dynamic>;
   }
 
   Future<List<dynamic>> getShoppingList() async {

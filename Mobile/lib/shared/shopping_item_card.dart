@@ -1,25 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 
 class ShoppingItemCard extends StatelessWidget {
-  String productName;
-  int price;
-  double quantity;
-  QuantityUnit quantityUnit;
-  String? imageUrl;
+  ShoppingListItem item;
 
-  ShoppingItemCard({
-    super.key,
-    required this.productName,
-    required this.price,
-    required this.quantity,
-    required this.quantityUnit,
-    this.imageUrl,
-  });
+  ShoppingItemCard({super.key, required this.item});
 
   String getQuantityUnitText() {
-    switch (quantityUnit) {
+    switch (item.quantityUnit) {
       case QuantityUnit.kilogram:
         return 'kg';
       case QuantityUnit.liter:
@@ -28,7 +18,7 @@ class ShoppingItemCard extends StatelessWidget {
         return 'g';
       case QuantityUnit.milliliter:
         return 'ml';
-      case QuantityUnit.piece:
+      case QuantityUnit.unit:
         return 'pcs';
     }
   }
@@ -74,23 +64,17 @@ class ShoppingItemCard extends StatelessWidget {
                       width: 56,
                       height: 56,
                       color: AppColors.surface,
-                      child: imageUrl != null
-                          ? Image.network(
-                              imageUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(
-                                  Icons.shopping_basket,
-                                  size: 30,
-                                  color: AppColors.mutedForeground,
-                                );
-                              },
-                            )
-                          : Icon(
-                              Icons.shopping_basket,
-                              size: 30,
-                              color: AppColors.mutedForeground,
-                            ),
+                      child: Image.network(
+                        item.image.path,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.shopping_basket,
+                            size: 30,
+                            color: AppColors.mutedForeground,
+                          );
+                        },
+                      ),
                     ),
                   ),
 
@@ -100,7 +84,7 @@ class ShoppingItemCard extends StatelessWidget {
                       spacing: 2,
                       children: [
                         Text(
-                          productName,
+                          item.foodName,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -109,7 +93,7 @@ class ShoppingItemCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          '${price.toString()} Ar',
+                          '${item.price.toString()} Ar',
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 16,
@@ -132,7 +116,7 @@ class ShoppingItemCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                '$quantity ${getQuantityUnitText()}',
+                '${item.recommendedQuantity} ${getQuantityUnitText()}',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               ),
             ),

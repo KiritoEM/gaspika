@@ -11,9 +11,9 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
 
   bool _isSubmitting = false;
 
-  String get name => _data.productName;
+  String get name => _data.foodName;
   String get price => _data.price.toString();
-  String get quantity => _data.estimatedQuantity.toString();
+  String get quantity => _data.recommendedQuantity.toString();
   QuantityUnit get unit => _data.unit;
   String get notes => _data.notes;
   String get storageTips => _data.storageTips;
@@ -23,7 +23,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   GlobalKey<FormState> get formKey => _formKey;
 
   void setName(String value) {
-    _data.productName = value.trim();
+    _data.foodName = value.trim();
     notifyListeners();
   }
 
@@ -35,7 +35,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
 
   void setQuantity(String value) {
     final cleaned = value.trim().replaceAll(',', '.');
-    _data.estimatedQuantity = double.tryParse(cleaned) ?? 0.0;
+    _data.recommendedQuantity = double.tryParse(cleaned) ?? 0.0;
     notifyListeners();
   }
 
@@ -71,7 +71,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
       return null;
     }
 
-    if (_data.productName.isEmpty) {
+    if (_data.foodName.isEmpty) {
       _isSubmitting = false;
       notifyListeners();
       return 'Le nom du produit est requis';
@@ -83,7 +83,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
       return 'Prix invalide';
     }
 
-    if (_data.estimatedQuantity <= 0) {
+    if (_data.recommendedQuantity <= 0) {
       _isSubmitting = false;
       notifyListeners();
       return 'Quantité invalide ou nulle';

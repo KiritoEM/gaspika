@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
 import 'package:gaspika_mobile/models/domains-object/user.dart';
 import 'package:gaspika_mobile/services/api/user_service.dart';
@@ -17,9 +18,14 @@ class UserModel {
         message: 'Utilisateur récupéré avec succès.',
       );
     } on DioException catch (err) {
-      throw NetworkErrorHandler.handleError(err).isNotEmpty
-          ? NetworkErrorHandler.handleError(err)
-          : err;
+      AppLogger.logger.e(
+        'DioException while fetching user: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+       errorType: NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
     } catch (err) {
       AppLogger.logger.e('Error while fetching user: $err');
       return ApiResponse(

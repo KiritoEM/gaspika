@@ -21,36 +21,61 @@ class ShoppingService {
     return response.data['data'] as List<dynamic>;
   }
 
-  Future<List<dynamic>> getShoppingList() async {
-    final response = await _dio.get(ApiConstant.shopping_lists_ENDPOINT);
-    return response.data as List<dynamic>;
+  Future<List<dynamic>> getShoppingList(String? status) async {
+    Map<String, dynamic> query = {};
+
+    if (status != null) {
+      query['status'] = status;
+    }
+
+    final response = await _dio.get(
+      ApiConstant.SHOPPING_LISTS_ENDPOINT,
+      queryParameters: query,
+    );
+    return response.data['results'] as List<dynamic>;
   }
 
   Future<Map<String, dynamic>> generateShoppingList(int weekNumber) async {
     final response = await _dio.post(
       ApiConstant.shopping_lists_GENERATE_ENDPOINT,
-      queryParameters: {'week_number': weekNumber},
-      data: [],
+      data: {'week_number': weekNumber},
     );
 
     return response.data;
   }
 
+  Future deleteShoppingList(int listId) async {
+    await _dio.delete('${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId');
+  }
+
   Future<List<dynamic>> getShoppingItemsById(int listId) async {
     final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId',
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/items',
     );
-    return response.data as List<dynamic>;
+    return response.data['data'] as List<dynamic>;
   }
 
   Future<Map<String, dynamic>> createShoppingItem(
     CreateShoppingItemSchema item,
     int listId,
   ) async {
-    print(item.toJson());
     final response = await _dio.post(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',
       data: item.toJson(),
+    );
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getShoppingItemById(int itemId) async {
+    final response = await _dio.get(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
+    );
+    return response.data['data'];
+  }
+
+  Future<Map<String, dynamic>> markItemAsComplete(int itemId) async {
+    final response = await _dio.patch(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId/complete',
     );
     return response.data;
   }

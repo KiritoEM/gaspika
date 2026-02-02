@@ -55,7 +55,7 @@ class NetworkErrorHandler {
       default:
         return {
           'type': NetworkErrorType.unknown,
-          'message': 'Oops ! Une erreur est survenue.  Veuillez réessaye',
+          'message': 'Oops ! Une erreur est survenue.  Veuillez réessayer.',
         };
     }
   }

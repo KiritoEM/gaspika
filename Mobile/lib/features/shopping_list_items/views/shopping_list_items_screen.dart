@@ -28,7 +28,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
         context,
         listen: false,
       );
-      await shoppingItemsVm.fetchShoppingItemsById(int.parse(widget.id));
+      await shoppingItemsVm.fetchShoppingItems(int.parse(widget.id));
     });
   }
 
@@ -64,10 +64,10 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(23, 10, 23, 23),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Text(
-                'Courses ${listName[0].toLowerCase()}${listName.substring(1)}',
+                listName,
                 style: TextStyle(
                   fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
                   fontWeight: FontWeight.bold,
@@ -125,7 +125,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
 
   Widget _buildItemsSkeleton() {
     return ListView.separated(
-      itemCount: 5,
+      itemCount: 7,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         return const SkeletonLine(

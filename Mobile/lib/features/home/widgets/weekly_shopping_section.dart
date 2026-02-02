@@ -71,7 +71,7 @@ class WeeklyShoppingSection extends StatelessWidget {
   Widget _buildWeeklyShoppingSkeleton() {
     return Column(
       children: List.generate(
-        5,
+        7,
         (index) => const Padding(
           padding: EdgeInsets.only(bottom: 12),
           child: SkeletonLine(
@@ -88,7 +88,7 @@ class WeeklyShoppingSection extends StatelessWidget {
 
   Widget _buildShoppingList() {
     return Column(
-      spacing: 14,
+      spacing: 16,
       children: shoppingListItems.map((item) {
         return ShoppingItemCard(item: item);
       }).toList(),

@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/ml_model.dart';
 import 'package:gaspika_mobile/models/schemas/createItem.dart';
-import 'package:gaspika_mobile/models/shopping_items_model.dart';
 
 class CreateShoppingItemViewModel extends ChangeNotifier {
-  final ShoppingItemsModel _shoppingItemsModel = ShoppingItemsModel();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final MlModel _mlModel = MlModel();
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
-  CreateShoppingItemSchema _data = CreateShoppingItemSchema();
+  CreateShoppingItemSchema _data = CreateShoppingItemSchema(
+    foodName: '',
+    personNumber: 1,
+    categoryId: 0,
+  );
 
-  bool _isSubmitting = false;
+  bool _isPredicting = false;
 
-  String get name => _data.foodName;
-  String get price => _data.price.toString();
-  String get quantity => _data.recommendedQuantity.toString();
-  QuantityUnit get unit => _data.unit;
-  String get notes => _data.notes;
-  String get storageTips => _data.storageTips;
-  int get categoryId => _data.categoryId;
+  CreateShoppingItemSchema get data => _data;
 
-  bool get isSubmitting => _isSubmitting;
-  GlobalKey<FormState> get formKey => _formKey;
+  bool get isPredicting => _isPredicting;
+  GlobalKey<FormState> get formkey => _formkey;
 
   void setName(String value) {
     _data.foodName = value.trim();
@@ -30,6 +28,11 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   void setPrice(String value) {
     final cleaned = value.trim().replaceAll(',', '.');
     _data.price = double.tryParse(cleaned) ?? 0.0;
+    notifyListeners();
+  }
+
+  void setNumberOfPeople(int value) {
+    _data.personNumber = value;
     notifyListeners();
   }
 
@@ -61,58 +64,70 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> submitItemForm(int listId) async {
-    _isSubmitting = true;
+  void setHumidity(int humidity) {
+    _data.humidity = humidity;
+    notifyListeners();
+  }
+
+  void setBackendCategory(String category) {
+    _data.backendCategory = category;
+    notifyListeners();
+  }
+
+  Future<String?> submitForm(int listId) async {
+    _isPredicting = true;
     notifyListeners();
 
-    if (!_formKey.currentState!.validate()) {
-      _isSubmitting = false;
+    if (!_formkey.currentState!.validate()) {
       notifyListeners();
-      return null;
+      return 'Veuillez remplir tous les champs requis';
     }
 
-    if (_data.foodName.isEmpty) {
-      _isSubmitting = false;
-      notifyListeners();
-      return 'Le nom du produit est requis';
-    }
+    _formkey.currentState!.save();
 
-    if (_data.price < 0) {
-      _isSubmitting = false;
-      notifyListeners();
-      return 'Prix invalide';
-    }
+    final results = await Future.wait([
+      _mlModel.predictQuantity(_data),
+      _mlModel.predictConservationDuration(_data),
+    ]);
 
-    if (_data.recommendedQuantity <= 0) {
-      _isSubmitting = false;
-      notifyListeners();
-      return 'Quantité invalide ou nulle';
-    }
+    final quantityResponse = results[0];
+    final conservationResponse = results[1];
 
-    final response = await _shoppingItemsModel.createShoppingItem(
-      _data,
-      listId,
-    );
-
-    _isSubmitting = false;
+    _isPredicting = false;
     notifyListeners();
 
-    if (response.hasError == true) {
-      return response.message ?? 'Erreur inconnue lors de l\'ajout';
+    if (quantityResponse.hasError == true) {
+      _isPredicting = false;
+      notifyListeners();
+      return quantityResponse.message ??
+          'Erreur lors de la prédiction de quantité';
     }
 
-    reset();
+    if (conservationResponse.hasError == true) {
+      _isPredicting = false;
+      notifyListeners();
+      return conservationResponse.message ??
+          'Erreur lors de la prédiction de conservation';
+    }
+
+    if (quantityResponse.data != null) {
+      final predictedQuantity = quantityResponse.data!['predicted_quantity'];
+      if (predictedQuantity != null) {
+        _data.recommendedQuantity = (predictedQuantity as num).toDouble();
+      }
+    }
+
+    if (conservationResponse.data != null) {
+      final conservationDuration =
+          conservationResponse.data!['conservation_duration'];
+      if (conservationDuration != null) {
+        _data.conservationDuration = (conservationDuration as num).toInt();
+      }
+    }
+
+    _isPredicting = false;
+    notifyListeners();
+
     return null;
-  }
-
-  void reset() {
-    _data = CreateShoppingItemSchema();
-    _formKey.currentState?.reset();
-    notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

@@ -1,0 +1,53 @@
+import 'package:flutter/material.dart';
+import 'package:gaspika_mobile/configs/app_colors.dart';
+
+class UnitItem extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final Function onSelect;
+
+  const UnitItem({
+    super.key,
+    required this.label,
+    required this.onSelect,
+    this.isActive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onSelect(),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Card(
+          borderOnForeground: false,
+          elevation: 0,
+          color: isActive
+              ? const Color.fromARGB(104, 167, 131, 236)
+              : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: isActive ? AppColors.primary : Colors.grey[300]!,
+              width: isActive ? 2.0 : 1.0,
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            child: Center(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: isActive ? Colors.white : AppColors.foreground,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

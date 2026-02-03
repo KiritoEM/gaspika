@@ -3,10 +3,23 @@ import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/shopping_list_model.dart';
 import 'package:gaspika_mobile/utils/date.dart';
+import 'package:intl/intl.dart';
 
 class ShoppingListViewModel extends ChangeNotifier {
   // Models
   final ShoppingListModel _shoppingListModel = ShoppingListModel();
+
+  late final TextEditingController listNameController;
+
+  ShoppingListViewModel() {
+    listNameController = TextEditingController(
+      text:
+          'Courses du ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}',
+    );
+
+    // add listener
+    listNameController.addListener(_onListNameChanged);
+  }
 
   bool _isLoadingList = true;
   bool _isGeneratingList = false;
@@ -107,6 +120,7 @@ class ShoppingListViewModel extends ChangeNotifier {
 
     final response = await _shoppingListModel.generateShoppingList(
       DateUtilities.getCurrentWeekNumberISO(date: _selectedDate),
+      listNameController.text,
     );
 
     if (response.hasError == true) {
@@ -162,5 +176,15 @@ class ShoppingListViewModel extends ChangeNotifier {
     _statusFilter = status;
     notifyListeners();
     await fetchShoppingList();
+  }
+
+  void _onListNameChanged() {
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    listNameController.dispose();
+    super.dispose();
   }
 }

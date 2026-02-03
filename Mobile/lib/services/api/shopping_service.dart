@@ -35,10 +35,13 @@ class ShoppingService {
     return response.data['results'] as List<dynamic>;
   }
 
-  Future<Map<String, dynamic>> generateShoppingList(int weekNumber) async {
+  Future<Map<String, dynamic>> generateShoppingList(
+    int weekNumber,
+    String? listName,
+  ) async {
     final response = await _dio.post(
       ApiConstant.shopping_lists_GENERATE_ENDPOINT,
-      data: {'week_number': weekNumber},
+      data: {'week_number': weekNumber, 'name': listName},
     );
 
     return response.data;
@@ -61,7 +64,7 @@ class ShoppingService {
   ) async {
     final response = await _dio.post(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',
-      data: item.toJson(),
+      data: item,
     );
     return response.data;
   }

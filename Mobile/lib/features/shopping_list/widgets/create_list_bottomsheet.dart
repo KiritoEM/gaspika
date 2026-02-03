@@ -3,6 +3,7 @@ import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/shared/date_picker.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
+import 'package:gaspika_mobile/shared/form_block.dart';
 import 'package:provider/provider.dart';
 import 'package:my_toastify/my_toastify.dart';
 
@@ -23,7 +24,7 @@ class CreateListBottomsheet {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Générer une liste',
+                'Créer une liste de course',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
@@ -33,16 +34,31 @@ class CreateListBottomsheet {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Choisissez une semaine (cliquer sur la date)'),
-                  const SizedBox(height: 8),
-                  DatePicker(
-                    value: modalDate,
-                    onSelectDate: (date) {
-                      setModalState(() {
-                        modalDate = date;
-                      });
-                      shoppingListVm.setSelectedDate(date);
-                    },
+                  FormBlock(
+                    label: 'Nom',
+                    child: TextField(
+                      controller: shoppingListVm.listNameController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Entrez le nom de la liste',
+                      ),
+                      autofocus: true,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  FormBlock(
+                    label: 'Choisissez une semaine (cliquer sur la date)',
+                    child: DatePicker(
+                      value: modalDate,
+                      onSelectDate: (date) {
+                        setModalState(() {
+                          modalDate = date;
+                        });
+                        shoppingListVm.setSelectedDate(date);
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -55,26 +71,29 @@ class CreateListBottomsheet {
                       isLoading: vm.isGeneratingList,
                       text: 'Générer',
                       loadingText: 'Génération en cours...',
-                      onPressed: () async {
-                        await vm.generateShoppingList();
+                      onPressed:
+                          shoppingListVm.listNameController.text.trim().isEmpty
+                          ? null
+                          : () async {
+                              await vm.generateShoppingList();
 
-                        if (!context.mounted) return;
+                              if (!context.mounted) return;
 
-                        if (vm.hasGenerateError) {
-                          Toastify.show(
-                            context,
-                            message: vm.generateErrorMessage,
-                            type: ToastType.error,
-                          );
-                        } else {
-                          Toastify.show(
-                            context,
-                            message: 'Liste générée avec succès',
-                            type: ToastType.success,
-                          );
-                          Navigator.of(context).pop();
-                        }
-                      },
+                              if (vm.hasGenerateError) {
+                                Toastify.show(
+                                  context,
+                                  message: vm.generateErrorMessage,
+                                  type: ToastType.error,
+                                );
+                              } else {
+                                Toastify.show(
+                                  context,
+                                  message: 'Liste générée avec succès',
+                                  type: ToastType.success,
+                                );
+                                Navigator.of(context).pop();
+                              }
+                            },
                     ),
                   );
                 },

@@ -4,6 +4,7 @@ import 'package:gaspika_mobile/configs/app_theme.dart';
 import 'package:gaspika_mobile/configs/dotenv_config.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/login_viewmodel.dart';
 import 'package:gaspika_mobile/features/auth/viewmodels/register_viewmodel.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_shopping_item_viewmodel.dart';
 import 'package:gaspika_mobile/features/food_details/viewmodels/food_details_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
@@ -26,6 +27,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ShoppingListViewModel()),
         ChangeNotifierProvider(create: (_) => ShoppingItemsViewModel()),
         ChangeNotifierProvider(create: (_) => FoodDetailsViewmodel()),
+        ChangeNotifierProvider(create: (_) => CreateShoppingItemViewModel()),
       ],
       child: const MyApp(),
     ),

@@ -65,6 +65,7 @@ class _ScaffoldNavigationBarState extends State<ScaffoldNavigationBar> {
           ],
         ),
         child: NavigationBar(
+          elevation: 0,
           selectedIndex: _currentIndex,
           onDestinationSelected: _handleChangeTab,
           backgroundColor: Colors.white,

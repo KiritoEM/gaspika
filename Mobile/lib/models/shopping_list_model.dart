@@ -48,9 +48,9 @@ class ShoppingListModel {
     }
   }
 
-  Future<ApiResponse<String>> generateShoppingList(int weekNumber) async {
+  Future<ApiResponse<String>> generateShoppingList(int weekNumber, String? listName) async {
     try {
-      await _shoppingService.generateShoppingList(weekNumber);
+      await _shoppingService.generateShoppingList(weekNumber, listName);
 
       await Future.delayed(const Duration(seconds: 2));
 

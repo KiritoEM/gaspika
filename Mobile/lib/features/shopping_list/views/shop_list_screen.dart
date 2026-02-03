@@ -71,6 +71,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
       child: Container(
         padding: EdgeInsets.fromLTRB(23, 30, 23, 23),
         child: Column(
+          crossAxisAlignment: .start,
           children: [
             ShoppingListStatusFilter(
               selectedStatus: shoppingListVm.statusFilter,

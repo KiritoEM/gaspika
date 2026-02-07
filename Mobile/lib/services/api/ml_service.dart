@@ -1,33 +1,23 @@
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
-import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/utils/app_loger.dart';
+import 'package:gaspika_mobile/utils/unit_utils.dart';
 
 class MlService {
   final _dio = DioConfig.instance;
 
-  String _convertUnitToBackend(QuantityUnit unit) {
-    switch (unit) {
-      case QuantityUnit.kilogram:
-      case QuantityUnit.gram:
-        return 'kg';
-      case QuantityUnit.liter:
-      case QuantityUnit.milliliter:
-        return 'l';
-      case QuantityUnit.unit:
-        return 'piece';
-    }
-  }
-
   Future<Map<String, dynamic>> predictQuantity(
     CreateShoppingItemSchema data,
   ) async {
+    AppLogger.logger.i(data);
+
     final response = await _dio.post(
       ApiConstant.PREDICT_QUANTITY,
       data: {
         'food': data.foodName,
         'nombre_personnes': data.personNumber,
-        'unite': _convertUnitToBackend(data.unit),
+        'unite': UnitUtils.convertUnitToBackend(data.unit),
         'duree_jours': 7,
         'type_repas': 'dejeuner',
         'categorie': data.backendCategory,

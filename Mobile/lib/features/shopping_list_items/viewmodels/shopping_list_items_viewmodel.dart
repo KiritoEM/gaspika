@@ -37,6 +37,14 @@ class ShoppingItemsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Refresh shopping items
+  Future<void> refreshItems(int listId) async {
+    _isLoadingItems = true;
+    notifyListeners();
+
+    await fetchShoppingItems(listId);
+  }
+
   // Clear items when leaving the screen
   void clearItems() {
     _shoppingItems = [];

@@ -2,12 +2,12 @@ from typing import Optional
 from sqlalchemy import extract, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
-from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_schemas import BaseShoppingList
 from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 from app.core.utils.pagination import paginate
 from app.core.schemas import PageParams
 from app.models import ShoppingList
+from sqlalchemy.orm import selectinload 
 
 class ShoppingListRepository:
     def __init__(self, db: AsyncSession):
@@ -17,7 +17,11 @@ class ShoppingListRepository:
                      status: Optional[str] = None, 
                      intervalDate: Optional[ShoppingListIntervalDateEnum] = None):
         """Get all lists with optional filters"""
-        query = select(ShoppingList).where(ShoppingList.user_id == user_id)
+        query = (
+             select(ShoppingList)
+            .options(selectinload(ShoppingList.items))
+            .where(ShoppingList.user_id == user_id)
+        )
         
         # Filter by status
         if status:
@@ -50,7 +54,7 @@ class ShoppingListRepository:
         
         # Order by date (most recent first)
         query = query.order_by(ShoppingList.created_at.desc())
-        
+                
         # Pagination
         return await paginate(self.db, PageParams(page=page, size=limit), query, BaseShoppingList)
     
@@ -186,7 +190,7 @@ class ShoppingListRepository:
                     ShoppingList.id == list_id,
                     ShoppingList.user_id == user_id
                 )    
-            )).scalar_one_or_none()
+            ))
         shopping_list = result.scalar_one_or_none()
         
         if shopping_list:

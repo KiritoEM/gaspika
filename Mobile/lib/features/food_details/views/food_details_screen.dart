@@ -100,7 +100,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
                 Toastify.show(context, message: foodDetailsVm.errorMessage);
               } else {
                 Toastify.show(context, message: 'Aliment marqué comme acheté');
-                context.pop();
+                context.pop(true);
               }
             },
       style: isPurchased
@@ -178,7 +178,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.network(
-              item.image.path,
+              item.image?.path ?? '',
               width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {

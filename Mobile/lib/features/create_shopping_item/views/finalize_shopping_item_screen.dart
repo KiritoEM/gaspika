@@ -2,14 +2,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
-import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_shopping_item_viewmodel.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/upload_image.dart';
+import 'package:gaspika_mobile/shared/button_with_loader.dart';
+import 'package:gaspika_mobile/shared/form_block.dart';
 import 'package:gaspika_mobile/shared/progress_indicator.dart';
+import 'package:gaspika_mobile/utils/app_loger.dart';
+import 'package:gaspika_mobile/utils/unit_utils.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_toastify/my_toastify.dart';
+import 'package:provider/provider.dart';
 
 class FinalizeShoppingItemScreen extends StatelessWidget {
-  final CreateShoppingItemSchema data;
+  final String id;
 
-  const FinalizeShoppingItemScreen({super.key, required this.data});
+  const FinalizeShoppingItemScreen({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +43,7 @@ class FinalizeShoppingItemScreen extends StatelessWidget {
           Expanded(
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(23, 32, 23, 23),
+                padding: const EdgeInsets.fromLTRB(23, 28, 23, 23),
                 child: _buildContent(context),
               ),
             ),
@@ -46,7 +54,7 @@ class FinalizeShoppingItemScreen extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
-    // final viewModel = context.watch<CreateShoppingItemViewModel>();
+    final createShoppingItemVm = context.watch<CreateShoppingItemViewModel>();
 
     return SingleChildScrollView(
       child: Column(
@@ -68,7 +76,7 @@ class FinalizeShoppingItemScreen extends StatelessWidget {
               ),
 
               Text(
-                'Consultez les informations relatives à la quantité recommandée et à la conservation de l’aliment.',
+                'Consultez les informations prédites et téléchargez une image de l\'aliment pour finaliser l\'ajout.',
                 style: TextStyle(color: AppColors.mutedForeground),
               ),
             ],
@@ -82,16 +90,18 @@ class FinalizeShoppingItemScreen extends StatelessWidget {
                 crossAxisAlignment: .start,
                 spacing: 8,
                 children: [
-                  Text('Quantité recommandée(kg)'),
+                  Text('Quantité recommandée'),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.all(24),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(127, 203, 218, 118),
                       border: BoxBorder.all(color: AppColors.secondary),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(data.recommendedQuantity.toString()),
+                    child: Text(
+                      '${createShoppingItemVm.data.recommendedQuantity.toString()} ${UnitUtils.convertUnitToBackend(createShoppingItemVm.data.unit)}',
+                    ),
                   ),
                 ],
               ),
@@ -105,15 +115,66 @@ class FinalizeShoppingItemScreen extends StatelessWidget {
                   Text('Durée de conservation'),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.all(24),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(127, 203, 218, 118),
                       border: BoxBorder.all(color: AppColors.secondary),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text('${data.conservationDuration.toString()} jour'),
+                    child: Text(
+                      '${createShoppingItemVm.data.conservationDuration.toString()} jour',
+                    ),
                   ),
                 ],
+              ),
+
+              SizedBox(height: 24),
+
+              FormBlock(
+                label: 'Image de l\'aliment',
+                isRequired: true,
+                child: UploadImage(
+                  image: createShoppingItemVm.image,
+                  error: createShoppingItemVm.uploadImageError,
+                  onTap: () => createShoppingItemVm.pickImage(),
+                  onRemove: () => createShoppingItemVm.removeImage(),
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              SizedBox(
+                width: double.infinity,
+                child: ButtonWithLoader(
+                  isLoading: createShoppingItemVm.isCreating,
+                  text: 'Ajouter l\'aliment',
+                  loadingText: 'Ajout en cours...',
+                  onPressed: createShoppingItemVm.image == null
+                      ? null
+                      : () async {
+                          final error = await createShoppingItemVm
+                              .createAliment(int.parse(id));
+
+                          if (error == null) {
+                            Toastify.show(
+                              context,
+                              message: 'Aliment ajouté avec succès',
+                              type: ToastType.success,
+                            );
+
+                            AppLogger.logger.i(int.parse(id));
+
+                            context.go(
+                              NavigationConstant.SHOPPING_LISTS_ROUTE,
+                            );
+                          } else {
+                            Toastify.show(
+                              context,
+                              message: error,
+                              type: ToastType.error,
+                            );
+                          }
+                        },
+                ),
               ),
             ],
           ),

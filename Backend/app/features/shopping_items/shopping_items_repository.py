@@ -48,7 +48,7 @@ class ShoppingItemsRepository:
         
         return all_items.scalars().all()
     
-    async def get_by_id(self, item_id: int, user_id: str, list_id: int) -> Optional[ShoppingListItem] :
+    async def get_by_id(self, item_id: int, user_id: str) -> Optional[ShoppingListItem] :
         """Get item by id"""
         shopping_item = await self.db.execute(
             select(ShoppingListItem)
@@ -56,7 +56,6 @@ class ShoppingItemsRepository:
             .where(
                 and_(
                     ShoppingList.user_id == user_id,
-                    ShoppingList.id == list_id,
                     ShoppingListItem.id == item_id
                 )
             )
@@ -141,7 +140,7 @@ class ShoppingItemsRepository:
         
         return total_price.scalar()
     
-    async def complete_item(self, item_id: int, user_id: str, list_id: int) -> Optional[ShoppingListItem]:
+    async def complete_item(self, item_id: int, user_id: str) -> Optional[ShoppingListItem]:
         """Change status of shopping item to complete"""
         result = await self.db.execute(
             select(ShoppingListItem)
@@ -149,7 +148,6 @@ class ShoppingItemsRepository:
            .where(
                 and_(
                     ShoppingList.user_id == user_id,
-                    ShoppingList.id == list_id,
                     ShoppingListItem.id == item_id
                 )
            )

@@ -72,7 +72,7 @@ async def get_shopping_list_items(
     }
 
 @shopping_items_router.get(
-"/{list_id}/items/{item_id}", 
+"/items/{item_id}",
 tags=["Shopping Items"], 
 response_model=GetShoppingItemOutDTO,
 summary="Obtenir un aliment specifique dans une liste de courses",
@@ -85,11 +85,10 @@ status_code=200
 )
 async def get_shopping_item(
     request: Request,
-    list_id: Annotated[int, Path(description="Id de la la liste")],
     item_id: Annotated[int, Path(description="Id de la l'aliment")],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
-    shopping_item = await service.get_shopping_item_by_id(item_id, list_id, request.state.user.id)
+    shopping_item = await service.get_shopping_item_by_id(item_id, request.state.user.id)
     
     if not shopping_item:
             raise HTTPException(status_code=404, detail="Aliment introuvable dans cette liste.")
@@ -171,7 +170,7 @@ async def update_shopping_item(
 
 
 @shopping_items_router.patch(
-"/{list_id}/items/{item_id}/complete", 
+"/items/{item_id}/complete", 
 tags=["Shopping Items"], 
 response_model=BaseShoppingListItem,
 summary="Marquer un aliment comme acheté",
@@ -184,11 +183,10 @@ status_code=200
 )
 async def mark_item_as_complete(
     request: Request,
-    list_id: Annotated[int, Path(description="Id de la la liste")],
     item_id: Annotated[int, Path(description="Id de la l'aliment")],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
-    return await service.complete_shopping_item(item_id, list_id, request.state.user.id)
+    return await service.complete_shopping_item(item_id, request.state.user.id)
 
 
 @shopping_items_router.delete(

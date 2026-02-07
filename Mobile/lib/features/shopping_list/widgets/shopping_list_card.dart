@@ -70,8 +70,8 @@ class ShoppingListCard extends StatelessWidget {
                               Flexible(
                                 child: Text(
                                   item.name!,
-                                  style: const TextStyle(
-                                    fontSize: 18,
+                                  style: TextStyle(
+                                    fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   maxLines: 1,
@@ -99,8 +99,10 @@ class ShoppingListCard extends StatelessWidget {
                     const SizedBox(height: 5),
                     Text(
                       '${item.itemsCount} aliment${item.itemsCount > 1 ? 's' : ''}',
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.fontSize!,
                         color: AppColors.mutedForeground,
                         fontWeight: FontWeight.w600,
                       ),

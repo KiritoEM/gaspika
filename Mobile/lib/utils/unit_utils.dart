@@ -15,4 +15,17 @@ class UnitUtils {
         return 'pcs';
     }
   }
+
+    static String convertUnitToBackend(QuantityUnit unit) {
+    switch (unit) {
+      case QuantityUnit.kilogram:
+      case QuantityUnit.gram:
+        return 'kg';
+      case QuantityUnit.liter:
+      case QuantityUnit.milliliter:
+        return 'l';
+      case QuantityUnit.unit:
+        return 'piece';
+    }
+  }
 }

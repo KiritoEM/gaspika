@@ -24,7 +24,7 @@ class CreateListBottomsheet {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Créer une liste de course',
+                'Créer une liste de courses',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,

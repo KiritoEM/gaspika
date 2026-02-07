@@ -61,12 +61,12 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
 
   @override
   Widget build(BuildContext context) {
-    final createItemVm = context.watch<CreateShoppingItemViewModel>();
+    final createShoppingItemVm = context.watch<CreateShoppingItemViewModel>();
 
     return Stack(
       children: [
         Form(
-          key: createItemVm.formkey,
+          key: createShoppingItemVm.formkey,
           child: Column(
             children: [
               FormBlock(
@@ -85,7 +85,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                   },
                   onSaved: (value) {
                     if (value != null) {
-                      createItemVm.setName(value);
+                      createShoppingItemVm.setName(value);
                     }
                   },
                 ),
@@ -115,7 +115,36 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                   },
                   onSaved: (value) {
                     if (value != null) {
-                      createItemVm.setNumberOfPeople(int.tryParse(value) ?? 1);
+                      createShoppingItemVm.setNumberOfPeople(
+                        int.tryParse(value) ?? 1,
+                      );
+                    }
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              FormBlock(
+                label: 'Prix(en Ariary)',
+                isRequired: true,
+                child: TextFormField(
+                  decoration: const InputDecoration(hintText: 'Ex: 2000'),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Veuillez entrer le nombre de personnes';
+                    }
+                    final number = int.tryParse(value);
+                    if (number == null || number <= 0) {
+                      return 'Veuillez entrer un nombre valide';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    if (value != null) {
+                      createShoppingItemVm.setPrice(value);
                     }
                   },
                 ),
@@ -130,9 +159,9 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                   decoration: const InputDecoration(
                     hintText: 'Sélectionnez une catégorie',
                   ),
-                  value: createItemVm.data.categoryId == 0
+                  value: createShoppingItemVm.data.categoryId == 0
                       ? null
-                      : createItemVm.data.categoryId,
+                      : createShoppingItemVm.data.categoryId,
                   items: categoryData.map((category) {
                     return DropdownMenuItem<int>(
                       value: category['value'],
@@ -147,11 +176,11 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                   },
                   onChanged: (value) {
                     if (value != null) {
-                      createItemVm.setCategoryId(value);
+                      createShoppingItemVm.setCategoryId(value);
                       final selectedCategory = categoryData.firstWhere(
                         (cat) => cat['value'] == value,
                       );
-                      createItemVm.setBackendCategory(
+                      createShoppingItemVm.setBackendCategory(
                         selectedCategory['backendCategory'],
                       );
                     }
@@ -166,12 +195,14 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                 isRequired: true,
                 child: Row(
                   children: unitData.map((unit) {
-                    final isActive = createItemVm.data.unit == unit['value'];
+                    final isActive =
+                        createShoppingItemVm.data.unit == unit['value'];
                     return Expanded(
                       child: UnitItem(
                         label: unit['label'],
                         isActive: isActive,
-                        onSelect: () => createItemVm.setUnit(unit['value']),
+                        onSelect: () =>
+                            createShoppingItemVm.setUnit(unit['value']),
                       ),
                     );
                   }).toList(),
@@ -189,7 +220,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                   decoration: const InputDecoration(
                     hintText: 'Sélectionnez une méthode de conservation',
                   ),
-                  value: createItemVm.data.humidity,
+                  value: createShoppingItemVm.data.humidity,
                   items: conservationMethods.map((method) {
                     return DropdownMenuItem<int>(
                       value: method['value'],
@@ -205,7 +236,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                   },
                   onChanged: (value) {
                     if (value != null) {
-                      createItemVm.setHumidity(value);
+                      createShoppingItemVm.setHumidity(value);
                     }
                   },
                 ),
@@ -216,11 +247,11 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
               SizedBox(
                 width: double.infinity,
                 child: ButtonWithLoader(
-                  isLoading: createItemVm.isPredicting,
+                  isLoading: createShoppingItemVm.isPredicting,
                   text: 'Continuer',
-                  loadingText: 'Chargement...',
+                  loadingText: 'Analyse en cours...',
                   onPressed: () async {
-                    final message = await createItemVm.submitForm(
+                    final message = await createShoppingItemVm.submitFormOne(
                       widget.listId,
                     );
 
@@ -232,8 +263,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                     }
 
                     context.go(
-                      NavigationConstant.FINALIZE_CREATE_SHOPPING_ITEM_ROUTE,
-                      extra: createItemVm.data,
+                      '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}/finalize',
                     );
                   },
                 ),

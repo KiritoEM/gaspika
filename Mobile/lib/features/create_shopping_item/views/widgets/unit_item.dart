@@ -24,7 +24,7 @@ class UnitItem extends StatelessWidget {
           borderOnForeground: false,
           elevation: 0,
           color: isActive
-              ? const Color.fromARGB(104, 167, 131, 236)
+              ? const Color.fromARGB(30, 245, 200, 87)
               : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -39,7 +39,7 @@ class UnitItem extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
-                  color: isActive ? Colors.white : AppColors.foreground,
+                  color: isActive ? AppColors.primary : AppColors.foreground,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
                   fontSize: 13,
                 ),

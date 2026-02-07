@@ -9,7 +9,7 @@ T = TypeVar("T")
 async def paginate(
     session: AsyncSession,
     page_params: PageParams, 
-    query, 
+    query,
     ResponseSchema: type[BaseModel]
 ) -> PagedResponseSchema[T]:
     """Paginate the query """
@@ -23,9 +23,16 @@ async def paginate(
     results = await session.execute(paginated_query)
     items = results.unique().scalars().all()
     
+    validated_items = []
+    for item in items:
+        schema = ResponseSchema.model_validate(item)
+        if hasattr(item, 'items'): 
+            schema.items_count = len(item.items)
+        validated_items.append(schema)
+    
     return PagedResponseSchema(
         total=total,
         page=page_params.page,
         limit=page_params.limit,
-        results=[ResponseSchema.model_validate(item) for item in items], 
+        results=validated_items, 
     )

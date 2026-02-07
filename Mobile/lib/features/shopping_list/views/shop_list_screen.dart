@@ -48,7 +48,12 @@ class _ShopListScreenState extends State<ShopListScreen> {
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       appBar: ShoppingListAppbar(),
-      body: SafeArea(child: _buildBody(shoppingListVm)),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () => shoppingListVm.refreshShoppingList(),
+          child: _buildBody(shoppingListVm),
+        ),
+      ),
       floatingActionButton: shoppingListVm.hasFetchError
           ? null
           : _buildFloatingActionButton(shoppingListVm),
@@ -68,6 +73,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
     }
 
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Container(
         padding: EdgeInsets.fromLTRB(23, 30, 23, 23),
         child: Column(

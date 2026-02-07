@@ -42,8 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(72),
         child: HomeAppbar(
-          userName:
-              Provider.of<HomeViewModel>(context).userName ?? 'Utilisateur',
+          userName: homeVm.userName ?? 'Utilisateur',
+          isLoading: homeVm.isLoadingUser,
         ),
       ),
       body: SafeArea(child: _buildBody(homeVm)),

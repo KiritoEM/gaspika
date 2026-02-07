@@ -2,6 +2,12 @@
 
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 
+extension QuantityUnitExtension on QuantityUnit {
+  String toUpperCase() {
+    return name.toUpperCase();
+  }
+}
+
 class CreateShoppingItemSchema {
   String foodName = '';
   double recommendedQuantity = 0.0;
@@ -35,6 +41,7 @@ class CreateShoppingItemSchema {
 CreateShoppingItemSchema {
   foodName: "$foodName",
   recommendedQuantity: ${recommendedQuantity.toStringAsFixed(2)} ${unit.name},
+  unit: $unit
   price: ${price.toStringAsFixed(2)}€,
   personNumber: $personNumber,
   categoryId: $categoryId,
@@ -44,5 +51,16 @@ CreateShoppingItemSchema {
   storageTips: "$storageTips"
 }
     ''';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'food_name': foodName,
+      'quantity': recommendedQuantity,
+      'price': price,
+      'person_number': personNumber,
+      'unit': unit.toUpperCase(),
+      'food_category_id': categoryId,
+    };
   }
 }

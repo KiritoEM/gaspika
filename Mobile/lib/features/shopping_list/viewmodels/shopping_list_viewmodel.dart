@@ -14,7 +14,7 @@ class ShoppingListViewModel extends ChangeNotifier {
   ShoppingListViewModel() {
     listNameController = TextEditingController(
       text:
-          'Courses du ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}',
+          'Courses semaine ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}',
     );
 
     // add listener
@@ -102,6 +102,19 @@ class ShoppingListViewModel extends ChangeNotifier {
     _shoppingWeekItems = response.data ?? [];
     _isLoadingList = false;
     notifyListeners();
+  }
+
+  // Refresh shopping list
+  Future<void> refreshShoppingList() async {
+    _shoppingWeekItems = [];
+    _isLoadingList = true;
+    _hasFetchError = false;
+    _fetchErrorMessage = '';
+    _fetchErrorType = null;
+    _statusFilter = ShoppingListStatus.all;
+    notifyListeners();
+
+    await fetchShoppingList();
   }
 
   // Set selected date

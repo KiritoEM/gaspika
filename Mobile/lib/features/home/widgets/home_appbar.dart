@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
@@ -7,8 +8,13 @@ import 'package:provider/provider.dart';
 
 class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String userName;
+  final bool isLoading;
 
-  const HomeAppbar({super.key, required this.userName});
+  const HomeAppbar({
+    super.key,
+    required this.userName,
+    required this.isLoading,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -39,13 +45,24 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
                 color: AppColors.mutedForeground,
               ),
             ),
-            Text(
-              userName,
-              style: TextStyle(
-                fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
+            isLoading
+                ? SkeletonLine(
+                    style: SkeletonLineStyle(
+                      height: 20,
+                      width: 100,
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  )
+                : Text(
+                    userName,
+                    style: TextStyle(
+                      fontSize: Theme.of(
+                        context,
+                      ).textTheme.headlineSmall?.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ],
         ),
         actions: [

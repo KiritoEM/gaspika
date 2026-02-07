@@ -18,7 +18,7 @@ class ShoppingListAppbar extends StatelessWidget
         elevation: 0,
         scrolledUnderElevation: 0,
         title: Text(
-          'Liste de courses',
+          'Listes de courses',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
         ),
         actions: [

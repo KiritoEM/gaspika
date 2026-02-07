@@ -38,6 +38,12 @@ class ShoppingListItem {
   });
 
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
+      print('=== PARSING SHOPPING ITEM ===');
+  print('JSON reçu: $json');
+  print('image field: ${json['image']}');
+  print('created_at: ${json['created_at']}');
+  print('updated_at: ${json['updated_at']}');
+  
     return ShoppingListItem(
       id: json['id']?.toString(),
       foodName: json['food_name'] ?? '',

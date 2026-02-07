@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
@@ -104,16 +106,17 @@ class ShoppingItemsModel {
     }
   }
 
-  Future<ApiResponse<List<ShoppingListItem>>> createShoppingItem(
+  Future<ApiResponse> createShoppingItem(
     CreateShoppingItemSchema item,
     int listId,
+    File image,
   ) async {
     try {
-      await _shoppingService.createShoppingItem(item, listId);
+      await _shoppingService.createShoppingItem(item, listId, image);
 
       await Future.delayed(const Duration(seconds: 2));
 
-      return ApiResponse(message: 'Aliment ajouté.');
+      return ApiResponse(message: 'Aliment ajouté avec succés.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while creating shopping item: ${err.response?.statusCode} - ${err.message}',

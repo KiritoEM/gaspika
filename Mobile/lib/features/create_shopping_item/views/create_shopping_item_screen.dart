@@ -34,7 +34,7 @@ class CreateShoppingItemScreen extends StatelessWidget {
           CustomProgressIndicator(value: 0.5),
           Expanded(
             child: SafeArea(
-              //  if (createItemVm.isPredicting)
+              //  if (createShoppingItemVm.isPredicting)
               // {
               //   const Positioned.fill(child: AnalysisOverlay()),
               // }
@@ -50,8 +50,6 @@ class CreateShoppingItemScreen extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
-    // final viewModel = context.watch<CreateShoppingItemViewModel>();
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

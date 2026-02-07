@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
 import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 
 class ShoppingService {
@@ -21,36 +25,74 @@ class ShoppingService {
     return response.data['data'] as List<dynamic>;
   }
 
-  Future<List<dynamic>> getShoppingList() async {
-    final response = await _dio.get(ApiConstant.shopping_lists_ENDPOINT);
-    return response.data as List<dynamic>;
+  Future<List<dynamic>> getShoppingList(String? status) async {
+    Map<String, dynamic> query = {};
+
+    if (status != null) {
+      query['status'] = status;
+    }
+
+    final response = await _dio.get(
+      ApiConstant.SHOPPING_LISTS_ENDPOINT,
+      queryParameters: query,
+    );
+    return response.data['results'] as List<dynamic>;
   }
 
-  Future<Map<String, dynamic>> generateShoppingList(int weekNumber) async {
+  Future<Map<String, dynamic>> generateShoppingList(
+    int weekNumber,
+    String? listName,
+  ) async {
     final response = await _dio.post(
       ApiConstant.shopping_lists_GENERATE_ENDPOINT,
-      queryParameters: {'week_number': weekNumber},
-      data: [],
+      data: {'week_number': weekNumber, 'name': listName},
     );
 
     return response.data;
   }
 
-  Future<List<dynamic>> getShoppingItemsById(int listId) async {
-    final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId',
-    );
-    return response.data as List<dynamic>;
+  Future deleteShoppingList(int listId) async {
+    await _dio.delete('${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId');
   }
 
-  Future<Map<String, dynamic>> createShoppingItem(
+  Future<List<dynamic>> getShoppingItemsById(int listId) async {
+    final response = await _dio.get(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/items',
+    );
+    return response.data['data'] as List<dynamic>;
+  }
+
+  Future createShoppingItem(
     CreateShoppingItemSchema item,
     int listId,
+    File image,
   ) async {
-    print(item.toJson());
-    final response = await _dio.post(
+    AppLogger.logger.i(item.toMap());
+
+    FormData formData = FormData.fromMap({
+      ...item.toMap(),
+      'image': await MultipartFile.fromFile(
+        image.path,
+        filename: image.path.split('/').last,
+      ),
+    });
+    
+      await _dio.post(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',
-      data: item.toJson(),
+      data: formData,
+    );
+  }
+
+  Future<Map<String, dynamic>> getShoppingItemById(int itemId) async {
+    final response = await _dio.get(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
+    );
+    return response.data['data'];
+  }
+
+  Future<Map<String, dynamic>> markItemAsComplete(int itemId) async {
+    final response = await _dio.patch(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId/complete',
     );
     return response.data;
   }

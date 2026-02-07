@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
@@ -72,7 +74,7 @@ class ShoppingItemsModel {
     }
   }
 
-  Future<ApiResponse<List<ShoppingListItem>>> getShoppingItemsById(
+  Future<ApiResponse<List<ShoppingListItem>>> getShoppingItems(
     int listId,
   ) async {
     try {
@@ -104,16 +106,17 @@ class ShoppingItemsModel {
     }
   }
 
-  Future<ApiResponse<List<ShoppingListItem>>> createShoppingItem(
+  Future<ApiResponse> createShoppingItem(
     CreateShoppingItemSchema item,
     int listId,
+    File image,
   ) async {
     try {
-      await _shoppingService.createShoppingItem(item, listId);
+      await _shoppingService.createShoppingItem(item, listId, image);
 
       await Future.delayed(const Duration(seconds: 2));
 
-      return ApiResponse(message: 'Aliment ajouté.');
+      return ApiResponse(message: 'Aliment ajouté avec succés.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while creating shopping item: ${err.response?.statusCode} - ${err.message}',
@@ -129,6 +132,62 @@ class ShoppingItemsModel {
       return ApiResponse(
         hasError: true,
         message: 'Impossible de créer l\'aliment.',
+      );
+    }
+  }
+
+  Future<ApiResponse<ShoppingListItem>> getShoppingItemById(int itemId) async {
+    try {
+      final response = await _shoppingService.getShoppingItemById(itemId);
+
+      final item = ShoppingListItem.fromJson(response);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      return ApiResponse(data: item, message: 'Aliments recuperé avec succés.');
+    } on DioException catch (err) {
+      AppLogger.logger.e(
+        'DioException while fetching shopping item: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
+    } catch (err) {
+      AppLogger.logger.e('Error while fetching shopping item: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de récupérer l\'aliment.',
+      );
+    }
+  }
+
+  Future<ApiResponse<ShoppingListItem>> markAsComplete(int itemId) async {
+    try {
+      final response = await _shoppingService.markItemAsComplete(itemId);
+
+      final item = ShoppingListItem.fromJson(response);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      return ApiResponse(data: item, message: 'Aliments marqué comme acheté.');
+    } on DioException catch (err) {
+      AppLogger.logger.e(
+        'DioException while marking shopping item: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
+    } catch (err) {
+      AppLogger.logger.e('Error while marking shopping item: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de marquer l\'aliment comme acheté.',
       );
     }
   }

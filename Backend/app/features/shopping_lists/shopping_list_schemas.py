@@ -16,6 +16,7 @@ class BaseShoppingList(BaseModel):
     name: str
     total_estimated_cost: float
     status: str
+    items_count: Optional[int] = 0
     created_at: str
     user_id: UUID
     created_at: datetime

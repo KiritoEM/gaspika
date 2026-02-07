@@ -14,8 +14,10 @@ class ShoppingListIntervalDateEnum(enum.Enum):
     CURRENT_MONTH="CURRENT_MONTH"
     LAST_5_MONTH="LAST_5_MONTH"
 
-    
+
 class UnitEnum(enum.Enum):
-    UNIT = "unit"
-    KG = "kg"
-    ML = "ml"
+    UNIT = "UNIT"
+    KILOGRAM = "KILOGRAM"
+    MILLILITER = "MILLILITER"
+    LITER = "LITER"
+    GRAM = "GRAM"

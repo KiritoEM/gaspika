@@ -28,7 +28,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
         context,
         listen: false,
       );
-      await shoppingItemsVm.fetchShoppingItemsById(int.parse(widget.id));
+      await shoppingItemsVm.fetchShoppingItems(int.parse(widget.id));
     });
   }
 
@@ -61,41 +61,44 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(23, 10, 23, 23),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Courses ${listName[0].toLowerCase()}${listName.substring(1)}',
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
-                  fontWeight: FontWeight.bold,
+        child: RefreshIndicator(
+          onRefresh: () => shoppingItemsVm.refreshItems(int.parse(widget.id)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(23, 10, 23, 23),
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Text(
+                  listName,
+                  style: TextStyle(
+                    fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Shopping items list
-              Expanded(
-                child: shoppingItemsVm.isLoadingItems
-                    ? _buildItemsSkeleton()
-                    : _buildShoppingItems(shoppingItemsVm),
-              ),
+                // Shopping items list
+                Expanded(
+                  child: shoppingItemsVm.isLoadingItems
+                      ? _buildItemsSkeleton()
+                      : _buildShoppingItems(shoppingItemsVm),
+                ),
 
-              // Add button
-              shoppingItemsVm.isLoadingItems
-                  ? Container()
-                  : Container(
-                      padding: const EdgeInsets.only(top: 16),
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () =>
-                            context.push('/create-shopping-item/${widget.id}'),
-                        label: const Text('Ajouter un aliment'),
-                        icon: const Icon(Icons.add),
+                // Add button
+                shoppingItemsVm.isLoadingItems
+                    ? Container()
+                    : Container(
+                        padding: const EdgeInsets.only(top: 16),
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () =>
+                              context.go('/create-shopping-item/${widget.id}'),
+                          label: const Text('Ajouter un aliment'),
+                          icon: const Icon(Icons.add),
+                        ),
                       ),
-                    ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -114,6 +117,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
     }
 
     return ListView.separated(
+      physics: AlwaysScrollableScrollPhysics(),
       itemCount: shoppingItemsVm.shoppingItems.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
@@ -125,7 +129,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
 
   Widget _buildItemsSkeleton() {
     return ListView.separated(
-      itemCount: 5,
+      itemCount: 7,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         return const SkeletonLine(

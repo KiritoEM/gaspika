@@ -20,11 +20,11 @@ class ShoppingItemsViewModel extends ChangeNotifier {
   List<ShoppingListItem> get shoppingItems => _shoppingItems;
 
   // Get shopping items by list ID
-  Future<void> fetchShoppingItemsById(int listId) async {
+  Future<void> fetchShoppingItems(int listId) async {
     _isLoadingItems = true;
     notifyListeners();
 
-    final response = await _shoppingItemsModel.getShoppingItemsById(listId);
+    final response = await _shoppingItemsModel.getShoppingItems(listId);
 
     if (response.hasError == true) {
       _isLoadingItems = false;
@@ -35,6 +35,14 @@ class ShoppingItemsViewModel extends ChangeNotifier {
     _shoppingItems = response.data ?? [];
     _isLoadingItems = false;
     notifyListeners();
+  }
+
+  // Refresh shopping items
+  Future<void> refreshItems(int listId) async {
+    _isLoadingItems = true;
+    notifyListeners();
+
+    await fetchShoppingItems(listId);
   }
 
   // Clear items when leaving the screen

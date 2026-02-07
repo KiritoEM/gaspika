@@ -9,14 +9,13 @@ class NavigationConstant {
   static const String SHOPPING_LISTS_ROUTE = '/shopping-list';
   static const String SHOPPING_LISTS_ITEMS_ROUTE = '/shopping-list-items';
   static const String CREATE_SHOPPING_ITEM_ROUTE = '/create-shopping-item';
-  static const String FINALIZE_CREATE_SHOPPING_ITEM_ROUTE = 'finalize';
 
   // Bottom Navigation Routes
   static const List<Map<String, dynamic>> BOTTOM_NAVIGATION_ROUTES = [
     {'route': HOME_ROUTE, 'label': 'Accueil', 'icon': 'assets/icons/home.svg'},
     {
       'route': HOME_ROUTE,
-      'label': 'Liste des courses',
+      'label': 'Listes de courses',
       'icon': 'assets/icons/shopping-list.svg',
     },
     {'route': HOME_ROUTE, 'label': 'Profil', 'icon': 'assets/icons/person.svg'},

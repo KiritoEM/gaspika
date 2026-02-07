@@ -1,27 +1,39 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
-import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/models/ml_model.dart';
 import 'package:gaspika_mobile/models/shopping_items_model.dart';
+import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/utils/app_loger.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateShoppingItemViewModel extends ChangeNotifier {
+  final MlModel _mlModel = MlModel();
   final ShoppingItemsModel _shoppingItemsModel = ShoppingItemsModel();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final ImagePicker _picker = ImagePicker();
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
-  CreateShoppingItemSchema _data = CreateShoppingItemSchema();
+  final CreateShoppingItemSchema _data = CreateShoppingItemSchema(
+    foodName: '',
+    personNumber: 1,
+    categoryId: 0,
+  );
 
-  bool _isSubmitting = false;
+  bool _isPredicting = false;
+  bool _isCreating = false;
+  File? _image;
+  String? _uploadImageError;
 
-  String get name => _data.foodName;
-  String get price => _data.price.toString();
-  String get quantity => _data.recommendedQuantity.toString();
-  QuantityUnit get unit => _data.unit;
-  String get notes => _data.notes;
-  String get storageTips => _data.storageTips;
-  int get categoryId => _data.categoryId;
+  // getters
+  CreateShoppingItemSchema get data => _data;
+  bool get isPredicting => _isPredicting;
+  bool get isCreating => _isCreating;
+  GlobalKey<FormState> get formkey => _formkey;
+  File? get image => _image;
+  String? get uploadImageError => _uploadImageError;
 
-  bool get isSubmitting => _isSubmitting;
-  GlobalKey<FormState> get formKey => _formKey;
-
+  //form setters
   void setName(String value) {
     _data.foodName = value.trim();
     notifyListeners();
@@ -30,6 +42,11 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   void setPrice(String value) {
     final cleaned = value.trim().replaceAll(',', '.');
     _data.price = double.tryParse(cleaned) ?? 0.0;
+    notifyListeners();
+  }
+
+  void setNumberOfPeople(int value) {
+    _data.personNumber = value;
     notifyListeners();
   }
 
@@ -61,58 +78,146 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> submitItemForm(int listId) async {
-    _isSubmitting = true;
+  void setHumidity(int humidity) {
+    _data.humidity = humidity;
+    notifyListeners();
+  }
+
+  void setBackendCategory(String category) {
+    _data.backendCategory = category;
+    notifyListeners();
+  }
+
+  // pick image
+  Future<void> pickImage() async {
+    try {
+      final picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxHeight: 1920,
+        maxWidth: 1920,
+      );
+
+      if (picked != null) {
+        final file = File(picked.path);
+        final fileSize = await file.length();
+
+        // Vérifier la taille (10MB max)
+        if (fileSize > 10 * 1024 * 1024) {
+          _uploadImageError = 'L\'image est trop volumineuse (max 10MB)';
+          _image = null;
+        } else {
+          _image = file;
+          _uploadImageError = null;
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      _uploadImageError = 'Erreur lors du chargement de l\'image';
+      AppLogger.logger.e('Error picking image: $e');
+      notifyListeners();
+    }
+  }
+
+  // remove image preview
+  void removeImage() {
+    _image = null;
+    _uploadImageError = null;
+    notifyListeners();
+  }
+
+  // Make prediction (form step 1)
+  Future<String?> submitFormOne(int listId) async {
+    _isPredicting = true;
     notifyListeners();
 
-    if (!_formKey.currentState!.validate()) {
-      _isSubmitting = false;
+    if (!_formkey.currentState!.validate()) {
+      _isPredicting = false;
       notifyListeners();
-      return null;
+      return 'Veuillez remplir tous les champs requis';
     }
 
-    if (_data.foodName.isEmpty) {
-      _isSubmitting = false;
+    _formkey.currentState!.save();
+
+    final results = await Future.wait([
+      _mlModel.predictQuantity(_data),
+      _mlModel.predictConservationDuration(_data),
+    ]);
+
+    final quantityResponse = results[0];
+    final conservationResponse = results[1];
+
+    if (quantityResponse.hasError == true) {
+      _isPredicting = false;
       notifyListeners();
-      return 'Le nom du produit est requis';
+      return quantityResponse.message ??
+          'Erreur lors de la prédiction de quantité';
     }
 
-    if (_data.price < 0) {
-      _isSubmitting = false;
+    if (conservationResponse.hasError == true) {
+      _isPredicting = false;
       notifyListeners();
-      return 'Prix invalide';
+      return conservationResponse.message ??
+          'Erreur lors de la prédiction de conservation';
     }
 
-    if (_data.recommendedQuantity <= 0) {
-      _isSubmitting = false;
-      notifyListeners();
-      return 'Quantité invalide ou nulle';
-    }
-
-    final response = await _shoppingItemsModel.createShoppingItem(
-      _data,
-      listId,
+    AppLogger.logger.i(
+      'quantite: ${quantityResponse.data}  conservation: ${conservationResponse.data}',
     );
 
-    _isSubmitting = false;
-    notifyListeners();
-
-    if (response.hasError == true) {
-      return response.message ?? 'Erreur inconnue lors de l\'ajout';
+    if (quantityResponse.data != null) {
+      final predictedQuantity = quantityResponse.data!['quantite_recommandee'];
+      if (predictedQuantity != null) {
+        _data.recommendedQuantity = (predictedQuantity as num).toDouble();
+      }
     }
 
-    reset();
+    if (conservationResponse.data != null) {
+      final conservationDuration =
+          conservationResponse.data!['duree_conservation_jours'];
+      if (conservationDuration != null) {
+        _data.conservationDuration = (conservationDuration as num).floor();
+      }
+    }
+
+    _isPredicting = false;
+    notifyListeners();
+
     return null;
   }
 
-  void reset() {
-    _data = CreateShoppingItemSchema();
-    _formKey.currentState?.reset();
-    notifyListeners();
-  }
+  // Create aliment (form step 2)
+  Future<String?> createAliment(int listId) async {
+    if (_image == null) {
+      return 'Veuillez sélectionner une image';
+    }
 
-  @override
-  void dispose() {
-    super.dispose();
+    _isCreating = true;
+    notifyListeners();
+
+    try {
+      final response = await _shoppingItemsModel.createShoppingItem(
+        _data,
+        listId,
+        _image!,
+      );
+
+      _isCreating = false;
+      notifyListeners();
+
+      if (response.hasError == true) {
+        return response.message ?? 'Erreur lors de la création de l\'aliment';
+      }
+
+      notifyListeners();
+
+      return null;
+    } catch (e) {
+      _isCreating = false;
+      notifyListeners();
+
+      AppLogger.logger.e('Unexpected error creating aliment: $e');
+      return 'Erreur inattendue lors de la création de l\'aliment';
+    }
   }
 }

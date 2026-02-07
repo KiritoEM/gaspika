@@ -82,12 +82,8 @@ class ShoppingItemsServices:
                 
         return await self.shoppingItemRepo.get_all(shopping_list.id)
         
-    async def get_shopping_item_by_id(self, item_id: int, list_id:int, user_id: str):
-        shopping_list = await self.shoppingListRepo.get_by_id(list_id, user_id)
-        if not shopping_list:
-            raise HTTPException(status_code=404, detail="Liste introuvable.")
-        
-        return await self.shoppingItemRepo.get_by_id(item_id, user_id, shopping_list.id)
+    async def get_shopping_item_by_id(self, item_id: int, user_id: str):
+        return await self.shoppingItemRepo.get_by_id(item_id, user_id)
                    
     async def get_available_items_count(self, user_id: str,week_number: int):
         shopping_list = await self.shoppingListRepo.get_list_by_week(week_number, user_id, datetime.now().year)
@@ -105,21 +101,17 @@ class ShoppingItemsServices:
         
         return await self.shoppingItemRepo.get_items_of_list(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
 
-    async def complete_shopping_item(self, item_id: int, list_id:int, user_id: str):
-        shopping_list = await self.shoppingListRepo.get_by_id(list_id, user_id)
-        if not shopping_list:
-            raise HTTPException(status_code=404, detail="Liste introuvable.")   
-        
-        shopping_item =  await self.shoppingItemRepo.complete_item(item_id, user_id, shopping_list.id)
+    async def complete_shopping_item(self, item_id: int, user_id: str):   
+        shopping_item =  await self.shoppingItemRepo.complete_item(item_id, user_id)
         
         if not shopping_item:
             raise HTTPException(status_code=400, detail="Impossible de marquer cet aliment comme acheté.")
         
         # make list complete if all items of the list is purchased
-        unpurchased_items_count =  await self.shoppingItemRepo.get_items_count(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
+        unpurchased_items_count =  await self.shoppingItemRepo.get_items_count(user_id, shopping_item.shopping_list_id, ShoppingListItemEnum.UNPURCHASED)
         
         if unpurchased_items_count == 0:
-            await self.shoppingListRepo.complete_list(shopping_list.id, user_id)
+            await self.shoppingListRepo.complete_list(shopping_item.shopping_list_id, user_id)
             
         return shopping_item
     

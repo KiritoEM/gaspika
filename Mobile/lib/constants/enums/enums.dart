@@ -15,3 +15,5 @@ enum NetworkErrorType {
 }
 
 enum ShoppingItemStatus { purchased, unpurchased }
+
+enum ShoppingListStatus { all, completed, unfinished }

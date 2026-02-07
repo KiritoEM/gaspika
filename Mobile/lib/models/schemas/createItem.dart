@@ -2,52 +2,65 @@
 
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 
+extension QuantityUnitExtension on QuantityUnit {
+  String toUpperCase() {
+    return name.toUpperCase();
+  }
+}
+
 class CreateShoppingItemSchema {
   String foodName = '';
   double recommendedQuantity = 0.0;
   QuantityUnit unit = QuantityUnit.unit;
   double price = 0.0;
-  bool isPurchased = false;
   String notes = '';
+  int personNumber = 1;
   String storageTips = '';
   int categoryId = 0;
+  int humidity = 10;
+  String backendCategory = '';
+  int? conservationDuration;
 
   CreateShoppingItemSchema({
-    this.foodName = '',
+    required this.foodName,
     this.recommendedQuantity = 0.0,
     this.unit = QuantityUnit.unit,
     this.price = 0.0,
-    this.isPurchased = false,
     this.notes = '',
+    required this.personNumber,
     this.storageTips = '',
-    this.categoryId = 0,
+    required this.categoryId,
+    this.humidity = 10,
+    this.backendCategory = '',
+    this.conservationDuration,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      "product_name": foodName.trim(),
-      "estimated_quantity": recommendedQuantity,
-      "unit": _mapToBackendUnit(unit),
-      "price": price,
-      "is_purchased": isPurchased,
-      "notes": notes.trim().isEmpty ? null : notes.trim(),
-      "storage_tips": storageTips.trim().isEmpty ? null : storageTips.trim(),
-      "category_id": categoryId == 0 ? null : categoryId,
-    };
+  @override
+  String toString() {
+    return '''
+CreateShoppingItemSchema {
+  foodName: "$foodName",
+  recommendedQuantity: ${recommendedQuantity.toStringAsFixed(2)} ${unit.name},
+  unit: $unit
+  price: ${price.toStringAsFixed(2)}€,
+  personNumber: $personNumber,
+  categoryId: $categoryId,
+  backendCategory: "$backendCategory",
+  humidity: $humidity%,
+  notes: "$notes",
+  storageTips: "$storageTips"
+}
+    ''';
   }
 
-  String _mapToBackendUnit(QuantityUnit unit) {
-    switch (unit) {
-      case QuantityUnit.unit:
-        return "unit";
-      case QuantityUnit.kilogram:
-        return "kg";
-      case QuantityUnit.gram:
-        return "g";
-      case QuantityUnit.liter:
-        return "l";
-      case QuantityUnit.milliliter:
-        return "ml";
-    }
+  Map<String, dynamic> toMap() {
+    return {
+      'food_name': foodName,
+      'quantity': recommendedQuantity,
+      'price': price,
+      'person_number': personNumber,
+      'unit': unit.toUpperCase(),
+      'food_category_id': categoryId,
+    };
   }
 }

@@ -5,12 +5,11 @@ import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/create_list_bottomsheet.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_appbar.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_card.dart';
-import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
-import 'package:gaspika_mobile/shared/button_with_loader.dart';
-import 'package:gaspika_mobile/shared/date_picker.dart';
-import 'package:gaspika_mobile/shared/snackbar.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_status_filter.dart';
+import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:provider/provider.dart';
 
 class ShopListScreen extends StatefulWidget {
@@ -21,6 +20,13 @@ class ShopListScreen extends StatefulWidget {
 }
 
 class _ShopListScreenState extends State<ShopListScreen> {
+  // list of status for filtering
+  List<Map<String, dynamic>> statusDataFilter = [
+    {'label': 'Tout', 'value': ShoppingListStatus.all},
+    {'label': 'Complétée', 'value': ShoppingListStatus.completed},
+    {'label': 'Inachevée', 'value': ShoppingListStatus.unfinished},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -43,91 +49,59 @@ class _ShopListScreenState extends State<ShopListScreen> {
       extendBodyBehindAppBar: true,
       appBar: ShoppingListAppbar(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.fromLTRB(23, 30, 23, 23),
-            child: Column(
-              children: [
-                shoppingListVm.isLoadingList
-                    ? _shoppingListSkeleton()
-                    : _buildShoppingList(shoppingListVm),
-              ],
-            ),
-          ),
+        child: RefreshIndicator(
+          onRefresh: () => shoppingListVm.refreshShoppingList(),
+          child: _buildBody(shoppingListVm),
         ),
       ),
+      floatingActionButton: shoppingListVm.hasFetchError
+          ? null
+          : _buildFloatingActionButton(shoppingListVm),
+    );
+  }
 
-      floatingActionButton: _buildFloatingActionButton(shoppingListVm),
+  Widget _buildBody(ShoppingListViewModel shoppingListVm) {
+    if (shoppingListVm.hasFetchError) {
+      return SizedBox(
+        height: double.infinity,
+        width: double.infinity,
+        child: ErrorState(
+          text: shoppingListVm.fetchErrorMessage,
+          onRefresh: () => shoppingListVm.refreshAll(),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(23, 30, 23, 23),
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            ShoppingListStatusFilter(
+              selectedStatus: shoppingListVm.statusFilter,
+              statusList: statusDataFilter,
+              onSelect: (ShoppingListStatus status) {
+                shoppingListVm.changeStatusFilter(status);
+              },
+            ),
+
+            SizedBox(height: 24),
+
+            shoppingListVm.isLoadingList
+                ? _shoppingListSkeleton()
+                : _buildShoppingList(shoppingListVm),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildFloatingActionButton(ShoppingListViewModel shoppingListVm) {
     return FloatingActionButton(
       onPressed: () {
-        DateTime modalDate = shoppingListVm.selectedDate;
-
-        AppBottomSheet.show(
-          context: context,
-          builder: (context, setModalState) {
-            return [
-              Column(
-                children: [
-                  Text(
-                    'Générer une liste',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: Theme.of(
-                        context,
-                      ).textTheme.titleLarge?.fontSize,
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 8,
-                    children: [
-                      const Text('Choisissez une semaine(cliquer sur la date)'),
-                      DatePicker(
-                        value: modalDate,
-                        onSelectDate: (date) {
-                          setModalState(() {
-                            modalDate = date;
-                          });
-
-                          shoppingListVm.setSelectedDate(date);
-                        },
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 40),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ButtonWithLoader(
-                      isLoading: shoppingListVm.isGeneratingList,
-                      text: 'Générer',
-                      loadingText: 'Genération en cours...',
-                      onPressed: () async {
-                        final response = await shoppingListVm
-                            .generateShoppingList();
-
-                        SnackbarUtils.showInSnackBar(
-                          context,
-                          response.message!,
-                          type: response.success!
-                              ? SnackbarType.success
-                              : SnackbarType.error,
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ];
-          },
-        );
+        CreateListBottomsheet.show(context);
       },
       shape: const CircleBorder(),
       backgroundColor: AppColors.primary,
@@ -137,14 +111,25 @@ class _ShopListScreenState extends State<ShopListScreen> {
 
   Widget _buildShoppingList(ShoppingListViewModel shoppingListVm) {
     return Column(
-      spacing: 14,
+      spacing: 16,
       children: shoppingListVm.shoppingWeekItems
           .map(
             (item) => ShoppingListCard(
-              id: item.id!,
-              listName: item.name ?? '',
-              itemsCount: item.itemCount,
-              isCompleted: item.isCompleted,
+              item: item,
+              succesMessage: 'Liste de courses supprimée avec succès.',
+              errorMessage: shoppingListVm.deleteErrorMessage,
+              onDelete: (id, resultCallback) async {
+                await shoppingListVm.deleteShoppingList(id);
+
+                if (!mounted) return;
+
+                if (!shoppingListVm.hasDeleteError &&
+                    !shoppingListVm.isDeletingList) {
+                  resultCallback(true, null);
+                } else {
+                  resultCallback(false, shoppingListVm.deleteErrorMessage);
+                }
+              },
             ),
           )
           .toList(),
@@ -154,7 +139,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
   Widget _shoppingListSkeleton() {
     return Column(
       children: List.generate(
-        5,
+        7,
         (index) => const Padding(
           padding: EdgeInsets.only(bottom: 12),
           child: SkeletonLine(

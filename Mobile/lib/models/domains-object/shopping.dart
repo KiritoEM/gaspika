@@ -38,6 +38,12 @@ class ShoppingListItem {
   });
 
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
+      print('=== PARSING SHOPPING ITEM ===');
+  print('JSON reçu: $json');
+  print('image field: ${json['image']}');
+  print('created_at: ${json['created_at']}');
+  print('updated_at: ${json['updated_at']}');
+  
     return ShoppingListItem(
       id: json['id']?.toString(),
       foodName: json['food_name'] ?? '',
@@ -92,21 +98,23 @@ class ShoppingList {
   final int? id;
   final int weekNumber;
   final String? name;
-  final String? status;
-  final int totalEstimatedCost;
-  final int? userId;
-  final bool isCompleted;
-  final List<ShoppingListItem>? items;
+  final ShoppingListStatus status;
+  final double totalEstimatedCost;
+  final String? userId;
+  final int itemsCount;
+  final String createdAt;
+  final String updatedAt;
 
   ShoppingList({
     this.id,
     required this.weekNumber,
     this.name,
-    this.status,
+    required this.status,
     this.totalEstimatedCost = 0,
     this.userId,
-    this.isCompleted = false,
-    this.items,
+    this.itemsCount = 0,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory ShoppingList.fromJson(Map<String, dynamic> json) {
@@ -114,15 +122,15 @@ class ShoppingList {
       id: json['id'] as int?,
       weekNumber: json['week_number'] as int,
       name: json['name'] as String?,
-      status: json['status'] as String?,
-      totalEstimatedCost: (json['total_estimated_cost'] as int?) ?? 0,
-      userId: json['user_id'] as int?,
-      isCompleted: json['is_completed'] ?? false,
-      items: json['items'] != null
-          ? (json['items'] as List)
-                .map((item) => ShoppingListItem.fromJson(item))
-                .toList()
-          : null,
+      status: ShoppingListStatus.values.byName(
+        (json['status'] ?? 'UNFINISHED').toLowerCase(),
+      ),
+      totalEstimatedCost:
+          (json['total_estimated_cost'] as num?)?.toDouble() ?? 0.0,
+      userId: json['user_id'] as String?,
+      itemsCount: (json['items_count'] as int?) ?? 0,
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
@@ -131,19 +139,12 @@ class ShoppingList {
       'id': id,
       'week_number': weekNumber,
       'name': name,
-      'status': status,
+      'status': status.name.toUpperCase(),
       'total_estimated_cost': totalEstimatedCost,
       'user_id': userId,
-      'is_completed': isCompleted,
-      // 'items': items?.map((item) => item.toJson()).toList(),
+      'items_count': itemsCount,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
-  }
-
-  // Return the number of items in the shopping list
-  int get itemCount => items?.length ?? 0;
-
-  @override
-  String toString() {
-    return 'ShoppingList{id: $id, weekNumber: $weekNumber, name: $name, status: $status, totalEstimatedCost: $totalEstimatedCost, userId: $userId, isCompleted: $isCompleted, itemCount: $itemCount}';
   }
 }

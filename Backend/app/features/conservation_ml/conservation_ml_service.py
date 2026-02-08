@@ -4,12 +4,14 @@ from fastapi import HTTPException
 
 from .conservation_ml_schemas import ConservationInput, ConservationOutput
 from .conservation_ml_repository import ConservationMLRepository
-from .conservation_ml_interpretation import conservation_interpretation
-
+from Backend.app.core.langchain_model import Model
+from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
 class ConservationMLService:
     def __init__(self, repo: ConservationMLRepository) -> None:
         self.repo = repo
+        self.llm = Model()()
 
     @staticmethod
     def _build_features(data: ConservationInput) -> pd.DataFrame:
@@ -40,11 +42,30 @@ class ConservationMLService:
             prediction_log = self.repo.model.predict(features)[0]
             duree_jours = np.expm1(prediction_log)
             duree_jours = round(duree_jours, 1)
+            template = """
+                Tu es un expert en conservation des aliments. 
+                Voici les prédictions de mon système :
+
+                Catégorie de l'aliment: {categorie}
+                Durée de conservation prédite: {duree} jours
+                Humidité relative: {humidite}
+
+                Donne une interprétation détaillée et des recommandations pratiques.
+            """
+            prompt = PromptTemplate(
+                input_variables=["categorie", "duree", "humidite"],
+                template=template
+            )
+            chain = prompt | self.llm | StrOutputParser()
 
             return ConservationOutput(
                 duree_conservation_jours=duree_jours,
                 categorie=data.categorie,
-                interpretation=conservation_interpretation(duree_jours, data.categorie),
+                interpretation=chain.invoke({
+                    "categorie": data.categorie,
+                    "duree": duree_jours,
+                    "humidite": data.humidite_relative
+                }),
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Erreur de prédiction: {str(e)}")

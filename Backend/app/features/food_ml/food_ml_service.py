@@ -1,13 +1,16 @@
 import numpy as np
 import pandas as pd
 from fastapi import HTTPException
-from app.features.food_ml.food_ml_interpretation import food_interpretation
 from .food_ml_schemas import FoodInput, FoodOutput         
 from .food_ml_repository import FoodMLRepository 
+from Backend.app.core.langchain_model import Model
+from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
 class FoodMlServices:                                       
     def __init__(self, repo: FoodMLRepository) -> None:     
         self.repo = repo
+        self.llm = Model()()
 
     @staticmethod
     def _build_features(data: FoodInput) -> pd.DataFrame:   
@@ -67,6 +70,24 @@ class FoodMlServices:
                 quantite = round(quantite)
             else:
                 quantite = round(quantite, 2)
+            
+            template = """
+                Tu es un expert en quantité des aliments. 
+                Voici les prédictions de mon système :
+
+                Catégorie de l'aliment: {categorie}
+                Quantité de l'aliment prédite: {quantite}
+                Unité de l'aliment: {unite}
+                Nombre de personnes: {nombre_personnes}
+                Durée de jours de la consommation: {duree_jours}
+
+                Donne une interprétation détaillée et des recommandations pratiques.
+            """
+            prompt = PromptTemplate(
+                input_variables=["categorie", "quantite", "unite", "nombre_personnes", "duree_jours"],
+                template=template
+            )
+            chain = prompt | self.llm | StrOutputParser()
 
             return FoodOutput(                          
                 food=data.food,                       
@@ -74,12 +95,13 @@ class FoodMlServices:
                 unite=data.unite,
                 nombre_personnes=data.nombre_personnes,
                 duree_jours=data.duree_jours,
-                interpretation=food_interpretation(    
-                    quantite,
-                    data.unite,
-                    data.nombre_personnes,
-                    data.duree_jours,
-                ),
+                interpretation= chain.invoke({
+                    "categorie": data.categorie,
+                    "quantite": quantite,
+                    "unite": data.unite,
+                    "nombre_personnes": data.nombre_personnes,
+                    "duree_jours": data.duree_jours
+                })
             )
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Erreur de prédiction: {str(e)}")

@@ -1,11 +1,14 @@
-def conservation_interpretation(duree_jours: float, categorie: str) -> str:
-    if duree_jours < 3:
-        return f"Très périssable : consommer rapidement (dans les {duree_jours:.0f} jours)"
-    elif duree_jours < 7:
-        return f"Périssable : consommer dans la semaine ({duree_jours:.0f} jours)"
-    elif duree_jours < 30:
-        return f"Conservation courte : bon pendant {duree_jours:.0f} jours"
-    elif duree_jours < 90:
-        return f"Conservation moyenne : {duree_jours:.0f} jours (environ {duree_jours/30:.0f} mois)"
-    else:
-        return f"Longue conservation : {duree_jours:.0f} jours (environ {duree_jours/30:.0f} mois)"
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+class Model:
+    def __init__(self, model: str = "gemini-1.5-flash", temperature: float = 0.7):
+        self.model_name = model
+        self.temperature = temperature
+        self.api_key = "AIzaSyAG9o_IfOLLaOM1PbQBTTwTTHEIaFFqwfM"
+
+    def __call__(self):
+        return ChatGoogleGenerativeAI(
+            model=self.model_name,
+            google_api_key=self.api_key,
+            temperature=self.temperature
+        )

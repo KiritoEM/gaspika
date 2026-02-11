@@ -27,6 +27,7 @@ class ShoppingItemsRepository:
             unit=item_data.unit,
             default_shelf_life_day = item_data.default_shelf_life_day,
             food_category_id = item_data.food_category_id,
+            storage_tips = item_data.storage_tips,
             shopping_list_id=list_id,
             user_id=user_id
         )

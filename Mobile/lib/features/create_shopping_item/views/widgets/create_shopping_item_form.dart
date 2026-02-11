@@ -262,7 +262,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                       return;
                     }
 
-                    context.go(
+                    context.push(
                       '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}/finalize',
                     );
                   },

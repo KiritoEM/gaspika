@@ -5,6 +5,8 @@ import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
+import 'package:gaspika_mobile/utils/app_Loger.dart';
+import 'package:gaspika_mobile/utils/date.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +48,12 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
   @override
   Widget build(BuildContext context) {
     final shoppingItemsVm = context.watch<ShoppingItemsViewModel>();
-    final listName = GoRouterState.of(context).extra as String;
+    final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
+    final listName = extra?['name'] as String? ?? 'Course inconnue';
+    final weekNumber = extra?['week_number'] as int? ?? 0;
+
+    final isCurrentOrFutureWeek =
+        DateUtilities.getCurrentWeekNumberISO() <= weekNumber;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -66,7 +73,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(23, 10, 23, 23),
             child: Column(
-              crossAxisAlignment: .start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   listName,
@@ -91,8 +98,11 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
                         padding: const EdgeInsets.only(top: 16),
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: () =>
-                              context.go('/create-shopping-item/${widget.id}'),
+                          onPressed: isCurrentOrFutureWeek == true
+                              ? () => context.push(
+                                  '/create-shopping-item/${widget.id}',
+                                )
+                              : null,
                           label: const Text('Ajouter un aliment'),
                           icon: const Icon(Icons.add),
                         ),
@@ -111,7 +121,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
         child: Text(
           'Aucun aliment ajouté dans cette liste',
           style: TextStyle(fontSize: 16, color: AppColors.mutedForeground),
-          textAlign: .center,
+          textAlign: TextAlign.center,
         ),
       );
     }

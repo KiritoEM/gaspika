@@ -16,6 +16,7 @@ class ShoppingListItem {
   final int? categoryId;
   final QuantityUnit quantityUnit;
   final Image image;
+  final int? conservationDuration;
   final String createdAt;
   final String updatedAt;
 
@@ -33,17 +34,12 @@ class ShoppingListItem {
     this.categoryId,
     required this.quantityUnit,
     required this.image,
+    this.conservationDuration,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
-      print('=== PARSING SHOPPING ITEM ===');
-  print('JSON reçu: $json');
-  print('image field: ${json['image']}');
-  print('created_at: ${json['created_at']}');
-  print('updated_at: ${json['updated_at']}');
-  
     return ShoppingListItem(
       id: json['id']?.toString(),
       foodName: json['food_name'] ?? '',
@@ -62,6 +58,7 @@ class ShoppingListItem {
       ),
       personNumber: (json['person_number'] as num?)?.toInt() ?? 1,
       image: Image.fromJson(json['image'] as Map<String, dynamic>),
+      conservationDuration:  json['default_shelf_life_day'] as int?,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );

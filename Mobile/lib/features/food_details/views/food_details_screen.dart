@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/food_details/viewmodels/food_details_viewmodel.dart';
+import 'package:gaspika_mobile/shared/badge_field.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +47,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, size: 32),
-          onPressed: () => context.pop(),
+          onPressed: () => context.pop(true),
         ),
         title: const Text(
           'Détails de l\'aliment',
@@ -97,9 +98,17 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
               if (!mounted) return;
 
               if (foodDetailsVm.hasError) {
-                Toastify.show(context, message: foodDetailsVm.errorMessage);
+                Toastify.show(
+                  context,
+                  message: foodDetailsVm.errorMessage,
+                  type: ToastType.error,
+                );
               } else {
-                Toastify.show(context, message: 'Aliment marqué comme acheté');
+                Toastify.show(
+                  context,
+                  message: 'Aliment marqué comme acheté',
+                  type: ToastType.success,
+                );
                 context.pop(true);
               }
             },
@@ -147,7 +156,9 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
               ),
           ],
         ),
+
         const SizedBox(height: 8),
+
         Row(
           children: [
             Text(
@@ -172,13 +183,34 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
             ),
           ],
         ),
+
         const SizedBox(height: 24),
+
+        if (item.conservationDuration != null)
+          Column(
+            children: [
+              BadgeField(
+                label: 'Durée de conservation',
+                value: '${item.conservationDuration.toString()} jours',
+              ),
+              SizedBox(height: 24),
+            ],
+          ),
+
+        if (item.storageTips != null && item.storageTips != null)
+          BadgeField(
+            label: 'Conseil de conservation',
+            value: item.storageTips!,
+          ),
+
+        const SizedBox(height: 24),
+
         AspectRatio(
           aspectRatio: 1.0,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.network(
-              item.image?.path ?? '',
+              item.image.path,
               width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {

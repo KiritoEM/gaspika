@@ -3,8 +3,8 @@ import pandas as pd
 from fastapi import HTTPException
 from .food_ml_schemas import FoodInput, FoodOutput         
 from .food_ml_repository import FoodMLRepository 
-from Backend.app.core.langchain_model import Model
-from langchain.prompts import PromptTemplate
+from app.core.langchain_model import Model
+from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 class FoodMlServices:                                       
@@ -70,19 +70,31 @@ class FoodMlServices:
                 quantite = round(quantite)
             else:
                 quantite = round(quantite, 2)
-            
+                
             template = """
-                Tu es un expert en quantité des aliments. 
-                Voici les prédictions de mon système :
+                    Tu es un expert en gestion des quantités alimentaires et tu parles de façon simple et naturelle, comme dans une discussion quotidienne.
 
-                Catégorie de l'aliment: {categorie}
-                Quantité de l'aliment prédite: {quantite}
-                Unité de l'aliment: {unite}
-                Nombre de personnes: {nombre_personnes}
-                Durée de jours de la consommation: {duree_jours}
+                    Contexte :
+                    - Aliment : {categorie}
+                    - Quantité totale : {quantite} {unite}
+                    - Nombre de personnes : {nombre_personnes}
+                    - Durée de consommation : {duree_jours} jours
 
-                Donne une interprétation détaillée et des recommandations pratiques.
+                    Consignes strictes :
+                    - Donne exactement une seule phrase
+                    - La phrase doit contenir exactement 3 informations claires dans cet ordre :
+                    1) si la quantité est suffisante ou non pour le nombre de personnes et la durée,
+                    2) une estimation simple par personne (et par jour ou par repas),
+                    3) un conseil pratique pour ajuster ou éviter le gaspillage
+                    - Utilise un ton direct et humain, pas administratif
+                    - Utilise des verbes à l’impératif
+                    - Relie les informations avec des virgules et des conjonctions simples (et, puis)
+                    - Interdis toute information supplémentaire
+                    - Pas de liste, pas de saut de ligne, pas d’introduction ni de conclusion
+                    - Pas plus de 45 mots
+                    - Réponds uniquement en français
             """
+
             prompt = PromptTemplate(
                 input_variables=["categorie", "quantite", "unite", "nombre_personnes", "duree_jours"],
                 template=template

@@ -7,9 +7,8 @@ class FoodInput(BaseModel):
     duree_jours: int = Field(..., ge=1, le=365, description="Durée en jours", example=7)
     type_repas: str = Field(..., description="Type: petit_dejeuner, dejeuner, diner, collation", example="dejeuner")
     categorie: str = Field(..., description="Catégorie: cereale, viande, poisson, legume, fruit, laitier", example="cereale")
+    
     unite: str = Field(..., description="Unité: kg, L, piece", example="kg")
-
-
     class Config:
         schema_extra = {
             "example": {

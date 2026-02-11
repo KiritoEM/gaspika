@@ -161,14 +161,16 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
           'Erreur lors de la prédiction de conservation';
     }
 
-    AppLogger.logger.i(
-      'quantite: ${quantityResponse.data}  conservation: ${conservationResponse.data}',
-    );
-
     if (quantityResponse.data != null) {
       final predictedQuantity = quantityResponse.data!['quantite_recommandee'];
       if (predictedQuantity != null) {
-        _data.recommendedQuantity = (predictedQuantity as num).toDouble();
+        if (_data.unit == QuantityUnit.gram ||
+            _data.unit == QuantityUnit.milliliter) {
+          _data.recommendedQuantity = ((predictedQuantity as num) * 1000)
+              .toDouble();
+        } else {
+          _data.recommendedQuantity = (predictedQuantity as num).toDouble();
+        }
       }
     }
 
@@ -177,6 +179,12 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
           conservationResponse.data!['duree_conservation_jours'];
       if (conservationDuration != null) {
         _data.conservationDuration = (conservationDuration as num).floor();
+      }
+
+      final conservationRecommandation =
+          conservationResponse.data!['interpretation'];
+      if (conservationRecommandation != null) {
+        _data.storageTips = conservationRecommandation;
       }
     }
 

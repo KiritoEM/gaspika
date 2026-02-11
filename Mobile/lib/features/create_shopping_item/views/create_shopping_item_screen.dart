@@ -21,7 +21,7 @@ class CreateShoppingItemScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, size: 32),
-          onPressed: () => context.pop(),
+          onPressed: () => context.pop(true),
         ),
         title: const Text(
           'Ajouter un aliment',
@@ -39,7 +39,7 @@ class CreateShoppingItemScreen extends StatelessWidget {
               //   const Positioned.fill(child: AnalysisOverlay()),
               // }
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(23, 32, 23, 23),
+                padding: const EdgeInsets.fromLTRB(23, 0, 23, 0),
                 child: _buildContent(context),
               ),
             ),
@@ -51,35 +51,38 @@ class CreateShoppingItemScreen extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //Header
-          Column(
-            crossAxisAlignment: .start,
-            spacing: 8,
-            children: [
-              Text(
-                'Informations de l’aliment',
-                style: TextStyle(
-                  fontSize: Theme.of(
-                    context,
-                  ).textTheme.headlineSmall?.fontSize!,
-                  fontWeight: .bold,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //Header
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Text(
+                  'Informations de l’aliment',
+                  style: TextStyle(
+                    fontSize: Theme.of(
+                      context,
+                    ).textTheme.headlineSmall?.fontSize!,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
 
-              Text(
-                'Entrez les informations principales de l’aliment que vous allez ajouter.',
-                style: TextStyle(color: AppColors.mutedForeground),
-              ),
-            ],
-          ),
+                Text(
+                  'Entrez les informations principales de l’aliment que vous allez ajouter.',
+                  style: TextStyle(color: AppColors.mutedForeground),
+                ),
+              ],
+            ),
 
-          SizedBox(height: 32),
+            SizedBox(height: 32),
 
-          CreateShoppingItemForm(listId: int.parse(id)),
-        ],
+            CreateShoppingItemForm(listId: int.parse(id)),
+          ],
+        ),
       ),
     );
   }

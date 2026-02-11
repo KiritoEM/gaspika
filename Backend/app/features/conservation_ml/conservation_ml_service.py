@@ -4,8 +4,8 @@ from fastapi import HTTPException
 
 from .conservation_ml_schemas import ConservationInput, ConservationOutput
 from .conservation_ml_repository import ConservationMLRepository
-from Backend.app.core.langchain_model import Model
-from langchain.prompts import PromptTemplate
+from app.core.langchain_model import Model
+from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 class ConservationMLService:
@@ -43,15 +43,36 @@ class ConservationMLService:
             duree_jours = np.expm1(prediction_log)
             duree_jours = round(duree_jours, 1)
             template = """
-                Tu es un expert en conservation des aliments. 
-                Voici les prédictions de mon système :
+                Tu es un ami de confiance qui sait comment bien conserver les aliments.
+                Tu parles simplement, comme dans une discussion du quotidien, sans ton scolaire ni phrases artificielles.
 
-                Catégorie de l'aliment: {categorie}
-                Durée de conservation prédite: {duree} jours
-                Humidité relative: {humidite}
+                Contexte :
+                - Aliment : {name}
+                - Catégorie : {categorie}
+                - Durée estimée : {duree} jours
+                - Humidité ambiante : {humidite} %
 
-                Donne une interprétation détaillée et des recommandations pratiques.
+                Consigne :
+                Donne un seul conseil en une phrase, fluide et naturelle, qui explique :
+                - où garder l’aliment et dans quelles conditions,
+                - comment le protéger au quotidien,
+                - à quel moment il faut s’en débarrasser, en décrivant des signes concrets (odeur, texture, apparence).
+
+                Style attendu :
+                - Tutoie, parle spontanément
+                - Utilise des verbes simples du quotidien (mets, garde, range, jette, enlève)
+                - Pas de vocabulaire technique ni de phrases rigides
+                - Le conseil doit sonner comme quelque chose que tu dirais vraiment à un proche
+                - 40 à 50 mots maximum
+
+                Contraintes :
+                - Pas de listes
+                - Pas de durées chiffrées
+                - Pas de conseils supplémentaires
+                - Une seule phrase
+                - Français uniquement
             """
+
             prompt = PromptTemplate(
                 input_variables=["categorie", "duree", "humidite"],
                 template=template
@@ -62,6 +83,7 @@ class ConservationMLService:
                 duree_conservation_jours=duree_jours,
                 categorie=data.categorie,
                 interpretation=chain.invoke({
+                    "name": data.food_name,
                     "categorie": data.categorie,
                     "duree": duree_jours,
                     "humidite": data.humidite_relative

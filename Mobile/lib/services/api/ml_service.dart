@@ -10,7 +10,14 @@ class MlService {
   Future<Map<String, dynamic>> predictQuantity(
     CreateShoppingItemSchema data,
   ) async {
-    AppLogger.logger.i(data);
+    AppLogger.logger.i({
+      'food': data.foodName,
+      'nombre_personnes': data.personNumber,
+      'unite': UnitUtils.convertUnitToBackend(data.unit),
+      'duree_jours': 7,
+      'type_repas': 'dejeuner',
+      'categorie': data.backendCategory,
+    });
 
     final response = await _dio.post(
       ApiConstant.PREDICT_QUANTITY,

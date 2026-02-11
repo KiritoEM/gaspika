@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
 import 'package:gaspika_mobile/models/schemas/createItem.dart';
-import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 
 class ShoppingService {
@@ -67,8 +66,6 @@ class ShoppingService {
     int listId,
     File image,
   ) async {
-    AppLogger.logger.i(item.toMap());
-
     FormData formData = FormData.fromMap({
       ...item.toMap(),
       'image': await MultipartFile.fromFile(
@@ -76,8 +73,8 @@ class ShoppingService {
         filename: image.path.split('/').last,
       ),
     });
-    
-      await _dio.post(
+
+    await _dio.post(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',
       data: formData,
     );

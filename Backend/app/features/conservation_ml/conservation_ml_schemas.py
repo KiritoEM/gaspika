@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class ConservationInput(BaseModel):
+    food_name: str = Field(..., description="Nom du produit", example="lait"),
     humidite_relative: float = Field(..., description="Humidité relative en %", example=80)
     categorie: str = Field(
         ...,

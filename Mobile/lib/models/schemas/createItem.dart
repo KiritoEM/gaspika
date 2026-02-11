@@ -15,7 +15,7 @@ class CreateShoppingItemSchema {
   double price = 0.0;
   String notes = '';
   int personNumber = 1;
-  String storageTips = '';
+  String? storageTips = '';
   int categoryId = 0;
   int humidity = 10;
   String backendCategory = '';
@@ -61,6 +61,8 @@ CreateShoppingItemSchema {
       'person_number': personNumber,
       'unit': unit.toUpperCase(),
       'food_category_id': categoryId,
+      'storage_tips': storageTips,
+      'default_shelf_life_day': conservationDuration,
     };
   }
 }

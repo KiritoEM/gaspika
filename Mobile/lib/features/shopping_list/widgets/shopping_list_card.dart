@@ -28,7 +28,10 @@ class ShoppingListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push('/shopping-list/${item.id}', extra: item.name);
+        context.push('/shopping-list/${item.id}', extra: {
+          'name': item.name,
+          'week_number': item.weekNumber
+        });
       },
       child: Container(
         width: double.infinity,

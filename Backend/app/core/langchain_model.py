@@ -1,14 +1,18 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
+from app.core.config import settings    
 
 class Model:
-    def __init__(self, model: str = "gemini-1.5-flash", temperature: float = 0.7):
+    def __init__(self, model: str = "llama-3.3-70b-versatile", temperature: float = 1.0):
         self.model_name = model
         self.temperature = temperature
-        self.api_key = "AIzaSyAG9o_IfOLLaOM1PbQBTTwTTHEIaFFqwfM"
+        self.api_key = settings.groq_api_key
 
     def __call__(self):
-        return ChatGoogleGenerativeAI(
+        return ChatGroq(
             model=self.model_name,
-            google_api_key=self.api_key,
-            temperature=self.temperature
+            groq_api_key=self.api_key,
+            temperature=self.temperature,
+            max_tokens=500,
+            timeout=None,
+            max_retries=2,
         )

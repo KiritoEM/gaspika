@@ -10,3 +10,5 @@ redis
 pydantic[email]
 python-jose[cryptography]
 jose
+langchain
+langchain-groq

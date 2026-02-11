@@ -12,12 +12,12 @@ class AppTheme {
         brightness: Brightness.light,
         onSurface: AppColors.foreground,
       ),
-      textTheme: GoogleFonts.quicksandTextTheme(Theme.of(context).textTheme)
+      textTheme: GoogleFonts.montserratTextTheme(Theme.of(context).textTheme)
           .copyWith(
-            bodyMedium: GoogleFonts.quicksand(
+            bodyMedium: GoogleFonts.montserrat(
               fontWeight: FontWeight.w500,
             ).copyWith(fontSize: 15),
-            bodyLarge: GoogleFonts.quicksand(
+            bodyLarge: GoogleFonts.montserrat(
               fontWeight: FontWeight.w500,
               fontSize: 15,
             ),

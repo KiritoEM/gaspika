@@ -16,12 +16,14 @@ class UnitUtils {
     }
   }
 
-    static String convertUnitToBackend(QuantityUnit unit) {
+  static String convertUnitToBackend(QuantityUnit unit) {
     switch (unit) {
       case QuantityUnit.kilogram:
+        return 'kg';
       case QuantityUnit.gram:
         return 'kg';
       case QuantityUnit.liter:
+        return 'l';
       case QuantityUnit.milliliter:
         return 'l';
       case QuantityUnit.unit:

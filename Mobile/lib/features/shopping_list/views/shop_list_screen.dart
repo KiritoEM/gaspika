@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
@@ -61,6 +62,8 @@ class _ShopListScreenState extends State<ShopListScreen> {
   }
 
   Widget _buildBody(ShoppingListViewModel shoppingListVm) {
+    bool isListEmpty = shoppingListVm.shoppingWeekItems.isEmpty;
+
     if (shoppingListVm.hasFetchError) {
       return SizedBox(
         height: double.infinity,
@@ -77,7 +80,6 @@ class _ShopListScreenState extends State<ShopListScreen> {
       child: Container(
         padding: EdgeInsets.fromLTRB(23, 30, 23, 23),
         child: Column(
-          crossAxisAlignment: .start,
           children: [
             ShoppingListStatusFilter(
               selectedStatus: shoppingListVm.statusFilter,
@@ -86,12 +88,13 @@ class _ShopListScreenState extends State<ShopListScreen> {
                 shoppingListVm.changeStatusFilter(status);
               },
             ),
-
             SizedBox(height: 24),
-
-            shoppingListVm.isLoadingList
-                ? _shoppingListSkeleton()
-                : _buildShoppingList(shoppingListVm),
+            if (shoppingListVm.isLoadingList)
+              _shoppingListSkeleton()
+            else if (!isListEmpty)
+              _buildShoppingList(shoppingListVm)
+            else
+              _buildEmptyState(),
           ],
         ),
       ),
@@ -133,6 +136,29 @@ class _ShopListScreenState extends State<ShopListScreen> {
             ),
           )
           .toList(),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.only(top: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset('assets/images/list-not-found.svg', width: 200),
+            SizedBox(height: 24),
+            Text(
+              'Aucune liste pour le moment.\nCrée une liste de courses.',
+              style: TextStyle(
+                fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                color: AppColors.mutedForeground,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 

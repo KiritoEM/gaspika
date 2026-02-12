@@ -45,6 +45,7 @@ class AuthModel {
         return ApiResponse(
           hasError: true,
           message: 'Email ou mot de passe incorrect.',
+          errorType: NetworkErrorType.conflict
         );
       }
 

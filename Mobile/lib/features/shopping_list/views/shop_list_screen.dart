@@ -1,15 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
+import 'package:gaspika_mobile/features/shopping_list/views/shopping_list_skeleton.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/create_list_bottomsheet.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_appbar.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_card.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_status_filter.dart';
+import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/empty_state.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:provider/provider.dart';
 
@@ -70,7 +70,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
         width: double.infinity,
         child: ErrorState(
           text: shoppingListVm.fetchErrorMessage,
-          onRefresh: () => shoppingListVm.refreshAll(),
+          onRefresh: () => shoppingListVm.refreshShoppingList(),
         ),
       );
     }
@@ -78,7 +78,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: Container(
-        padding: EdgeInsets.fromLTRB(23, 30, 23, 23),
+        padding: EdgeInsets.all(23),
         child: Column(
           children: [
             ShoppingListStatusFilter(
@@ -90,11 +90,11 @@ class _ShopListScreenState extends State<ShopListScreen> {
             ),
             SizedBox(height: 24),
             if (shoppingListVm.isLoadingList)
-              _shoppingListSkeleton()
+              ShoppingListSkeleton()
             else if (!isListEmpty)
               _buildShoppingList(shoppingListVm)
             else
-              _buildEmptyState(),
+              ShoppingListEmptyState(),
           ],
         ),
       ),
@@ -136,47 +136,6 @@ class _ShopListScreenState extends State<ShopListScreen> {
             ),
           )
           .toList(),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Container(
-        margin: EdgeInsets.only(top: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset('assets/images/list-not-found.svg', width: 200),
-            SizedBox(height: 24),
-            Text(
-              'Aucune liste pour le moment.\nCrée une liste de courses.',
-              style: TextStyle(
-                fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
-                color: AppColors.mutedForeground,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _shoppingListSkeleton() {
-    return Column(
-      children: List.generate(
-        7,
-        (index) => const Padding(
-          padding: EdgeInsets.only(bottom: 12),
-          child: SkeletonLine(
-            style: SkeletonLineStyle(
-              height: 85,
-              width: double.infinity,
-              borderRadius: BorderRadius.all(Radius.circular(12)),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -63,7 +63,7 @@ class ShoppingItemCard extends StatelessWidget {
                         height: 56,
                         color: AppColors.surface,
                         child: Image.network(
-                          item.image.path,
+                          item.image?.path ?? '',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(

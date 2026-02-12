@@ -205,27 +205,29 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
 
         const SizedBox(height: 24),
 
-        AspectRatio(
-          aspectRatio: 1.0,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              item.image.path,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: AppColors.surface,
-                  child: const Icon(
-                    Icons.shopping_basket,
-                    size: 64,
-                    color: AppColors.mutedForeground,
+        item.image != null
+            ? AspectRatio(
+                aspectRatio: 1.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    item.image!.path,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: AppColors.surface,
+                        child: const Icon(
+                          Icons.shopping_basket,
+                          size: 64,
+                          color: AppColors.mutedForeground,
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ),
-        ),
+                ),
+              )
+            : Container(),
       ],
     );
   }

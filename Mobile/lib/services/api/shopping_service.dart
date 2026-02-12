@@ -21,6 +21,7 @@ class ShoppingService {
     final response = await _dio.get(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/${DateUtilities.getCurrentWeekNumberISO()}/available-product',
     );
+
     return response.data['data'] as List<dynamic>;
   }
 

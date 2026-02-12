@@ -3,7 +3,7 @@ import 'package:gaspika_mobile/configs/app_colors.dart';
 
 class BottomsheetAction extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final dynamic icon;
   final VoidCallback onTap;
   final bool isDestructive;
 
@@ -18,7 +18,7 @@ class BottomsheetAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color actionColor = isDestructive
-        ? Colors.red
+        ? AppColors.destructive
         : AppColors.mutedForeground;
 
     return GestureDetector(
@@ -31,8 +31,12 @@ class BottomsheetAction extends StatelessWidget {
         width: double.infinity,
         child: Row(
           children: [
-            Icon(icon, color: actionColor, size: 20),
-
+            if (icon is IconData)
+              Icon(icon as IconData, color: actionColor, size: 20)
+            else if (icon is Widget)
+              icon as Widget
+            else
+              const SizedBox.shrink(),
             const SizedBox(width: 12),
 
             Text(

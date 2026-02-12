@@ -48,7 +48,10 @@ class ShoppingListModel {
     }
   }
 
-  Future<ApiResponse<String>> generateShoppingList(int weekNumber, String? listName) async {
+  Future<ApiResponse<String>> generateShoppingList(
+    int weekNumber,
+    String? listName,
+  ) async {
     try {
       await _shoppingService.generateShoppingList(weekNumber, listName);
 
@@ -62,6 +65,17 @@ class ShoppingListModel {
       AppLogger.logger.e(
         'DioException while generating shopping list: ${err.response?.statusCode} - ${err.message}',
       );
+
+      if (err.response?.statusCode == 409) {
+        return ApiResponse(
+          hasError: true,
+          message:
+              'Une liste de course existe déja pour cette semaine séléctionnée.',
+          errorType:
+              NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+        );
+      }
+
       return ApiResponse(
         hasError: true,
         message: NetworkErrorHandler.handleError(err)['message'],

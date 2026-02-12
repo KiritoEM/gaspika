@@ -7,4 +7,5 @@ class AppColors {
   static const Color surface = Color(0xFFF4F4F4);
   static const Color background = Color(0xFFFDFDFD);
   static const Color secondary = Color(0xFFBBCB64);
+  static const Color destructive = Color(0xFFFF5151);
 }

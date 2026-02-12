@@ -19,86 +19,94 @@ class CreateListBottomsheet {
     return await AppBottomSheet.show(
       context: context,
       builder: (context, setModalState) {
+        final shoppingListVm = context.watch<ShoppingListViewModel>();
+
         return [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Créer une liste de courses',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Créer une liste de courses',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FormBlock(
-                    label: 'Nom',
-                    child: TextField(
-                      controller: shoppingListVm.listNameController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Entrez le nom de la liste',
+                const SizedBox(height: 32),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FormBlock(
+                      label: 'Nom',
+                      child: TextField(
+                        controller: shoppingListVm.listNameController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Entrez le nom de la liste',
+                        ),
+                        autofocus: true,
                       ),
-                      autofocus: true,
                     ),
+
+                    const SizedBox(height: 24),
+
+                    FormBlock(
+                      label: 'Choisissez une date d\'une semaine',
+                      child: DatePicker(
+                        value: modalDate,
+                        onSelectDate: (date) {
+                          setModalState(() {
+                            modalDate = date;
+                          });
+                          shoppingListVm.setSelectedDate(date);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 40),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ButtonWithLoader(
+                    isLoading: shoppingListVm.isGeneratingList,
+                    text: 'Générer',
+                    loadingText: 'Génération en cours...',
+                    onPressed:
+                        shoppingListVm.listNameController.text.trim().isEmpty
+                        ? null
+                        : () async {
+                            await shoppingListVm.generateShoppingList();
+
+                            if (!context.mounted) return;
+
+                            Navigator.of(context).pop();
+
+                            if (shoppingListVm.hasGenerateError) {
+                              Toastify.show(
+                                context,
+                                message: shoppingListVm.generateErrorMessage,
+                                type: ToastType.error,
+                              );
+                            } else {
+                              Toastify.show(
+                                context,
+                                message: 'Liste générée avec succès',
+                                type: ToastType.success,
+                              );
+
+                              await shoppingListVm.refreshShoppingList();
+                            }
+                          },
                   ),
-
-                  const SizedBox(height: 24),
-
-                  FormBlock(
-                    label: 'Choisissez une semaine (cliquer sur la date)',
-                    child: DatePicker(
-                      value: modalDate,
-                      onSelectDate: (date) {
-                        setModalState(() {
-                          modalDate = date;
-                        });
-                        shoppingListVm.setSelectedDate(date);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 40),
-              Consumer<ShoppingListViewModel>(
-                builder: (context, vm, child) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: ButtonWithLoader(
-                      isLoading: vm.isGeneratingList,
-                      text: 'Générer',
-                      loadingText: 'Génération en cours...',
-                      onPressed:
-                          shoppingListVm.listNameController.text.trim().isEmpty
-                          ? null
-                          : () async {
-                              await vm.generateShoppingList();
-
-                              if (!context.mounted) return;
-
-                              if (vm.hasGenerateError) {
-                                Toastify.show(
-                                  context,
-                                  message: vm.generateErrorMessage,
-                                  type: ToastType.error,
-                                );
-                              } else {
-                                Toastify.show(
-                                  context,
-                                  message: 'Liste générée avec succès',
-                                  type: ToastType.success,
-                                );
-                                Navigator.of(context).pop();
-                              }
-                            },
-                    ),
-                  );
-                },
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ];
       },

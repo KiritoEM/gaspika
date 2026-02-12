@@ -15,7 +15,7 @@ class ShoppingListItem {
   final int? defaultShelfLifeDay;
   final int? categoryId;
   final QuantityUnit quantityUnit;
-  final Image image;
+  final Image? image;
   final int? conservationDuration;
   final String createdAt;
   final String updatedAt;
@@ -57,8 +57,10 @@ class ShoppingListItem {
         (json['unit'] ?? 'UNIT').toLowerCase(),
       ),
       personNumber: (json['person_number'] as num?)?.toInt() ?? 1,
-      image: Image.fromJson(json['image'] as Map<String, dynamic>),
-      conservationDuration:  json['default_shelf_life_day'] as int?,
+      image: json['image'] != null
+          ? Image.fromJson(json['image'] as Map<String, dynamic>)
+          : null,
+      conservationDuration: json['default_shelf_life_day'] as int?,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );

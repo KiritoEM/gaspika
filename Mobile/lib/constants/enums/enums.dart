@@ -12,6 +12,7 @@ enum NetworkErrorType {
   unauthorized,
   client,
   canceled,
+  conflict
 }
 
 enum ShoppingItemStatus { purchased, unpurchased }

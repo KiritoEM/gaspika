@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(72),
+        preferredSize: Size.fromHeight(65),
         child: HomeAppbar(
           userName: homeVm.userName ?? 'Utilisateur',
           isLoading: homeVm.isLoadingUser,
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(23, 28, 23, 23),
+        padding: const EdgeInsets.all(23),
         child: Column(
           children: [
             // Available product

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/delete_confirmation_dialog.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/bottomsheet_action.dart';
@@ -28,10 +29,10 @@ class ShoppingListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push('/shopping-list/${item.id}', extra: {
-          'name': item.name,
-          'week_number': item.weekNumber
-        });
+        context.push(
+          '/shopping-list/${item.id}',
+          extra: {'name': item.name, 'week_number': item.weekNumber},
+        );
       },
       child: Container(
         width: double.infinity,
@@ -74,7 +75,9 @@ class ShoppingListCard extends StatelessWidget {
                                 child: Text(
                                   item.name!,
                                   style: TextStyle(
-                                    fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
+                                    fontSize: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium?.fontSize,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   maxLines: 1,
@@ -140,14 +143,23 @@ class ShoppingListCard extends StatelessWidget {
         return [
           Column(
             mainAxisSize: MainAxisSize.min,
+            spacing: 8,
             children: [
+              const SizedBox(height: 16),
+              BottomsheetAction(
+                label: 'Modifier',
+                icon: SvgPicture.asset('assets/icons/edit.svg', width: 18),
+                onTap: () => _showEditDialog(context),
+              ),
+
+              const SizedBox(height: 16),
+
               BottomsheetAction(
                 label: 'Supprimer',
-                icon: Icons.delete_outline,
+                icon: SvgPicture.asset('assets/icons/trash.svg', width: 20),
                 isDestructive: true,
                 onTap: () => _showDeleteConfirmationDialog(context),
               ),
-              const SizedBox(height: 16),
             ],
           ),
         ];
@@ -155,48 +167,30 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
+  void _showEditDialog(BuildContext context) {}
+
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Supprimer la liste'),
-        content: Text(
-          'Voulez-vous vraiment supprimer la liste "${item.name}" ?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.mutedForeground,
-            ),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-
-              onDelete(item.id!, (success, error) {
-                if (success) {
-                  Toastify.show(
-                    context,
-                    message: succesMessage,
-                    type: ToastType.success,
-                  );
-                } else {
-                  Toastify.show(
-                    context,
-                    message: errorMessage,
-                    type: ToastType.error,
-                  );
-                }
-              });
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Supprimer'),
-          ),
-        ],
+      builder: (dialogContext) => DeleteConfirmationDialog(
+        listName: item.name!,
+        onDelete: () {
+          onDelete(item.id!, (success, error) {
+            if (success) {
+              Toastify.show(
+                context,
+                message: succesMessage,
+                type: ToastType.success,
+              );
+            } else {
+              Toastify.show(
+                context,
+                message: errorMessage,
+                type: ToastType.error,
+              );
+            }
+          });
+        },
       ),
     );
   }

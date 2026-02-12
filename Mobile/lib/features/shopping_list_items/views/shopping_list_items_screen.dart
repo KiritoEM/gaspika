@@ -5,7 +5,6 @@ import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
-import 'package:gaspika_mobile/utils/app_Loger.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -82,6 +81,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+
                 const SizedBox(height: 20),
 
                 // Shopping items list

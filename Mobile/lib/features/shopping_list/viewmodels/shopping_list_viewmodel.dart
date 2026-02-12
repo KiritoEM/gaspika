@@ -17,7 +17,7 @@ class ShoppingListViewModel extends ChangeNotifier {
           'Courses semaine ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}',
     );
 
-    // add listener
+    // add listener to listNameController
     listNameController.addListener(_onListNameChanged);
   }
 
@@ -42,14 +42,15 @@ class ShoppingListViewModel extends ChangeNotifier {
   DateTime _selectedDate = DateTime.now();
   ShoppingListStatus _statusFilter = ShoppingListStatus.all;
 
+  // loading states
   bool get isLoadingList => _isLoadingList;
   bool get isGeneratingList => _isGeneratingList;
   bool get isDeletingList => _isDeletingList;
 
+  // error states
   bool get hasFetchError => _hasFetchError;
   String get fetchErrorMessage => _fetchErrorMessage;
   NetworkErrorType? get fetchErrorType => _fetchErrorType;
-
   bool get hasGenerateError => _hasGenerateError;
   String get generateErrorMessage => _generateErrorMessage;
   NetworkErrorType? get generateErrorType => _generateErrorType;
@@ -100,6 +101,9 @@ class ShoppingListViewModel extends ChangeNotifier {
     }
 
     _shoppingWeekItems = response.data ?? [];
+
+    await Future.delayed(Duration(seconds: 5));
+
     _isLoadingList = false;
     notifyListeners();
   }
@@ -112,6 +116,7 @@ class ShoppingListViewModel extends ChangeNotifier {
     _fetchErrorMessage = '';
     _fetchErrorType = null;
     _statusFilter = ShoppingListStatus.all;
+    clearAllErrors();
     notifyListeners();
 
     await fetchShoppingList();
@@ -120,6 +125,10 @@ class ShoppingListViewModel extends ChangeNotifier {
   // Set selected date
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
+
+    listNameController.text =
+        'Courses semaine ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}';
+
     notifyListeners();
   }
 
@@ -141,12 +150,16 @@ class ShoppingListViewModel extends ChangeNotifier {
       _hasGenerateError = true;
       _generateErrorType = response.errorType;
       _generateErrorMessage = response.message!;
+      resetAllStates();
+
       notifyListeners();
       return;
     }
 
     _isGeneratingList = false;
-    await fetchShoppingList();
+    notifyListeners();
+
+    refreshShoppingList();
   }
 
   // Delete list
@@ -164,20 +177,15 @@ class ShoppingListViewModel extends ChangeNotifier {
       _hasDeleteError = true;
       _deleteErrorType = response.errorType;
       _deleteErrorMessage = response.message!;
+      resetAllStates();
+
       notifyListeners();
       return;
     }
 
     _isDeletingList = false;
-    await fetchShoppingList();
-  }
-
-  // Refresh all data
-  Future<void> refreshAll() async {
-    _isLoadingList = true;
-    clearAllErrors();
-    notifyListeners();
-    await fetchShoppingList();
+    resetAllStates();
+    await refreshShoppingList();
   }
 
   // Handle change status filter
@@ -188,10 +196,19 @@ class ShoppingListViewModel extends ChangeNotifier {
     _fetchErrorType = null;
     _statusFilter = status;
     notifyListeners();
+
     await fetchShoppingList();
   }
 
   void _onListNameChanged() {
+    notifyListeners();
+  }
+
+  // reset all states
+  void resetAllStates() {
+    _selectedDate = DateTime.now();
+    listNameController.text =
+        'Courses semaine ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}';
     notifyListeners();
   }
 

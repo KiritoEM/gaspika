@@ -19,7 +19,7 @@ class ApiConstant {
   static const String SHOPPING_ITEMS_ENDPOINT = '/shopping-items';
   static const String SHOPPING_LISTS_ENDPOINT = '/shopping-lists';
   static const String PREDICT_QUANTITY_ENDPOINT = '/shopping-lists';
-  static const String shopping_lists_GENERATE_ENDPOINT =
+  static const String SHOPPING_LISTS_GENERATE_ENDPOINT =
       '$SHOPPING_LISTS_ENDPOINT/generate';
   static const String PREDICT_QUANTITY = '/predict/quantite';
   static const String PREDICT_CONSERVATION = '/predict/conservation';

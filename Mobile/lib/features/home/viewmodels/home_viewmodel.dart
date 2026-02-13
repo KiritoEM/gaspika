@@ -37,7 +37,7 @@ class HomeViewModel extends ChangeNotifier {
   List<ShoppingListItem> get shoppingWeekItems => _shoppingWeekItems;
 
   // get user info
-  Future<void> fetchUserInfo() async {
+  Future fetchUserInfo() async {
     final response = await _userModel.getUserInfo();
 
     if (response.hasError == true) {
@@ -55,7 +55,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   // get available food count
-  Future<void> fetchAvailableFoodCount() async {
+  Future fetchAvailableFoodCount() async {
     final response = await _shoppingItemsModel.getAvalaibleFoodCount();
 
     AppLogger.logger.i(response);
@@ -75,7 +75,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   // get shopping week items
-  Future<void> fetchShoppingWeekItems() async {
+  Future fetchShoppingWeekItems() async {
     _isLoadingShopping = true;
     notifyListeners();
 

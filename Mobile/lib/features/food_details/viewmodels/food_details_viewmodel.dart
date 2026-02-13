@@ -38,7 +38,7 @@ class FoodDetailsViewmodel extends ChangeNotifier {
   }
 
   // Fetch item details
-  Future<void> fetchItemDetails(int itemId) async {
+  Future fetchItemDetails(int itemId) async {
     _currentItem = null;
     _isLoadingItem = true;
     clearError();
@@ -61,7 +61,7 @@ class FoodDetailsViewmodel extends ChangeNotifier {
   }
 
   // Fetch item details
-  Future<void> markItemAsComplete(int itemId) async {
+  Future markItemAsComplete(int itemId) async {
     clearError();
     _isMarkingItem = true;
     notifyListeners();
@@ -83,7 +83,7 @@ class FoodDetailsViewmodel extends ChangeNotifier {
   }
 
   // Refresh item
-  Future<void> refreshItem(int itemId) async {
+  Future refreshItem(int itemId) async {
     _isLoadingItem = true;
     clearError();
     notifyListeners();

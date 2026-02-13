@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import HTTPException
 from app.models import ShoppingList
-from app.features.shopping_lists.shopping_list_schemas import GetAllListsFilterParams
+from app.features.shopping_lists.shopping_list_schemas import GetAllListsFilterParams, UpdateShoppingListDTO
 from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 
@@ -29,13 +29,10 @@ class ShoppingListServices:
         
         return await self.shoppingListRepo.create(week_number, user_id, final_name)
     
-    async def update_list(self, user_id: str, shopping_lists_id: int, update_data: dict):
+    
+    async def update_list(self, user_id: str, shopping_lists_id: int, update_data: UpdateShoppingListDTO):
         """Update shopping list"""
-        return  await self.shoppingListRepo.update_list(
-            shopping_lists_id, user_id, 
-            update_data.get("name"),
-            update_data.get("week_number")
-        )
+        return  await self.shoppingListRepo.update_list(shopping_lists_id, user_id, update_data)
         
     async def delete_list(self, user_id: str, shopping_lists_id: int):
         """Delete shopping list"""

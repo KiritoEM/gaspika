@@ -5,17 +5,22 @@ import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/services/api/shopping_service.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/network_error_handler.dart';
+import 'package:gaspika_mobile/utils/shopping_list_utils.dart';
 
 class ShoppingListModel {
   final ShoppingService _shoppingService = ShoppingService();
 
   Future<ApiResponse<List<ShoppingList>>> getShoppingList(
     ShoppingListStatus statusFilter,
+    PeriodFilterEnum? periodFilter,
   ) async {
     try {
       final response = await _shoppingService.getShoppingList(
         statusFilter != ShoppingListStatus.all
             ? statusFilter.name.toUpperCase()
+            : null,
+        periodFilter != null
+            ? ShoppingListUtils.convertPeriodFilterToBackendEnum(periodFilter)
             : null,
       );
 
@@ -87,6 +92,39 @@ class ShoppingListModel {
       return ApiResponse(
         hasError: true,
         message: 'Impossible de générer la liste de courses.',
+      );
+    }
+  }
+
+  Future<ApiResponse<String>> updateShoppingList(
+    int listId,
+    String newListName,
+  ) async {
+    try {
+      await _shoppingService.updateShoppingList(listId, newListName);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      return ApiResponse(
+        data: 'success',
+        message: 'Liste de courses modifiée avec succès.',
+      );
+    } on DioException catch (err) {
+      AppLogger.logger.e(
+        'DioException while updating shopping list: ${err.response?.statusCode} - ${err.message}',
+      );
+
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
+    } catch (err) {
+      AppLogger.logger.e('Error while updating shopping list: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de modifier la liste de courses.',
       );
     }
   }

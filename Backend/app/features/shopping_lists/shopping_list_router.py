@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.middlewares.auth_middleware import require_user
 from app.core.schemas import PagedResponseSchema
 from app.features.users.user_repository import UserRepository
-from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, CreateShoppingListOutDTO, GetAllListsFilterParams, BaseShoppingList
+from app.features.shopping_lists.shopping_list_schemas import CreateShoppingListDTO, CreateShoppingListOutDTO, GetAllListsFilterParams, BaseShoppingList, UpdateShoppingListDTO
 from app.features.shopping_lists.shopping_list_service import ShoppingListServices
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.core.database import db_session
@@ -23,9 +23,7 @@ response_model=PagedResponseSchema[BaseShoppingList],
 summary="Obtenir la liste des listes de courses",
 responses={
     200: {"description": "Liste des listes de courses"},
-    404: {"description": "Utilisateur introuvable"},
-    422: {"description": "Données invalides"},
-},  
+    },  
 status_code=200
 )
 async def get_shopping_listss(
@@ -42,13 +40,12 @@ response_model=CreateShoppingListOutDTO,
 summary="Générer une liste de courses",
 responses={
     200: {"description": "Liste de courses générée avec succés"},
-    404: {"description": "Utilisateur introuvable"},
     409: {"description": "Une liste existe déja pour cette semaine"},
     422: {"description": "Données invalides"},
 },  
 status_code=201
 )
-async def create_shopping_lists(
+async def create_shopping_list(
     request: Request,
     payload: CreateShoppingListDTO,
     service: ShoppingListServices = Depends(get_shopping_lists_services)
@@ -57,6 +54,31 @@ async def create_shopping_lists(
     
     return {
         "data": created_list,
+        "message": "Liste créée avec succés"
+    }
+    
+
+@shopping_list_router.patch(
+"/{list_id}", 
+tags=["Shopping Lists"], 
+response_model=CreateShoppingListOutDTO,
+summary="Modifier une liste de courses",
+responses={
+    200: {"description": "Liste de courses modifiée avec succés"},
+    422: {"description": "Données invalides"},
+},  
+status_code=200
+)
+async def update_shopping_list(
+    request: Request,
+    payload: UpdateShoppingListDTO,
+    list_id: Annotated[int, Path(..., ge=1)],
+    service: ShoppingListServices = Depends(get_shopping_lists_services)
+):
+    updated_list =  await service.update_list(request.state.user.id, list_id, payload)
+    
+    return {
+        "data": updated_list,
         "message": "Liste créée avec succés"
     }
 

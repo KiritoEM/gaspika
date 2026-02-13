@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
-import 'package:gaspika_mobile/features/shopping_list/views/shopping_list_skeleton.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/filter_bottomsheet.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_skeleton.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/create_list_bottomsheet.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_appbar.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_card.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_status_filter.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/empty_state.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
+import 'package:my_toastify/my_toastify.dart';
 import 'package:provider/provider.dart';
 
 class ShopListScreen extends StatefulWidget {
@@ -27,6 +29,52 @@ class _ShopListScreenState extends State<ShopListScreen> {
     {'label': 'Complétée', 'value': ShoppingListStatus.completed},
     {'label': 'Inachevée', 'value': ShoppingListStatus.unfinished},
   ];
+
+  Future handleDeleteList(
+    int listId,
+    ShoppingListViewModel shoppingListVm,
+  ) async {
+    await shoppingListVm.deleteShoppingList(listId);
+
+    if (!mounted) return;
+
+    if (!shoppingListVm.hasDeleteError && !shoppingListVm.isDeletingList) {
+      Toastify.show(
+        context,
+        message: 'Liste de courses supprimée avec succès.',
+        type: ToastType.success,
+      );
+    } else {
+      Toastify.show(
+        context,
+        message: shoppingListVm.deleteErrorMessage,
+        type: ToastType.error,
+      );
+    }
+  }
+
+  Future handleUpdateList(
+    int listId,
+    ShoppingListViewModel shoppingListVm,
+  ) async {
+    await shoppingListVm.updateShoppingList(listId);
+
+    if (!mounted) return;
+
+    if (!shoppingListVm.hasUpdateError && !shoppingListVm.isUpdatingList) {
+      Toastify.show(
+        context,
+        message: 'Liste de courses mis a jour avec succès.',
+        type: ToastType.success,
+      );
+    } else {
+      Toastify.show(
+        context,
+        message: shoppingListVm.updateErrorMessage,
+        type: ToastType.error,
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -48,7 +96,20 @@ class _ShopListScreenState extends State<ShopListScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
-      appBar: ShoppingListAppbar(),
+      appBar: ShoppingListAppbar(
+        onFilter: () {
+          FilterBottomsheet.show(
+            context,
+            shoppingListVm.periodFilter,
+            (PeriodFilterEnum? periodFilter) {
+              shoppingListVm.setFilterPeriod(periodFilter);
+            },
+            () {
+              shoppingListVm.setFilterPeriod(null);
+            },
+          );
+        },
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => shoppingListVm.refreshShoppingList(),
@@ -119,19 +180,11 @@ class _ShopListScreenState extends State<ShopListScreen> {
           .map(
             (item) => ShoppingListCard(
               item: item,
-              succesMessage: 'Liste de courses supprimée avec succès.',
-              errorMessage: shoppingListVm.deleteErrorMessage,
-              onDelete: (id, resultCallback) async {
-                await shoppingListVm.deleteShoppingList(id);
-
-                if (!mounted) return;
-
-                if (!shoppingListVm.hasDeleteError &&
-                    !shoppingListVm.isDeletingList) {
-                  resultCallback(true, null);
-                } else {
-                  resultCallback(false, shoppingListVm.deleteErrorMessage);
-                }
+              onUpdate: (id) async {
+                handleUpdateList(id, shoppingListVm);
+              },
+              onDelete: (id) async {
+                handleDeleteList(id, shoppingListVm);
               },
             ),
           )

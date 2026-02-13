@@ -2,7 +2,7 @@ from typing import Optional
 from sqlalchemy import extract, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
-from app.features.shopping_lists.shopping_list_schemas import BaseShoppingList
+from app.features.shopping_lists.shopping_list_schemas import BaseShoppingList, UpdateShoppingListDTO
 from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 from app.core.utils.pagination import paginate
 from app.core.schemas import PageParams
@@ -97,9 +97,7 @@ class ShoppingListRepository:
         
         return shopping_list.scalar_one_or_none()
     
-    async def update_list(self, shopping_lists_id: int, user_id: str, 
-                     name: Optional[str] = None, 
-                     week_number: Optional[int] = None) -> Optional[ShoppingList]:
+    async def update_list(self, shopping_lists_id: int, user_id: str, update_data: UpdateShoppingListDTO) -> Optional[ShoppingList]:
         """Update shopping list name or week_number"""
         result = await self.db.execute(
             select(ShoppingList)
@@ -108,14 +106,14 @@ class ShoppingListRepository:
                     ShoppingList.id == shopping_lists_id,
                     ShoppingList.user_id == user_id
                 )
-        )).scalar_one_or_none()
+        ))
         shopping_list = result.scalar_one_or_none()
         
         if shopping_list:
-            if name is not None:
-                shopping_list.name = name
-            if week_number is not None:
-                shopping_list.week_number = week_number
+            shopping_list.name = update_data.name
+            
+            if update_data.week_number is not None:
+                shopping_list.week_number = update_data.week_number
             
             shopping_list.updated_at = datetime.now(timezone.utc)
             

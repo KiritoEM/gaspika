@@ -20,7 +20,7 @@ class ShoppingItemsViewModel extends ChangeNotifier {
   List<ShoppingListItem> get shoppingItems => _shoppingItems;
 
   // Get shopping items by list ID
-  Future<void> fetchShoppingItems(int listId) async {
+  Future fetchShoppingItems(int listId) async {
     _isLoadingItems = true;
     notifyListeners();
 
@@ -38,7 +38,7 @@ class ShoppingItemsViewModel extends ChangeNotifier {
   }
 
   // Refresh shopping items
-  Future<void> refreshItems(int listId) async {
+  Future refreshItems(int listId) async {
     _isLoadingItems = true;
     notifyListeners();
 

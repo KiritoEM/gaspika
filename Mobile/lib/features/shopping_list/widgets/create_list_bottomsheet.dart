@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:my_toastify/my_toastify.dart';
 
 class CreateListBottomsheet {
-  static Future<void> show(BuildContext context) async {
+  static Future show(BuildContext context) async {
     final shoppingListVm = Provider.of<ShoppingListViewModel>(
       context,
       listen: false,

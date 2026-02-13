@@ -9,7 +9,7 @@ class ShoppingListViewModel extends ChangeNotifier {
   // Models
   final ShoppingListModel _shoppingListModel = ShoppingListModel();
 
-  late final TextEditingController listNameController;
+  TextEditingController listNameController = TextEditingController(text: '');
 
   ShoppingListViewModel() {
     listNameController = TextEditingController(
@@ -17,44 +17,53 @@ class ShoppingListViewModel extends ChangeNotifier {
           'Courses semaine ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}',
     );
 
-    // add listener to listNameController
     listNameController.addListener(_onListNameChanged);
   }
 
   bool _isLoadingList = true;
   bool _isGeneratingList = false;
   bool _isDeletingList = false;
-
+  bool _isUpdatingList = false;
   bool _hasFetchError = false;
   String _fetchErrorMessage = '';
   NetworkErrorType? _fetchErrorType;
-
   bool _hasGenerateError = false;
   String _generateErrorMessage = '';
   NetworkErrorType? _generateErrorType;
-
-  // Delete errors
   bool _hasDeleteError = false;
   String _deleteErrorMessage = '';
   NetworkErrorType? _deleteErrorType;
+  bool _hasUpdateError = false;
+  String _updateErrorMessage = '';
+  NetworkErrorType? _updateErrorType;
+  PeriodFilterEnum? _periodFilter;
 
   List<ShoppingList> _shoppingWeekItems = [];
   DateTime _selectedDate = DateTime.now();
   ShoppingListStatus _statusFilter = ShoppingListStatus.all;
 
-  // loading states
+  // loading getters
   bool get isLoadingList => _isLoadingList;
   bool get isGeneratingList => _isGeneratingList;
   bool get isDeletingList => _isDeletingList;
+  bool get isUpdatingList => _isUpdatingList;
 
-  // error states
+  // fetching error getters
   bool get hasFetchError => _hasFetchError;
   String get fetchErrorMessage => _fetchErrorMessage;
   NetworkErrorType? get fetchErrorType => _fetchErrorType;
+
+  // generation error getters
   bool get hasGenerateError => _hasGenerateError;
   String get generateErrorMessage => _generateErrorMessage;
   NetworkErrorType? get generateErrorType => _generateErrorType;
 
+  // updade error getters
+  bool get hasUpdateError => _hasUpdateError;
+  String get updateErrorMessage => _updateErrorMessage;
+  NetworkErrorType? get updateErrorType => _updateErrorType;
+
+  // delete error getters
   bool get hasDeleteError => _hasDeleteError;
   String get deleteErrorMessage => _deleteErrorMessage;
   NetworkErrorType? get deleteErrorType => _deleteErrorType;
@@ -62,6 +71,7 @@ class ShoppingListViewModel extends ChangeNotifier {
   List<ShoppingList> get shoppingWeekItems => _shoppingWeekItems;
   DateTime get selectedDate => _selectedDate;
   ShoppingListStatus get statusFilter => _statusFilter;
+  PeriodFilterEnum? get periodFilter => _periodFilter;
 
   // Clear all errors
   void clearAllErrors() {
@@ -81,7 +91,7 @@ class ShoppingListViewModel extends ChangeNotifier {
   }
 
   // Get shopping list
-  Future<void> fetchShoppingList() async {
+  Future fetchShoppingList() async {
     _shoppingWeekItems = [];
     _isLoadingList = true;
     _hasFetchError = false;
@@ -89,7 +99,10 @@ class ShoppingListViewModel extends ChangeNotifier {
     _fetchErrorType = null;
     notifyListeners();
 
-    final response = await _shoppingListModel.getShoppingList(statusFilter);
+    final response = await _shoppingListModel.getShoppingList(
+      statusFilter,
+      periodFilter,
+    );
 
     if (response.hasError == true) {
       _isLoadingList = false;
@@ -102,14 +115,14 @@ class ShoppingListViewModel extends ChangeNotifier {
 
     _shoppingWeekItems = response.data ?? [];
 
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 3));
 
     _isLoadingList = false;
     notifyListeners();
   }
 
   // Refresh shopping list
-  Future<void> refreshShoppingList() async {
+  Future refreshShoppingList() async {
     _shoppingWeekItems = [];
     _isLoadingList = true;
     _hasFetchError = false;
@@ -133,7 +146,7 @@ class ShoppingListViewModel extends ChangeNotifier {
   }
 
   // Generate shopping list
-  Future<void> generateShoppingList() async {
+  Future generateShoppingList() async {
     _isGeneratingList = true;
     _hasGenerateError = false;
     _generateErrorMessage = '';
@@ -157,13 +170,14 @@ class ShoppingListViewModel extends ChangeNotifier {
     }
 
     _isGeneratingList = false;
+    listNameController.text = '';
     notifyListeners();
 
     refreshShoppingList();
   }
 
   // Delete list
-  Future<void> deleteShoppingList(int id) async {
+  Future deleteShoppingList(int id) async {
     _isDeletingList = true;
     _hasDeleteError = false;
     _deleteErrorMessage = '';
@@ -177,7 +191,6 @@ class ShoppingListViewModel extends ChangeNotifier {
       _hasDeleteError = true;
       _deleteErrorType = response.errorType;
       _deleteErrorMessage = response.message!;
-      resetAllStates();
 
       notifyListeners();
       return;
@@ -185,16 +198,61 @@ class ShoppingListViewModel extends ChangeNotifier {
 
     _isDeletingList = false;
     resetAllStates();
+
+    await refreshShoppingList();
+  }
+
+  // update a shopping list
+  Future updateShoppingList(int listId) async {
+    _isUpdatingList = true;
+    _hasUpdateError = false;
+    _updateErrorMessage = '';
+    _updateErrorType = null;
+    notifyListeners();
+
+    final response = await _shoppingListModel.updateShoppingList(
+      listId,
+      listNameController.text,
+    );
+
+    if (response.hasError == true) {
+      _isUpdatingList = false;
+      _hasUpdateError = true;
+      _updateErrorType = response.errorType;
+      _updateErrorMessage = response.message!;
+
+      notifyListeners();
+      return;
+    }
+
+    _isUpdatingList = false;
+    resetAllStates();
+
     await refreshShoppingList();
   }
 
   // Handle change status filter
-  Future<void> changeStatusFilter(ShoppingListStatus status) async {
+  Future changeStatusFilter(ShoppingListStatus status) async {
     _isLoadingList = true;
-    _hasFetchError = false;
+    _shoppingWeekItems = [];
     _fetchErrorMessage = '';
     _fetchErrorType = null;
+    _hasFetchError = false;
     _statusFilter = status;
+    notifyListeners();
+
+    await fetchShoppingList();
+  }
+
+  // filter by period
+  Future setFilterPeriod(PeriodFilterEnum? period) async {
+    _isLoadingList = true;
+    _shoppingWeekItems = [];
+    _fetchErrorMessage = '';
+    _fetchErrorType = null;
+    _hasFetchError = false;
+    _periodFilter = period;
+
     notifyListeners();
 
     await fetchShoppingList();

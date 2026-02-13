@@ -60,7 +60,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           elevation: 0.5,
           disabledForegroundColor: AppColors.mutedForeground,
         ),

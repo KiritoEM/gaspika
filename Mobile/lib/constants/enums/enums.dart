@@ -12,9 +12,11 @@ enum NetworkErrorType {
   unauthorized,
   client,
   canceled,
-  conflict
+  conflict,
 }
 
 enum ShoppingItemStatus { purchased, unpurchased }
 
 enum ShoppingListStatus { all, completed, unfinished }
+
+enum PeriodFilterEnum { lastYear, currentYear, currentMonth, last5Month }

@@ -13,10 +13,10 @@ class ShoppingListEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset('assets/images/list-not-found.svg', width: 200),
-            SizedBox(height: 24),
+            SvgPicture.asset('assets/images/list-not-found.svg', width: 220),
+            SizedBox(height: 16),
             Text(
-              'Aucune liste pour le moment.\nCrée une liste de courses.',
+              'Aucune liste de courses \ndisponible.',
               style: TextStyle(
                 fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
                 color: AppColors.mutedForeground,

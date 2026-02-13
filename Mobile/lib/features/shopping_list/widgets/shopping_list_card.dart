@@ -3,24 +3,22 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/delete_confirmation_dialog.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/update_list_dialog.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/bottomsheet_action.dart';
 import 'package:go_router/go_router.dart';
-import 'package:my_toastify/my_toastify.dart';
 
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList item;
-  final String succesMessage;
-  final String errorMessage;
-  final Function(int id, Function(bool success, String? error)) onDelete;
+  final Function(int id) onDelete;
+  final Function(int id) onUpdate;
 
   const ShoppingListCard({
     super.key,
     required this.item,
     required this.onDelete,
-    this.succesMessage = '',
-    this.errorMessage = '',
+    required this.onUpdate,
   });
 
   bool get isCompleted => item.status == ShoppingListStatus.completed;
@@ -104,7 +102,7 @@ class ShoppingListCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '${item.itemsCount} aliment${item.itemsCount > 1 ? 's' : ''}',
+                      '${item.itemsCount > 0 ? item.itemsCount : 'Aucun'} aliment${item.itemsCount > 1 ? 's' : ''}',
                       style: TextStyle(
                         fontSize: Theme.of(
                           context,
@@ -167,30 +165,22 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context) {}
+  void _showEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => UpdateListDialog(
+        listName: item.name!,
+        onUpdate: () => onUpdate(item.id!),
+      ),
+    );
+  }
 
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (dialogContext) => DeleteConfirmationDialog(
         listName: item.name!,
-        onDelete: () {
-          onDelete(item.id!, (success, error) {
-            if (success) {
-              Toastify.show(
-                context,
-                message: succesMessage,
-                type: ToastType.success,
-              );
-            } else {
-              Toastify.show(
-                context,
-                message: errorMessage,
-                type: ToastType.error,
-              );
-            }
-          });
-        },
+        onDelete: () => onDelete(item.id!),
       ),
     );
   }

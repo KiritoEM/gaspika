@@ -4,7 +4,8 @@ import 'package:gaspika_mobile/configs/app_colors.dart';
 
 class ShoppingListAppbar extends StatelessWidget
     implements PreferredSizeWidget {
-  const ShoppingListAppbar({super.key});
+  final VoidCallback onFilter;
+  const ShoppingListAppbar({super.key, required this.onFilter});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -23,7 +24,7 @@ class ShoppingListAppbar extends StatelessWidget
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => onFilter(),
             icon: SvgPicture.asset('assets/icons/arrow-sort.svg', width: 24),
             style: IconButton.styleFrom(
               foregroundColor: AppColors.primary,

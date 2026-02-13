@@ -89,7 +89,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   }
 
   // pick image
-  Future<void> pickImage() async {
+  Future pickImage() async {
     try {
       final picked = await _picker.pickImage(
         source: ImageSource.gallery,

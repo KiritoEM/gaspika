@@ -25,11 +25,15 @@ class ShoppingService {
     return response.data['data'] as List<dynamic>;
   }
 
-  Future<List<dynamic>> getShoppingList(String? status) async {
+  Future<List<dynamic>> getShoppingList(String? status, String? period) async {
     Map<String, dynamic> query = {};
 
     if (status != null) {
       query['status'] = status;
+    }
+
+    if (period != null) {
+      query['dateInterval'] = period;
     }
 
     final response = await _dio.get(
@@ -44,8 +48,20 @@ class ShoppingService {
     String? listName,
   ) async {
     final response = await _dio.post(
-      ApiConstant.shopping_lists_GENERATE_ENDPOINT,
+      ApiConstant.SHOPPING_LISTS_GENERATE_ENDPOINT,
       data: {'week_number': weekNumber, 'name': listName},
+    );
+
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateShoppingList(
+    int listId,
+    String newListName,
+  ) async {
+    final response = await _dio.patch(
+      '${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId',
+      data: {'name': newListName},
     );
 
     return response.data;

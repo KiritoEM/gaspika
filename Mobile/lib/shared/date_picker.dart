@@ -8,7 +8,7 @@ class DatePicker extends StatelessWidget {
 
   const DatePicker({super.key, required this.onSelectDate, this.value});
 
-  Future<void> _handlePickDate(BuildContext context) async {
+  Future _handlePickDate(BuildContext context) async {
     final DateTime now = DateTime.now();
     final startOfCurrentWeek = DateUtilities.startOfWeek(now);
 

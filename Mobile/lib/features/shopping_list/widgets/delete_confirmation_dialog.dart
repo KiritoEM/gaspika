@@ -23,6 +23,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
         style: TextStyle(color: AppColors.mutedForeground),
       ),
       backgroundColor: Colors.white,
+
       actions: [
         Row(
           spacing: 8,
@@ -47,7 +48,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
 
                   onDelete();
                 },
-                style: TextButton.styleFrom(
+                style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: AppColors.destructive,
                 ),

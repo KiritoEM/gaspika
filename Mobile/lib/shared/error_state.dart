@@ -42,7 +42,7 @@ class ErrorState extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRefresh,
                 label: const Text('Réessayer', style: TextStyle(fontSize: 14)),
-                icon: const Icon(Icons.refresh, size: 20),
+                icon: SvgPicture.asset('assets/icons/refresh.svg', width: 18),
                 iconAlignment: IconAlignment.end,
               ),
           ],

@@ -156,9 +156,11 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                 label: 'Catégorie',
                 isRequired: true,
                 child: DropdownButtonFormField<int>(
+                  dropdownColor: Colors.white,
                   decoration: const InputDecoration(
                     hintText: 'Sélectionnez une catégorie',
                   ),
+
                   value: createShoppingItemVm.data.categoryId == 0
                       ? null
                       : createShoppingItemVm.data.categoryId,
@@ -213,10 +215,11 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
 
               FormBlock(
                 label: 'Méthode de conservation',
-                isRequired: false,
+                isRequired: true,
                 child: DropdownButtonFormField<int>(
                   isDense: true,
                   isExpanded: true,
+                  dropdownColor: Colors.white,
                   decoration: const InputDecoration(
                     hintText: 'Sélectionnez une méthode de conservation',
                   ),

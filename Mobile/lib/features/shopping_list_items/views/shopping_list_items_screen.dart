@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/shopping_items_skeleton.dart';
+import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 import 'package:go_router/go_router.dart';
@@ -61,9 +62,9 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, size: 32),
+          icon: SvgPicture.asset('assets/icons/chevron-left.svg', width: 40),
           onPressed: () => context.go('/shopping-list'),
         ),
       ),
@@ -131,6 +132,18 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
               textAlign: TextAlign.center,
             ),
           ],
+        ),
+      );
+    }
+
+    if (shoppingItemsVm.hasError) {
+      return SizedBox(
+        height: double.infinity,
+        width: double.infinity,
+        child: ErrorState(
+          text: shoppingItemsVm.errorMessage,
+          onRefresh: () =>
+              shoppingItemsVm.refreshShoppingItems(int.parse(widget.id)),
         ),
       );
     }

@@ -20,12 +20,12 @@ class ShoppingListAppbar extends StatelessWidget
         scrolledUnderElevation: 0,
         title: Text(
           'Listes de courses',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         actions: [
           IconButton(
             onPressed: () => onFilter(),
-            icon: SvgPicture.asset('assets/icons/arrow-sort.svg', width: 24),
+            icon: SvgPicture.asset('assets/icons/filter.svg', width: 24),
             style: IconButton.styleFrom(
               foregroundColor: AppColors.primary,
               backgroundColor: AppColors.surface,

@@ -46,7 +46,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, size: 32),
+          icon: SvgPicture.asset('assets/icons/chevron-left.svg', width: 40),
           onPressed: () => context.pop(true),
         ),
         title: const Text(

@@ -76,8 +76,8 @@ class CreateListBottomsheet {
                   width: double.infinity,
                   child: ButtonWithLoader(
                     isLoading: shoppingListVm.isGeneratingList,
-                    text: 'Générer',
-                    loadingText: 'Génération en cours...',
+                    text: 'Créer',
+                    loadingText: 'Création en cours...',
                     onPressed:
                         shoppingListVm.listNameController.text.trim().isEmpty
                         ? null

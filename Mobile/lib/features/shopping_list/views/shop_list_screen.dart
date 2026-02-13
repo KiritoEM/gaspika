@@ -140,7 +140,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
       crossAxisAlignment: .start,
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(23, 20, 23, 0),
+          padding: EdgeInsets.fromLTRB(23, 16, 23, 0),
           child: ShoppingListStatusFilter(
             selectedStatus: shoppingListVm.statusFilter,
             statusList: statusDataFilter,

@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
+import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/shopping_items_skeleton.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 import 'package:go_router/go_router.dart';
@@ -87,7 +88,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
                 // Shopping items list
                 Expanded(
                   child: shoppingItemsVm.isLoadingItems
-                      ? _buildItemsSkeleton()
+                      ? ShoppingItemsSkeleton()
                       : _buildShoppingItems(shoppingItemsVm),
                 ),
 
@@ -118,10 +119,18 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
   Widget _buildShoppingItems(ShoppingItemsViewModel shoppingItemsVm) {
     if (shoppingItemsVm.shoppingItems.isEmpty) {
       return Center(
-        child: Text(
-          'Aucun aliment ajouté dans cette liste',
-          style: TextStyle(fontSize: 16, color: AppColors.mutedForeground),
-          textAlign: TextAlign.center,
+        child: Column(
+          mainAxisSize: .min,
+          spacing: 16,
+          children: [
+            SvgPicture.asset('assets/images/food-not-found.svg', width: 200),
+
+            Text(
+              'Aucun aliment ajouté dans \ncette liste',
+              style: TextStyle(fontSize: 16, color: AppColors.mutedForeground),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       );
     }
@@ -133,22 +142,6 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
       itemBuilder: (context, index) {
         final item = shoppingItemsVm.shoppingItems[index];
         return ShoppingItemCard(item: item);
-      },
-    );
-  }
-
-  Widget _buildItemsSkeleton() {
-    return ListView.separated(
-      itemCount: 7,
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
-      itemBuilder: (context, index) {
-        return const SkeletonLine(
-          style: SkeletonLineStyle(
-            height: 100,
-            width: double.infinity,
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-          ),
-        );
       },
     );
   }

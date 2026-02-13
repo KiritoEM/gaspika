@@ -14,6 +14,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 23),
       title: const Text(
         'Supprimer la liste',
         style: TextStyle(fontWeight: .bold),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/shared/date_picker.dart';
@@ -88,6 +89,16 @@ class CreateListBottomsheet {
                             Navigator.of(context).pop();
 
                             if (shoppingListVm.hasGenerateError) {
+                              if (shoppingListVm.generateErrorType ==
+                                  NetworkErrorType.conflict) {
+                                Toastify.show(
+                                  context,
+                                  message: shoppingListVm.generateErrorMessage,
+                                  type: ToastType.info,
+                                );
+                                return;
+                              }
+
                               Toastify.show(
                                 context,
                                 message: shoppingListVm.generateErrorMessage,

@@ -136,29 +136,42 @@ class _ShopListScreenState extends State<ShopListScreen> {
       );
     }
 
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Container(
-        padding: EdgeInsets.all(23),
-        child: Column(
-          children: [
-            ShoppingListStatusFilter(
-              selectedStatus: shoppingListVm.statusFilter,
-              statusList: statusDataFilter,
-              onSelect: (ShoppingListStatus status) {
-                shoppingListVm.changeStatusFilter(status);
-              },
-            ),
-            SizedBox(height: 24),
-            if (shoppingListVm.isLoadingList)
-              ShoppingListSkeleton()
-            else if (!isListEmpty)
-              _buildShoppingList(shoppingListVm)
-            else
-              ShoppingListEmptyState(),
-          ],
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(23, 20, 23, 0),
+          child: ShoppingListStatusFilter(
+            selectedStatus: shoppingListVm.statusFilter,
+            statusList: statusDataFilter,
+            onSelect: (ShoppingListStatus status) {
+              shoppingListVm.changeStatusFilter(status);
+            },
+          ),
         ),
-      ),
+
+        SizedBox(height: 24),
+
+        // Contenu scrollable
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 23),
+              child: Column(
+                children: [
+                  if (shoppingListVm.isLoadingList)
+                    ShoppingListSkeleton()
+                  else if (!isListEmpty)
+                    _buildShoppingList(shoppingListVm)
+                  else
+                    ShoppingListEmptyState(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

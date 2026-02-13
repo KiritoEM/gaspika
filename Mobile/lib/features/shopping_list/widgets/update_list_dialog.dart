@@ -25,65 +25,59 @@ class UpdateListDialog extends StatelessWidget {
     shoppingListVm.listNameController.text = listName;
 
     return AlertDialog(
-      title: const Text(
+      insetPadding: EdgeInsets.symmetric(horizontal: 23),
+      title: Text(
         'Modifier la liste',
-        style: TextStyle(fontWeight: .bold),
+        style: TextStyle(fontWeight: FontWeight.bold),
       ),
-
-      content: Column(
-        mainAxisSize: .min,
-        children: [
-          FormBlock(
-            label: 'Nouveau nom de la liste',
-            child: TextField(
-              controller: shoppingListVm.listNameController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Entrez un nouveau nom',
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FormBlock(
+              label: 'Nouveau nom de la liste',
+              child: TextField(
+                controller: shoppingListVm.listNameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Entrez un nouveau nom',
+                ),
+                autofocus: true,
               ),
-              autofocus: true,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-
       backgroundColor: Colors.white,
-
       actions: [
-        Container(
-          margin: EdgeInsets.only(top: 8),
-          child: Row(
-            spacing: 8,
-
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.mutedForeground,
-                  ),
-                  child: const Text('Annuler'),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.mutedForeground,
                 ),
+                child: const Text('Annuler'),
               ),
-
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: shoppingListVm.listNameController.text.isEmpty
-                      ? null
-                      : () {
-                          Navigator.pop(context);
-                          onUpdate();
-                        },
-                  child: const Text('Modifier'),
-                ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(foregroundColor: Colors.white),
+                onPressed: shoppingListVm.listNameController.text.isEmpty
+                    ? null
+                    : () {
+                        Navigator.pop(context);
+                        onUpdate();
+                      },
+                child: const Text('Modifier'),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );

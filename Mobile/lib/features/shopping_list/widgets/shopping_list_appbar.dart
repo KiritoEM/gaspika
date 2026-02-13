@@ -13,7 +13,7 @@ class ShoppingListAppbar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
       child: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

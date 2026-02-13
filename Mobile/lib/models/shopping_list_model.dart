@@ -76,8 +76,7 @@ class ShoppingListModel {
           hasError: true,
           message:
               'Une liste de course existe déja pour cette semaine séléctionnée.',
-          errorType:
-              NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+          errorType: NetworkErrorType.conflict,
         );
       }
 

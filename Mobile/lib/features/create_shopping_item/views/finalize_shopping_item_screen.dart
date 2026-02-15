@@ -3,23 +3,90 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_shopping_item_viewmodel.dart';
 import 'package:gaspika_mobile/shared/badge_field.dart';
-import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/upload_image.dart';
-import 'package:gaspika_mobile/shared/button_with_loader.dart';
+import 'package:gaspika_mobile/shared/upload_image.dart';
 import 'package:gaspika_mobile/shared/form_block.dart';
 import 'package:gaspika_mobile/shared/progress_indicator.dart';
-import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_toastify/my_toastify.dart';
 import 'package:provider/provider.dart';
 
-class FinalizeShoppingItemScreen extends StatelessWidget {
-  final String id;
+class FinalizeShoppingItemScreen extends StatefulWidget {
+  final String listId;
 
-  const FinalizeShoppingItemScreen({super.key, required this.id});
+  const FinalizeShoppingItemScreen({super.key, required this.listId});
+
+  @override
+  State<FinalizeShoppingItemScreen> createState() =>
+      _FinalizeShoppingItemScreenState();
+}
+
+class _FinalizeShoppingItemScreenState
+    extends State<FinalizeShoppingItemScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    final createShoppingItemVm = Provider.of<CreateShoppingItemViewModel>(
+      context,
+      listen: false,
+    );
+
+    // init quantity input default value
+    createShoppingItemVm.quantityController.text = createShoppingItemVm
+        .data
+        .recommendedQuantity
+        .toString();
+  }
+
+  Future _handleSubmit(
+    BuildContext context,
+    CreateShoppingItemViewModel createShoppingItemVm,
+  ) async {
+    if (context.mounted) {
+      context.go(NavigationConstant.SHOPPING_LISTS_ROUTE);
+    }
+
+    createShoppingItemVm
+        .createAliment(int.parse(widget.listId))
+        .then((_) {
+          if (context.mounted) {
+            if (createShoppingItemVm.hasCreateFoodError) {
+              Toastify.show(
+                context,
+                message:
+                    createShoppingItemVm.createFoodErrorMessage ??
+                    'Erreur lors de l\'ajout',
+                type:
+                    createShoppingItemVm.createFoodErrorType ==
+                        NetworkErrorType.conflict
+                    ? ToastType.info
+                    : ToastType.error,
+              );
+            } else {
+              Toastify.show(
+                context,
+                message: 'Aliment ajouté avec succès',
+                type: ToastType.success,
+              );
+            }
+          }
+        })
+        .catchError((error) {
+          // Erreur non catchée
+          if (context.mounted) {
+            Toastify.show(
+              context,
+              message: 'Erreur inattendue',
+              type: ToastType.error,
+            );
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +157,22 @@ class FinalizeShoppingItemScreen extends StatelessWidget {
 
             Column(
               children: [
-                BadgeField(
-                  label: 'Quantité recommandée',
-                  value:
-                      '${createShoppingItemVm.data.recommendedQuantity.toString()} ${UnitUtils.getQuantityUnitText(createShoppingItemVm.data.unit)}',
+                FormBlock(
+                  label:
+                      'Quantité recommandée(en ${UnitUtils.getQuantityUnitText(createShoppingItemVm.data.unit)})',
+                  isRequired: false,
+
+                  child: TextField(
+                    controller: createShoppingItemVm.quantityController,
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'ex:3.4',
+                    ),
+                  ),
                 ),
 
                 SizedBox(height: 24),
@@ -116,49 +195,29 @@ class FinalizeShoppingItemScreen extends StatelessWidget {
                 SizedBox(height: 24),
 
                 FormBlock(
-                  label: 'Image de l\'aliment',
-                  isRequired: true,
+                  label: 'Image de l\'aliment(optionnel)',
+                  isRequired: false,
                   child: UploadImage(
                     image: createShoppingItemVm.image,
-                    error: createShoppingItemVm.uploadImageError,
+                    error: createShoppingItemVm.uploadImageErrorMessage,
                     onTap: () => createShoppingItemVm.pickImage(),
                     onRemove: () => createShoppingItemVm.removeImage(),
                   ),
                 ),
+
                 const SizedBox(height: 40),
 
                 SizedBox(
                   width: double.infinity,
-                  child: ButtonWithLoader(
-                    isLoading: createShoppingItemVm.isCreating,
-                    text: 'Ajouter l\'aliment',
-                    loadingText: 'Ajout en cours...',
-                    onPressed: createShoppingItemVm.image == null
+                  child: ElevatedButton(
+                    onPressed:
+                        createShoppingItemVm.data.recommendedQuantity
+                            .toString()
+                            .isEmpty
                         ? null
-                        : () async {
-                            final error = await createShoppingItemVm
-                                .createAliment(int.parse(id));
-
-                            if (error == null) {
-                              Toastify.show(
-                                context,
-                                message: 'Aliment ajouté avec succès',
-                                type: ToastType.success,
-                              );
-
-                              AppLogger.logger.i(int.parse(id));
-
-                              context.go(
-                                NavigationConstant.SHOPPING_LISTS_ROUTE,
-                              );
-                            } else {
-                              Toastify.show(
-                                context,
-                                message: error,
-                                type: ToastType.error,
-                              );
-                            }
-                          },
+                        : () async =>
+                              _handleSubmit(context, createShoppingItemVm),
+                    child: Text('Ajouter l\'aliment'),
                   ),
                 ),
               ],

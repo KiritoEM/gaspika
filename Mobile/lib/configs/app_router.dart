@@ -64,18 +64,19 @@ class AppRouter {
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),
       GoRoute(
-        path: '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/:id',
+        path: '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/:listId',
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return CreateShoppingItemScreen(id: id);
+          final listId = state.pathParameters['listId']!;
+          return CreateShoppingItemScreen(listId: listId);
         },
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),
       GoRoute(
-        path: '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/:id/finalize',
+        path:
+            '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/:listId/finalize',
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return FinalizeShoppingItemScreen(id: id);
+          final listId = state.pathParameters['listId']!;
+          return FinalizeShoppingItemScreen(listId: listId);
         },
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),

@@ -75,21 +75,37 @@ class ShoppingService {
     final response = await _dio.get(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/items',
     );
+
+    return response.data['data'] as List<dynamic>;
+  }
+
+  Future<List<dynamic>> getFoodSuggestion(String query) async {
+    final response = await _dio.get(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/suggestion',
+      queryParameters: {'food_name': query},
+    );
+
     return response.data['data'] as List<dynamic>;
   }
 
   Future createShoppingItem(
     CreateShoppingItemSchema item,
     int listId,
-    File image,
+    File? image,
   ) async {
-    FormData formData = FormData.fromMap({
-      ...item.toMap(),
-      'image': await MultipartFile.fromFile(
-        image.path,
-        filename: image.path.split('/').last,
-      ),
-    });
+    FormData formData = FormData.fromMap({...item.toMap()});
+
+    if (image != null) {
+      formData.files.add(
+        MapEntry(
+          'image',
+          await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+          ),
+        ),
+      );
+    }
 
     await _dio.post(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',

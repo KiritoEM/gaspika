@@ -2,12 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_shopping_item_viewmodel.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/analysis_overlay.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/food_autocomplete_view.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/unit_item.dart';
-import 'package:gaspika_mobile/shared/button_with_loader.dart';
+import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/form_block.dart';
+import 'package:gaspika_mobile/utils/debounce_timer.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_toastify/my_toastify.dart';
 import 'package:provider/provider.dart';
@@ -59,6 +63,63 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
     {'value': 7, 'label': 'Entretien', 'backendCategory': 'autre'},
   ];
 
+  late final Debounceable<List<ShoppingListItem>?, String> _debouncedSearch;
+
+  Future _handleSubmitForm(
+    BuildContext context,
+    CreateShoppingItemViewModel createShoppingItemVm,
+  ) async {
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return ListenableBuilder(
+          listenable: createShoppingItemVm,
+          builder: (context, child) {
+            return AnalysisOverlay();
+          },
+        );
+      },
+    );
+
+    await createShoppingItemVm.submitFormOne(widget.listId);
+
+    if (!mounted) return;
+
+    if (createShoppingItemVm.hasSubmitStepOneError == true) {
+      Toastify.show(
+        context,
+        message: createShoppingItemVm.submitStepOneErrorMessage!,
+        type: ToastType.error,
+      );
+      Navigator.of(context, rootNavigator: true).pop(true);
+
+      return;
+    }
+
+    context.push(
+      '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}/finalize',
+    );
+
+    Navigator.of(context, rootNavigator: true).pop(true);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final createShoppingItemVm = Provider.of<CreateShoppingItemViewModel>(
+      context,
+      listen: false,
+    );
+
+    _debouncedSearch = DebounceUtils.debounce<List<ShoppingListItem>?, String>(
+      createShoppingItemVm.searchFoodName,
+      const Duration(milliseconds: 500),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final createShoppingItemVm = context.watch<CreateShoppingItemViewModel>();
@@ -72,21 +133,60 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
               FormBlock(
                 label: 'Nom de l\'aliment',
                 isRequired: true,
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Ex: Tomate, Riz, Poulet...',
-                  ),
-                  textCapitalization: TextCapitalization.words,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Veuillez entrer un nom d\'aliment';
+                child: Autocomplete<ShoppingListItem>(
+                  fieldViewBuilder:
+                      (
+                        context,
+                        textEditingController,
+                        focusNode,
+                        onFieldSubmitted,
+                      ) {
+                        return TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: 'Ex: Tomate, Riz, Poulet...',
+                          ),
+                          focusNode: focusNode,
+                          controller: textEditingController,
+                          textCapitalization: TextCapitalization.words,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Veuillez entrer un nom d\'aliment';
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (String value) {
+                            onFieldSubmitted();
+                          },
+                          onSaved: (value) {
+                            if (value != null) {
+                              createShoppingItemVm.setName(value);
+                            }
+                          },
+                        );
+                      },
+                  displayStringForOption: (ShoppingListItem option) =>
+                      option.foodName,
+                  optionsBuilder: (textEditingValue) async {
+                    if (textEditingValue.text.isEmpty) {
+                      return [];
                     }
-                    return null;
+
+                    final options = await _debouncedSearch(
+                      textEditingValue.text,
+                    );
+
+                    return options ?? const Iterable<ShoppingListItem>.empty();
                   },
-                  onSaved: (value) {
-                    if (value != null) {
-                      createShoppingItemVm.setName(value);
-                    }
+                  optionsViewBuilder: (context, onSelected, options) =>
+                      FoodAutocompleteView(
+                        options: options,
+                        onSelect: (option) => onSelected(option),
+                      ),
+                  onSelected: (option) {
+                    createShoppingItemVm.setName(option.foodName);
+
+                    // seed category select with selected food
+                    createShoppingItemVm.setCategoryId(option.categoryId!);
                   },
                 ),
               ),
@@ -249,26 +349,16 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
 
               SizedBox(
                 width: double.infinity,
-                child: ButtonWithLoader(
-                  isLoading: createShoppingItemVm.isPredicting,
-                  text: 'Continuer',
-                  loadingText: 'Analyse en cours...',
+                child: ElevatedButton.icon(
                   onPressed: () async {
-                    final message = await createShoppingItemVm.submitFormOne(
-                      widget.listId,
-                    );
-
-                    if (!mounted) return;
-
-                    if (message != null) {
-                      Toastify.show(context, message: message);
-                      return;
-                    }
-
-                    context.push(
-                      '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}/finalize',
-                    );
+                    _handleSubmitForm(context, createShoppingItemVm);
                   },
+                  label: Text('Continuer'),
+                  iconAlignment: .end,
+                  icon: SvgPicture.asset(
+                    'assets/icons/arrow-right-broken.svg',
+                    width: 20,
+                  ),
                 ),
               ),
             ],

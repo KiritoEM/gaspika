@@ -37,37 +37,27 @@ class ShoppingListViewModel extends ChangeNotifier {
   String _updateErrorMessage = '';
   NetworkErrorType? _updateErrorType;
   PeriodFilterEnum? _periodFilter;
-
   List<ShoppingList> _shoppingWeekItems = [];
   DateTime _selectedDate = DateTime.now();
   ShoppingListStatus _statusFilter = ShoppingListStatus.all;
 
-  // loading getters
+  // getters
   bool get isLoadingList => _isLoadingList;
   bool get isGeneratingList => _isGeneratingList;
   bool get isDeletingList => _isDeletingList;
   bool get isUpdatingList => _isUpdatingList;
-
-  // fetching error getters
   bool get hasFetchError => _hasFetchError;
   String get fetchErrorMessage => _fetchErrorMessage;
   NetworkErrorType? get fetchErrorType => _fetchErrorType;
-
-  // generation error getters
   bool get hasGenerateError => _hasGenerateError;
   String get generateErrorMessage => _generateErrorMessage;
   NetworkErrorType? get generateErrorType => _generateErrorType;
-
-  // updade error getters
   bool get hasUpdateError => _hasUpdateError;
   String get updateErrorMessage => _updateErrorMessage;
   NetworkErrorType? get updateErrorType => _updateErrorType;
-
-  // delete error getters
   bool get hasDeleteError => _hasDeleteError;
   String get deleteErrorMessage => _deleteErrorMessage;
   NetworkErrorType? get deleteErrorType => _deleteErrorType;
-
   List<ShoppingList> get shoppingWeekItems => _shoppingWeekItems;
   DateTime get selectedDate => _selectedDate;
   ShoppingListStatus get statusFilter => _statusFilter;

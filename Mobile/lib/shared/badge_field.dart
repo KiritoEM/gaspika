@@ -18,7 +18,7 @@ class BadgeField extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color.fromARGB(88, 208, 222, 126),
+            color: const Color.fromARGB(51, 208, 222, 126),
             border: BoxBorder.all(color: AppColors.secondary),
             borderRadius: BorderRadius.circular(12),
           ),

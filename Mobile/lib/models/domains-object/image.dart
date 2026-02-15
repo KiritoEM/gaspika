@@ -6,11 +6,11 @@ class Image {
   final String updatedAt;
 
   const Image({
-    this.id,
     required this.filename,
     required this.size,
     required this.path,
     required this.updatedAt,
+    this.id,
   });
 
   factory Image.fromJson(Map<String, dynamic> json) {

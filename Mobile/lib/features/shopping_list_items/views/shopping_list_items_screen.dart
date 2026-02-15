@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/shopping_items_skeleton.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
@@ -102,7 +103,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
                         child: ElevatedButton.icon(
                           onPressed: isCurrentOrFutureWeek == true
                               ? () => context.push(
-                                  '/create-shopping-item/${widget.id}',
+                                  '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.id}',
                                 )
                               : null,
                           label: const Text('Ajouter un aliment'),

@@ -93,7 +93,7 @@ class UploadImage extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                margin: EdgeInsets.all(16),
+                margin: EdgeInsets.all(12),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -106,7 +106,7 @@ class UploadImage extends StatelessWidget {
                     Text(
                       'Cliquez pour télécharger une image',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: AppColors.foreground,
                       ),

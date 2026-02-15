@@ -21,6 +21,7 @@ class FoodDetailsScreen extends StatefulWidget {
   State<FoodDetailsScreen> createState() => _FoodDetailsViewScreenState();
 }
 
+
 class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
   @override
   void initState() {

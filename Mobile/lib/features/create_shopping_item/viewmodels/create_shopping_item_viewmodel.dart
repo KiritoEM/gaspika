@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/ml_model.dart';
 import 'package:gaspika_mobile/models/shopping_items_model.dart';
 import 'package:gaspika_mobile/models/schemas/createItem.dart';
@@ -13,6 +14,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   final ShoppingItemsModel _shoppingItemsModel = ShoppingItemsModel();
   final ImagePicker _picker = ImagePicker();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  TextEditingController quantityController = TextEditingController(text: '');
 
   final CreateShoppingItemSchema _data = CreateShoppingItemSchema(
     foodName: '',
@@ -23,7 +25,13 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   bool _isPredicting = false;
   bool _isCreating = false;
   File? _image;
-  String? _uploadImageError;
+  String _uploadImageErrorMessage = '';
+  bool _hasSubmitStepOneError = false;
+  String _submitStepOneErrorMessage = '';
+  NetworkErrorType? _submitStepOneErrorType;
+  bool _hasCreateFoodError = false;
+  String _createFoodErrorMessage = '';
+  NetworkErrorType? _createFoodErrorType;
 
   // getters
   CreateShoppingItemSchema get data => _data;
@@ -31,7 +39,13 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   bool get isCreating => _isCreating;
   GlobalKey<FormState> get formkey => _formkey;
   File? get image => _image;
-  String? get uploadImageError => _uploadImageError;
+  String get uploadImageErrorMessage => _uploadImageErrorMessage;
+  String? get submitStepOneErrorMessage => _submitStepOneErrorMessage;
+  bool get hasSubmitStepOneError => _hasSubmitStepOneError;
+  NetworkErrorType? get submitStepOneErrorType => _submitStepOneErrorType;
+  bool get hasCreateFoodError => _hasCreateFoodError;
+  String? get createFoodErrorMessage => _createFoodErrorMessage;
+  NetworkErrorType? get createFoodErrorType => _createFoodErrorType;
 
   //form setters
   void setName(String value) {
@@ -102,18 +116,17 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
         final file = File(picked.path);
         final fileSize = await file.length();
 
-        // Vérifier la taille (10MB max)
         if (fileSize > 10 * 1024 * 1024) {
-          _uploadImageError = 'L\'image est trop volumineuse (max 10MB)';
+          _uploadImageErrorMessage = 'L\'image est trop volumineuse (max 10MB)';
           _image = null;
         } else {
           _image = file;
-          _uploadImageError = null;
+          _uploadImageErrorMessage = '';
         }
         notifyListeners();
       }
     } catch (e) {
-      _uploadImageError = 'Erreur lors du chargement de l\'image';
+      _uploadImageErrorMessage = 'Erreur lors du chargement de l\'image';
       AppLogger.logger.e('Error picking image: $e');
       notifyListeners();
     }
@@ -122,12 +135,16 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   // remove image preview
   void removeImage() {
     _image = null;
-    _uploadImageError = null;
+    _uploadImageErrorMessage = '';
     notifyListeners();
   }
 
   // Make prediction (form step 1)
-  Future<String?> submitFormOne(int listId) async {
+  Future submitFormOne(int listId) async {
+    _hasSubmitStepOneError = false;
+    _submitStepOneErrorMessage = '';
+    _submitStepOneErrorType = null;
+
     _isPredicting = true;
     notifyListeners();
 
@@ -139,6 +156,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
 
     _formkey.currentState!.save();
 
+    // predict quantity and conservation duration
     final results = await Future.wait([
       _mlModel.predictQuantity(_data),
       _mlModel.predictConservationDuration(_data),
@@ -149,16 +167,18 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
 
     if (quantityResponse.hasError == true) {
       _isPredicting = false;
+      _submitStepOneErrorMessage = quantityResponse.message!;
       notifyListeners();
-      return quantityResponse.message ??
-          'Erreur lors de la prédiction de quantité';
+
+      return;
     }
 
     if (conservationResponse.hasError == true) {
       _isPredicting = false;
+      _submitStepOneErrorMessage = conservationResponse.message!;
       notifyListeners();
-      return conservationResponse.message ??
-          'Erreur lors de la prédiction de conservation';
+
+      return;
     }
 
     if (quantityResponse.data != null) {
@@ -190,42 +210,59 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
 
     _isPredicting = false;
     notifyListeners();
-
-    return null;
   }
 
   // Create aliment (form step 2)
-  Future<String?> createAliment(int listId) async {
-    if (_image == null) {
-      return 'Veuillez sélectionner une image';
-    }
-
+  Future createAliment(int listId) async {
     _isCreating = true;
+    _hasCreateFoodError = false;
+    _createFoodErrorMessage = '';
+    _createFoodErrorType = null;
     notifyListeners();
 
-    try {
-      final response = await _shoppingItemsModel.createShoppingItem(
-        _data,
-        listId,
-        _image!,
-      );
-
-      _isCreating = false;
-      notifyListeners();
-
-      if (response.hasError == true) {
-        return response.message ?? 'Erreur lors de la création de l\'aliment';
-      }
-
-      notifyListeners();
-
-      return null;
-    } catch (e) {
-      _isCreating = false;
-      notifyListeners();
-
-      AppLogger.logger.e('Unexpected error creating aliment: $e');
-      return 'Erreur inattendue lors de la création de l\'aliment';
+    // if quantity was changed then change the final data quantity
+    if (_data.recommendedQuantity != double.tryParse(quantityController.text)) {
+      setQuantity(quantityController.text);
     }
+
+    final response = await _shoppingItemsModel.createShoppingItem(
+      _data,
+      listId,
+      _image,
+    );
+
+    _isCreating = false;
+    notifyListeners();
+
+    if (response.hasError == true) {
+      _hasCreateFoodError = true;
+      _createFoodErrorMessage = response.message!;
+      _createFoodErrorType = response.errorType!;
+      notifyListeners();
+
+      return;
+    }
+
+    notifyListeners();
+
+    _isCreating = false;
+    notifyListeners();
+  }
+
+  // get food suggestions
+  Future<List<ShoppingListItem>> searchFoodName(String query) async {
+    final response = await _shoppingItemsModel.getFoodSuggestion(query);
+
+    if (response.hasError == true) {
+      return [];
+    }
+
+    return response.data!;
+  }
+
+  @override
+  void dispose() {
+    quantityController.dispose();
+    super.dispose();
   }
 }

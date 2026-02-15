@@ -1,4 +1,5 @@
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/domains-object/category.dart';
 import 'package:gaspika_mobile/models/domains-object/image.dart';
 
 // ========= ShoppingListItem =========
@@ -19,6 +20,7 @@ class ShoppingListItem {
   final int? conservationDuration;
   final String createdAt;
   final String updatedAt;
+  final Category category;
 
   ShoppingListItem({
     this.id,
@@ -34,6 +36,7 @@ class ShoppingListItem {
     this.categoryId,
     required this.quantityUnit,
     required this.image,
+    required this.category,
     this.conservationDuration,
     required this.createdAt,
     required this.updatedAt,
@@ -61,6 +64,7 @@ class ShoppingListItem {
           ? Image.fromJson(json['image'] as Map<String, dynamic>)
           : null,
       conservationDuration: json['default_shelf_life_day'] as int?,
+      category: Category.fromJson(json['category'] as Map<String, dynamic>),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );

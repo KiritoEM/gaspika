@@ -86,7 +86,7 @@ class ShoppingItemsModel {
 
       await Future.delayed(const Duration(seconds: 2));
 
-      return ApiResponse(data: items, message: 'Aliments recuperés.');
+      return ApiResponse(data: items, message: 'Aliments récuperés.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while fetching shopping items: ${err.response?.statusCode} - ${err.message}',
@@ -106,10 +106,42 @@ class ShoppingItemsModel {
     }
   }
 
+  Future<ApiResponse<List<ShoppingListItem>>> getFoodSuggestion(
+    String query,
+  ) async {
+    try {
+      final response = await _shoppingService.getFoodSuggestion(query);
+
+      final items = response
+          .map((e) => ShoppingListItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      return ApiResponse(data: items, message: 'Aliments suggérés récuperés.');
+    } on DioException catch (err) {
+      AppLogger.logger.e(
+        'DioException while fetching shopping items: ${err.response?.statusCode} - ${err.message}',
+      );
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
+    } catch (err) {
+      AppLogger.logger.e('Error while fetching suggestion: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de récupérer les aliments suggérés.',
+      );
+    }
+  }
+
   Future<ApiResponse> createShoppingItem(
     CreateShoppingItemSchema item,
     int listId,
-    File image,
+    File? image,
   ) async {
     try {
       await _shoppingService.createShoppingItem(item, listId, image);
@@ -121,6 +153,15 @@ class ShoppingItemsModel {
       AppLogger.logger.e(
         'DioException while creating shopping item: ${err.response?.statusCode} - ${err.message}',
       );
+
+      if (err.response?.statusCode == 409) {
+        return ApiResponse(
+          hasError: true,
+          message: 'Un aliment avec ce nom existe déja dans cette semaine.',
+          errorType: NetworkErrorType.conflict,
+        );
+      }
+
       return ApiResponse(
         hasError: true,
         message: NetworkErrorHandler.handleError(err)['message'],

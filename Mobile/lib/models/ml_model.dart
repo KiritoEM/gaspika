@@ -33,7 +33,8 @@ class MlModel {
       AppLogger.logger.e('Error while predicting quantity: $err');
       return ApiResponse(
         hasError: true,
-        message: 'Impossible de prédire la quantité.',
+        message:
+            'Une erreur s\'est produite lors de la prédiction de la quantité.',
       );
     }
   }
@@ -62,7 +63,8 @@ class MlModel {
       AppLogger.logger.e('Error while predicting conservation duration: $err');
       return ApiResponse(
         hasError: true,
-        message: 'Impossible de prédire la durée de conservation.',
+        message:
+            'Une erreur s\'est produite lors de la prédiction de la durée de conservation.',
       );
     }
   }

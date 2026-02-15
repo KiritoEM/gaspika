@@ -8,9 +8,9 @@ import 'package:gaspika_mobile/shared/progress_indicator.dart';
 import 'package:go_router/go_router.dart';
 
 class CreateShoppingItemScreen extends StatelessWidget {
-  final String id;
+  final String listId;
 
-  const CreateShoppingItemScreen({super.key, required this.id});
+  const CreateShoppingItemScreen({super.key, required this.listId});
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class CreateShoppingItemScreen extends StatelessWidget {
 
             SizedBox(height: 32),
 
-            CreateShoppingItemForm(listId: int.parse(id)),
+            CreateShoppingItemForm(listId: int.parse(listId)),
           ],
         ),
       ),

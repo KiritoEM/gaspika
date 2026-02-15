@@ -8,7 +8,7 @@ from app.features.shopping_items.shopping_items_repository import ShoppingItemsR
 from app.core.database import db_session
 from app.features.shopping_items.shopping_items_service import ShoppingItemsServices
 from app.core.middlewares.auth_middleware import require_user
-from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, GetAllShoppingItemsDTO, BaseShoppingListItem, UpdateShoppingItemDTO, GetShoppingItemOutDTO, UpdateShoppingItemOutDTO
+from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, FoodSuggestionFilterParams, GetAllShoppingItemsDTO, BaseShoppingListItem, UpdateShoppingItemDTO, GetShoppingItemOutDTO, UpdateShoppingItemOutDTO
 from sqlalchemy.ext.asyncio import AsyncSession
 
 shopping_items_router = APIRouter(prefix="/shopping-items", tags=["Shopping Items"], dependencies=[Depends(require_user)])
@@ -95,6 +95,29 @@ async def get_shopping_item(
     
     return {
         "data" : shopping_item
+    }
+    
+
+@shopping_items_router.get(
+"/suggestion",
+tags=["Shopping Items"], 
+response_model=GetAllShoppingItemsDTO,
+summary="Obtenir une suggestion d'aliment si l'utilisateur tape un nom d'aliment",
+responses={
+    200: {"description": "Suggestions récupérés avec succés"},
+    422: {"description": "Données invalides"},
+},  
+status_code=200
+)
+async def get_food_suggestion(
+    request: Request,
+    query: FoodSuggestionFilterParams = Depends(),
+    service: ShoppingItemsServices = Depends(get_shopping_items_services)
+):
+    shopping_items = await service.search_food_by_name(request.state.user.id, query.food_name)
+    
+    return {
+        "data" : shopping_items
     }
 
 @shopping_items_router.get(

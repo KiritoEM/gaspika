@@ -101,10 +101,14 @@ class GetShoppingItemOutDTO(BaseModel):
     class Config:
         from_attributes = True
 
-
 # Get shopping items response schema
 class GetAllShoppingItemsDTO(BaseModel):
     data: list[BaseShoppingListItem]
 
     class Config:
         from_attributes = True
+
+
+# Get all shopping lists filter params
+class FoodSuggestionFilterParams(BaseModel):
+    food_name: str = Field(..., description="Nom de l'aliment a rechercher")

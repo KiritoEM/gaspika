@@ -23,6 +23,11 @@ class ShoppingItemsServices:
         self.userRepo = userRepo
         self.imageRepo = imageRepo
         self.storageProvider = storageProvider
+        
+        
+    async def search_food_by_name(self,  user_id: str, query: str):
+        return await self.shoppingItemRepo.search_by_food_name(query, user_id)
+    
 
     async def add_item_to_list(self, list_id: int, user_id: str, payload: CreateShoppingItemDTO):        
         # Verify list exists

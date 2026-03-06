@@ -24,7 +24,7 @@ class FoodDetailsScreen extends StatefulWidget {
 }
 
 class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
-  Future _handleDeleteList(
+  Future _handleDeleteItem(
     BuildContext context,
     int itemId,
     FoodDetailsViewmodel foodDetailsVm,
@@ -41,6 +41,27 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
         message: foodDetailsVm.deleteErrorMessage,
         type: ToastType.error,
       );
+    }
+  }
+
+  Future _handleCompleteItem(FoodDetailsViewmodel foodDetailsVm) async {
+    await foodDetailsVm.markItemAsComplete(int.parse(widget.id));
+
+    if (!mounted) return;
+
+    if (foodDetailsVm.hasError) {
+      Toastify.show(
+        context,
+        message: foodDetailsVm.errorMessage,
+        type: ToastType.error,
+      );
+    } else {
+      Toastify.show(
+        context,
+        message: 'Aliment marqué comme acheté',
+        type: ToastType.success,
+      );
+      context.pop(true);
     }
   }
 
@@ -69,7 +90,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
             context,
             foodDetailsVm,
             () =>
-                _handleDeleteList(context, int.parse(widget.id), foodDetailsVm),
+                _handleDeleteItem(context, int.parse(widget.id), foodDetailsVm),
           );
         },
         onGoBack: () => context.pop(true),
@@ -109,28 +130,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
       text: isPurchased ? 'Déjà acheté' : 'Marquer comme acheté',
       loadingText: 'Marquage en cours...',
       isLoading: isLoading,
-      onPressed: isPurchased
-          ? null
-          : () async {
-              await foodDetailsVm.markItemAsComplete(int.parse(widget.id));
-
-              if (!mounted) return;
-
-              if (foodDetailsVm.hasError) {
-                Toastify.show(
-                  context,
-                  message: foodDetailsVm.errorMessage,
-                  type: ToastType.error,
-                );
-              } else {
-                Toastify.show(
-                  context,
-                  message: 'Aliment marqué comme acheté',
-                  type: ToastType.success,
-                );
-                context.pop(true);
-              }
-            },
+      onPressed: isPurchased ? null : () => _handleCompleteItem(foodDetailsVm),
       style: isPurchased
           ? ElevatedButton.styleFrom(
               backgroundColor: AppColors.mutedForeground.withOpacity(0.3),

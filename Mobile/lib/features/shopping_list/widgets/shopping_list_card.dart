@@ -29,7 +29,7 @@ class ShoppingListCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         context.push(
-          '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${item.id}?name=${item.name}&week=${item.weekNumber}',
+          '${NavigationConstant.SHOPPING_LISTS_ROUTE}/${item.id}?name=${item.name}&week=${item.weekNumber}',
         );
       },
       child: Container(

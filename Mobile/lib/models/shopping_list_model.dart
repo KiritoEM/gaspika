@@ -62,10 +62,7 @@ class ShoppingListModel {
 
       await Future.delayed(const Duration(milliseconds: 500));
 
-      return ApiResponse(
-        data: 'success',
-        message: 'Liste de courses générée avec succès.',
-      );
+      return ApiResponse(message: 'Liste de courses générée avec succès.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while generating shopping list: ${err.response?.statusCode} - ${err.message}',
@@ -104,10 +101,7 @@ class ShoppingListModel {
 
       await Future.delayed(const Duration(milliseconds: 500));
 
-      return ApiResponse(
-        data: 'success',
-        message: 'Liste de courses modifiée avec succès.',
-      );
+      return ApiResponse(message: 'Liste de courses modifiée avec succès.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while updating shopping list: ${err.response?.statusCode} - ${err.message}',
@@ -132,10 +126,7 @@ class ShoppingListModel {
     try {
       await _shoppingService.deleteShoppingList(listId);
 
-      return ApiResponse(
-        data: 'success',
-        message: 'Liste de courses supprimée avec succès.',
-      );
+      return ApiResponse(message: 'Liste de courses supprimée avec succès.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while generating shopping list: ${err.response?.statusCode} - ${err.message}',

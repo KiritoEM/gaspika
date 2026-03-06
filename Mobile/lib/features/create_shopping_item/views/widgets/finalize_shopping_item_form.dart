@@ -39,7 +39,9 @@ class _FinalizeShoppingItemFormState extends State<FinalizeShoppingItemForm> {
       CreateShoppingItemViewModel createShoppingItemVm,
     ) async {
       if (context.mounted) {
-        context.go(NavigationConstant.SHOPPING_LISTS_ROUTE);
+        context.push(
+          '${NavigationConstant.SHOPPING_LISTS_ROUTE}/${widget.listId}?name=${widget.listName}&week=${widget.weekNumber}',
+        );
       }
 
       createShoppingItemVm
@@ -57,12 +59,6 @@ class _FinalizeShoppingItemFormState extends State<FinalizeShoppingItemForm> {
                           NetworkErrorType.conflict
                       ? ToastType.info
                       : ToastType.error,
-                );
-              } else {
-                Toastify.show(
-                  context,
-                  message: 'Aliment ajouté avec succès',
-                  type: ToastType.success,
                 );
               }
             }

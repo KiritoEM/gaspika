@@ -207,13 +207,11 @@ class ShoppingItemsModel {
 
   Future<ApiResponse<ShoppingListItem>> markAsComplete(int itemId) async {
     try {
-      final response = await _shoppingService.markItemAsComplete(itemId);
-
-      final item = ShoppingListItem.fromJson(response);
+      await _shoppingService.markItemAsComplete(itemId);
 
       await Future.delayed(const Duration(milliseconds: 500));
 
-      return ApiResponse(data: item, message: 'Aliments marqué comme acheté.');
+      return ApiResponse(message: 'Aliments marqué comme acheté.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while marking shopping item: ${err.response?.statusCode} - ${err.message}',

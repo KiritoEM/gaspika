@@ -11,7 +11,7 @@ class FoodDetailsViewmodel extends ChangeNotifier {
   bool _hasError = false;
   String _errorMessage = '';
   NetworkErrorType? _errorType;
-  bool _isDeletingItem = true;
+  bool _isDeletingItem = false;
   bool _hasDeleteError = false;
   String _deleteErrorMessage = '';
   NetworkErrorType? _deleteErrorType;

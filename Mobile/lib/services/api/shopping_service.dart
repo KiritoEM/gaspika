@@ -55,16 +55,11 @@ class ShoppingService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateShoppingList(
-    int listId,
-    String newListName,
-  ) async {
-    final response = await _dio.patch(
+  Future updateShoppingList(int listId, String newListName) async {
+    await _dio.patch(
       '${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId',
       data: {'name': newListName},
     );
-
-    return response.data;
   }
 
   Future deleteShoppingList(int listId) async {
@@ -124,10 +119,9 @@ class ShoppingService {
     return response.data['data'];
   }
 
-  Future<Map<String, dynamic>> markItemAsComplete(int itemId) async {
-    final response = await _dio.patch(
+  Future markItemAsComplete(int itemId) async {
+    await _dio.patch(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId/complete',
     );
-    return response.data;
   }
 }

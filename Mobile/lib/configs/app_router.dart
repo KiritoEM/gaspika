@@ -1,6 +1,7 @@
 /// App router handler
 library;
 
+import 'package:gaspika_mobile/configs/router_observer.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/auth/views/login_screen.dart';
 import 'package:gaspika_mobile/features/auth/views/register_screen.dart';
@@ -17,6 +18,7 @@ import 'package:go_router/go_router.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
+    observers: [routeObserver],
     initialLocation: NavigationConstant.DEFAULT_ROUTE,
     routes: [
       GoRoute(
@@ -68,6 +70,7 @@ class AppRouter {
         path: '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/:id',
         builder: (context, state) {
           final id = state.pathParameters['id']!;
+
           return FoodDetailsScreen(id: id);
         },
         redirect: (context, state) => RoleGuard().checkAccess(),

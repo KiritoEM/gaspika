@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/configs/router_observer.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/shopping_items_skeleton.dart';
@@ -29,7 +30,8 @@ class ShoppingListItemsScreen extends StatefulWidget {
       _ShoppingListItemsScreenState();
 }
 
-class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
+class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
+    with RouteAware {
   late ShoppingItemsViewModel _shoppingItemsVm;
 
   @override
@@ -39,6 +41,10 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
       context,
       listen: false,
     );
+
+    ModalRoute.of(context)?.settings.name != null
+        ? routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute)
+        : null;
   }
 
   @override
@@ -47,6 +53,18 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
     Future.microtask(() async {
       await _shoppingItemsVm.fetchShoppingItems(int.parse(widget.listId));
     });
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _shoppingItemsVm.refreshItems(int.parse(widget.listId));
   }
 
   @override
@@ -65,12 +83,13 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: SvgPicture.asset('assets/icons/chevron-left.svg', width: 40),
-          onPressed: () => context.go('/shopping-list'),
+          onPressed: () => context.go(NavigationConstant.SHOPPING_LISTS_ROUTE),
         ),
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => shoppingItemsVm.refreshItems(int.parse(widget.listId)),
+          onRefresh: () =>
+              shoppingItemsVm.refreshItems(int.parse(widget.listId)),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(23, 10, 23, 23),
             child: Column(

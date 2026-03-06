@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.features.users.user_schemas import BaseUser, GetUserDTO
+from app.features.devices.device_repository import DeviceRepository
+from app.features.users.user_schemas import GetUserDTO
 from app.features.users.user_repository import UserRepository
 from app.features.users.user_service import UserServices
 from app.core.database import db_session
@@ -9,8 +10,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 user_router = APIRouter(prefix="/user", tags=["Users"], dependencies=[Depends(require_user)])
 
 async def get_users_services(db: AsyncSession = Depends(db_session)) -> UserServices:
-    userRepo = UserRepository(db)
-    return UserServices(userRepo)
+    user_repot = UserRepository(db)
+    device_repot = DeviceRepository(db)
+    
+    return UserServices(user_repot, device_repot)
 
 @user_router.get(
 "/me",

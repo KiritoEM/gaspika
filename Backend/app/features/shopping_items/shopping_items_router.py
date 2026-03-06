@@ -1,5 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, HTTPException, Path, Request
+from app.features.devices.device_repository import DeviceRepository
 from app.core.storages.imgbb import ImgBBProvider
 from app.features.images_upload.image_upload_repository import ImageRepository
 from app.features.users.user_repository import UserRepository
@@ -14,13 +15,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 shopping_items_router = APIRouter(prefix="/shopping-items", tags=["Shopping Items"], dependencies=[Depends(require_user)])
 
 async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) -> ShoppingItemsServices:
-    shoppingListRepo = ShoppingListRepository(db)
-    shoppingItemsRepo = ShoppingItemsRepository(db)
-    userRepo = UserRepository(db)
-    imageRepo = ImageRepository(db)
-    storageProvider = ImgBBProvider()
+    shopping_list_repot = ShoppingListRepository(db)
+    shopping_items_repot = ShoppingItemsRepository(db)
+    user_repot = UserRepository(db)
+    image_repot = ImageRepository(db)
+    device_repot = DeviceRepository(db)
+    storage_provider = ImgBBProvider()
     
-    return ShoppingItemsServices(shoppingListRepo, shoppingItemsRepo, imageRepo, userRepo, storageProvider)
+    return ShoppingItemsServices(
+        shopping_list_repot,
+        shopping_items_repot,
+        image_repot, 
+        user_repot,
+        storage_provider,
+        device_repot
+    )
 
 @shopping_items_router.post(
 "/{list_id}/add", 
@@ -41,10 +50,9 @@ async def add_new_shopping_item(
     list_id: Annotated[int, Path(description="Id de la liste de course")],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
-    created_list =  await service.add_item_to_list(list_id, request.state.user.id, payload)
+    await service.add_item_to_list(list_id, request.state.user.id, payload)
     
     return {
-        "data": created_list,
         "message": "Aliment  ajouté avec avec succés"
     }
 
@@ -167,7 +175,7 @@ async def get_available_shopping_items_count(
     }
 
 @shopping_items_router.patch(
-"/{list_id}/items/{item_id}", 
+"/items/{item_id}", 
 tags=["Shopping Items"],
 response_model=UpdateShoppingItemOutDTO,
 summary="Mettre a jour certaines informations d'un element dans une liste",
@@ -180,12 +188,11 @@ status_code=200
 )
 async def update_shopping_item(
     request: Request,
-    list_id: Annotated[int, Path(description="Id de la la liste")],
     item_id: Annotated[int, Path(description="Id de la l'aliment")],
     payload: UpdateShoppingItemDTO,
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
-    await service.update_shopping_item(item_id, list_id, request.state.user.id, payload)
+    await service.update_shopping_item(item_id, request.state.user.id, payload)
     
     return {
         "message" :"Aliment modifié avec succés."
@@ -195,7 +202,7 @@ async def update_shopping_item(
 @shopping_items_router.patch(
 "/items/{item_id}/complete", 
 tags=["Shopping Items"], 
-response_model=BaseShoppingListItem,
+response_model=UpdateShoppingItemOutDTO, 
 summary="Marquer un aliment comme acheté",
 responses={
     200: {"description": "Aliment marqué comme acheté"},
@@ -209,22 +216,25 @@ async def mark_item_as_complete(
     item_id: Annotated[int, Path(description="Id de la l'aliment")],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
-    return await service.complete_shopping_item(item_id, request.state.user.id)
-
-
+    await service.complete_shopping_item(item_id, request.state.user.id)
+    
+    return {
+        "message" :"Aliment marqué comme acheté avec succés"
+    }
+    
+    
 @shopping_items_router.delete(
-    "/{list_id}/items/{item_id}",
+    "/items/{item_id}",
     tags=["Shopping Items"],    
     summary="Supprimer un aliment de la liste",
     status_code=204,
 )
 async def delete_shopping_lists(
     request: Request,
-    list_id: Annotated[int, Path(..., ge=1)],
     item_id: Annotated[int, Path(..., ge=1)],
     service: ShoppingItemsServices = Depends(get_shopping_items_services)
 ):
-    success = await service.delete_shopping_item(item_id, list_id, request.state.user.id)
+    success = await service.delete_shopping_item(item_id, request.state.user.id)
     if not success:
         raise HTTPException(400, "Impossible de supprimer la liste.")
     

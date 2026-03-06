@@ -8,8 +8,8 @@ from app.features.categories.category_repository import CategoryRepository
 category_router = APIRouter(prefix="/categories", tags=["Categories"])
 
 async def get_category_services(db: AsyncSession = Depends(db_session)) -> CategoryServices:
-    repo = CategoryRepository(db)
-    return CategoryServices(repo)
+    repot = CategoryRepository(db)
+    return CategoryServices(repot)
 
 @category_router.get(
     "/",

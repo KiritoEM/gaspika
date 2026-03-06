@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = Field(default=60, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
     imgbb_api_key : str = Field(alias="IMGBB_API_KEY")
     groq_api_key: str = Field(alias="GROQ_API_KEY")
+    firebase_project_id: str = Field(alias="FIREBASE_PROJECT_ID")
+    firebase_creds_path: str = Field(alias="FIREBASE_CREDS_PATH")
 
     class Config:
         env_file = ".env"

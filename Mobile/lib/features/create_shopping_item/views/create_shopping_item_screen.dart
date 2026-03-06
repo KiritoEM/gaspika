@@ -9,8 +9,15 @@ import 'package:go_router/go_router.dart';
 
 class CreateShoppingItemScreen extends StatelessWidget {
   final String listId;
+  final String listName;
+  final int weekNumber;
 
-  const CreateShoppingItemScreen({super.key, required this.listId});
+  const CreateShoppingItemScreen({
+    super.key,
+    required this.listId,
+    required this.listName,
+    required this.weekNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +84,11 @@ class CreateShoppingItemScreen extends StatelessWidget {
 
             SizedBox(height: 32),
 
-            CreateShoppingItemForm(listId: int.parse(listId)),
+            CreateShoppingItemForm(
+              listId: int.parse(listId),
+              listName: listName,
+              weekNumber: weekNumber,
+            ),
           ],
         ),
       ),

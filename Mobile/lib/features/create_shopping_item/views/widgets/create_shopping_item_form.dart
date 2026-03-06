@@ -18,8 +18,15 @@ import 'package:provider/provider.dart';
 
 class CreateShoppingItemForm extends StatefulWidget {
   final int listId;
+  final String listName;
+  final int weekNumber;
 
-  const CreateShoppingItemForm({super.key, required this.listId});
+  const CreateShoppingItemForm({
+    super.key,
+    required this.listId,
+    required this.listName,
+    required this.weekNumber,
+  });
 
   @override
   State<CreateShoppingItemForm> createState() => _CreateShoppingItemFormState();
@@ -98,8 +105,8 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
       return;
     }
 
-    context.push(
-      '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}/finalize',
+    context.go(
+      '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}/finalize?name=${widget.listName}&week=${widget.weekNumber}',
     );
 
     Navigator.of(context, rootNavigator: true).pop(true);
@@ -116,13 +123,15 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
 
     _debouncedSearch = DebounceUtils.debounce<List<ShoppingListItem>?, String>(
       createShoppingItemVm.searchFoodName,
-      const Duration(milliseconds: 500),
+      const Duration(milliseconds: 250),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final createShoppingItemVm = context.watch<CreateShoppingItemViewModel>();
+    final createShoppingItemVm = Provider.of<CreateShoppingItemViewModel>(
+      context,
+    );
 
     return Stack(
       children: [

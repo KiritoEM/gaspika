@@ -1,7 +1,6 @@
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
 import 'package:gaspika_mobile/models/schemas/createItem.dart';
-import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
 
 class MlService {
@@ -10,15 +9,6 @@ class MlService {
   Future<Map<String, dynamic>> predictQuantity(
     CreateShoppingItemSchema data,
   ) async {
-    AppLogger.logger.i({
-      'food': data.foodName,
-      'nombre_personnes': data.personNumber,
-      'unite': UnitUtils.convertUnitToBackend(data.unit),
-      'duree_jours': 7,
-      'type_repas': 'dejeuner',
-      'categorie': data.backendCategory,
-    });
-
     final response = await _dio.post(
       ApiConstant.PREDICT_QUANTITY,
       data: {

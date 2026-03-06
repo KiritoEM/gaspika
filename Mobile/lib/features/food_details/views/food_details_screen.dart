@@ -5,6 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/food_details/viewmodels/food_details_viewmodel.dart';
+import 'package:gaspika_mobile/features/food_details/widgets/food_details_appbar.dart';
+import 'package:gaspika_mobile/features/food_details/widgets/food_details_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/badge_field.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
@@ -21,8 +23,27 @@ class FoodDetailsScreen extends StatefulWidget {
   State<FoodDetailsScreen> createState() => _FoodDetailsViewScreenState();
 }
 
-
 class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
+  Future _handleDeleteList(
+    BuildContext context,
+    int itemId,
+    FoodDetailsViewmodel foodDetailsVm,
+  ) async {
+    await foodDetailsVm.deleteItem(itemId);
+
+    if (!mounted) return;
+
+    if (!foodDetailsVm.hasDeleteError && !foodDetailsVm.isDeletingItem) {
+      context.pop(true);
+    } else {
+      Toastify.show(
+        context,
+        message: foodDetailsVm.deleteErrorMessage,
+        type: ToastType.error,
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,23 +59,20 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final foodDetailsVm = context.watch<FoodDetailsViewmodel>();
+    final foodDetailsVm = Provider.of<FoodDetailsViewmodel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: SvgPicture.asset('assets/icons/chevron-left.svg', width: 40),
-          onPressed: () => context.pop(true),
-        ),
-        title: const Text(
-          'Détails de l\'aliment',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        titleSpacing: 4,
+      appBar: FoodDetailsAppbar(
+        onOpenAction: () {
+          FoodDetailsBottomsheet.show(
+            context,
+            foodDetailsVm,
+            () =>
+                _handleDeleteList(context, int.parse(widget.id), foodDetailsVm),
+          );
+        },
+        onGoBack: () => context.pop(true),
       ),
       body: SafeArea(
         child: Padding(

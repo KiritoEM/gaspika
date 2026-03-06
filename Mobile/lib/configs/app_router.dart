@@ -48,10 +48,19 @@ class AppRouter {
         ],
       ),
       GoRoute(
-        path: '${NavigationConstant.SHOPPING_LISTS_ROUTE}/:id',
+        path: '${NavigationConstant.SHOPPING_LISTS_ROUTE}/:listId',
         builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return ShoppingListItemsScreen(id: id);
+          final listId = state.pathParameters['listId']!;
+          final listName =
+              state.uri.queryParameters['name'] ?? 'Course inconnue';
+          final week =
+              int.tryParse(state.uri.queryParameters['week'] ?? '0') ?? 0;
+
+          return ShoppingListItemsScreen(
+            listId: listId,
+            listName: listName,
+            weekNumber: week,
+          );
         },
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),
@@ -67,7 +76,16 @@ class AppRouter {
         path: '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/:listId',
         builder: (context, state) {
           final listId = state.pathParameters['listId']!;
-          return CreateShoppingItemScreen(listId: listId);
+          final listName =
+              state.uri.queryParameters['name'] ?? 'Course inconnue';
+          final week =
+              int.tryParse(state.uri.queryParameters['week'] ?? '0') ?? 0;
+
+          return CreateShoppingItemScreen(
+            listId: listId,
+            listName: listName,
+            weekNumber: week,
+          );
         },
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),
@@ -76,7 +94,16 @@ class AppRouter {
             '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/:listId/finalize',
         builder: (context, state) {
           final listId = state.pathParameters['listId']!;
-          return FinalizeShoppingItemScreen(listId: listId);
+          final listName =
+              state.uri.queryParameters['name'] ?? 'Course inconnue';
+          final week =
+              int.tryParse(state.uri.queryParameters['week'] ?? '0') ?? 0;
+
+          return FinalizeShoppingItemScreen(
+            listId: listId,
+            listName: listName,
+            weekNumber: week,
+          );
         },
         redirect: (context, state) => RoleGuard().checkAccess(),
       ),

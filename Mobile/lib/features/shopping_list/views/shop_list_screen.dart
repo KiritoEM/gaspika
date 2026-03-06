@@ -91,7 +91,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final shoppingListVm = context.watch<ShoppingListViewModel>();
+    final shoppingListVm = Provider.of<ShoppingListViewModel>(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,

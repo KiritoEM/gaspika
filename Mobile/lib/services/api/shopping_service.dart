@@ -71,6 +71,10 @@ class ShoppingService {
     await _dio.delete('${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId');
   }
 
+  Future deleteShoppingItem(int itemId) async {
+    await _dio.delete('${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId');
+  }
+
   Future<List<dynamic>> getShoppingItemsById(int listId) async {
     final response = await _dio.get(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/items',

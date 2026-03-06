@@ -10,6 +10,7 @@ class ApiConstant {
   static const Map<String, String> HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   };
 
   // Endpoints

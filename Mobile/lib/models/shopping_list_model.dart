@@ -24,7 +24,7 @@ class ShoppingListModel {
             : null,
       );
 
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(milliseconds: 500));
 
       final items = response
           .map((e) => ShoppingList.fromJson(e as Map<String, dynamic>))
@@ -60,7 +60,7 @@ class ShoppingListModel {
     try {
       await _shoppingService.generateShoppingList(weekNumber, listName);
 
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(milliseconds: 500));
 
       return ApiResponse(
         data: 'success',
@@ -102,7 +102,7 @@ class ShoppingListModel {
     try {
       await _shoppingService.updateShoppingList(listId, newListName);
 
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(milliseconds: 500));
 
       return ApiResponse(
         data: 'success',

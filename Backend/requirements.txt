@@ -12,3 +12,5 @@ python-jose[cryptography]
 jose
 langchain
 langchain-groq
+httpx[http2]
+google-auth

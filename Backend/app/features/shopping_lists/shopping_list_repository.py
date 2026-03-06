@@ -178,6 +178,30 @@ class ShoppingListRepository:
             return shopping_list
             
         return None
+    
+    async def rollback_list_to_unfinished(self, list_id: int, user_id: str) -> Optional[ShoppingList]:
+        """Change status of shopping list to unfinished"""
+        result = await self.db.execute(
+            select(ShoppingList)
+           .where(
+                and_(                    
+                    ShoppingList.id == list_id,
+                    ShoppingList.user_id == user_id
+                )
+           )
+        )
+        
+        shopping_list = result.scalar_one_or_none()
+        
+        if shopping_list:
+            shopping_list.status = ShoppingListStatusEnum.UNFINISHED
+            shopping_list.updated_at = datetime.now(timezone.utc)
+            
+            await self.db.commit()
+            
+            return shopping_list
+            
+        return None
 
     async def delete_list(self, list_id: int, user_id: str) -> bool:
         """Delete shopping list and cascade items"""

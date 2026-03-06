@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "999245067102",
+    "project_id": "kirito-project-35852",
+    "storage_bucket": "kirito-project-35852.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999245067102:android:a8f0a515cef78cc46795cf",
+        "android_client_info": {
+          "package_name": "com.example.gaspika_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlCzkYqYOAJHEXCMbM_VSvLVsXH26g6Wk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999245067102:android:1721dc15870c7d136795cf",
+        "android_client_info": {
+          "package_name": "com.example.joke_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlCzkYqYOAJHEXCMbM_VSvLVsXH26g6Wk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

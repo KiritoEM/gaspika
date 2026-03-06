@@ -46,3 +46,5 @@ app.*.map.json
 
 # Environment variables file
 *.env
+
+/backend/service-account.json

@@ -21,7 +21,7 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeVm = context.watch<HomeViewModel>();
+    final homeVm = Provider.of<HomeViewModel>(context);
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),

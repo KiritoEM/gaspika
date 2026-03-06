@@ -13,9 +13,16 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ShoppingListItemsScreen extends StatefulWidget {
-  final String id;
+  final String listId;
+  final String listName;
+  final int weekNumber;
 
-  const ShoppingListItemsScreen({super.key, required this.id});
+  const ShoppingListItemsScreen({
+    super.key,
+    required this.listId,
+    required this.listName,
+    required this.weekNumber,
+  });
 
   @override
   State<ShoppingListItemsScreen> createState() =>
@@ -23,39 +30,31 @@ class ShoppingListItemsScreen extends StatefulWidget {
 }
 
 class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
+  late ShoppingItemsViewModel _shoppingItemsVm;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _shoppingItemsVm = Provider.of<ShoppingItemsViewModel>(
+      context,
+      listen: false,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-
     Future.microtask(() async {
-      final shoppingItemsVm = Provider.of<ShoppingItemsViewModel>(
-        context,
-        listen: false,
-      );
-      await shoppingItemsVm.fetchShoppingItems(int.parse(widget.id));
+      await _shoppingItemsVm.fetchShoppingItems(int.parse(widget.listId));
     });
   }
 
   @override
-  void dispose() {
-    // Clear items when leaving
-    final shoppingItemsVm = Provider.of<ShoppingItemsViewModel>(
-      context,
-      listen: false,
-    );
-    shoppingItemsVm.clearItems();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final shoppingItemsVm = context.watch<ShoppingItemsViewModel>();
-    final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
-    final listName = extra?['name'] as String? ?? 'Course inconnue';
-    final weekNumber = extra?['week_number'] as int? ?? 0;
+    final shoppingItemsVm = Provider.of<ShoppingItemsViewModel>(context);
 
     final isCurrentOrFutureWeek =
-        DateUtilities.getCurrentWeekNumberISO() <= weekNumber;
+        DateUtilities.getCurrentWeekNumberISO() <= widget.weekNumber;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -71,14 +70,14 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => shoppingItemsVm.refreshItems(int.parse(widget.id)),
+          onRefresh: () => shoppingItemsVm.refreshItems(int.parse(widget.listId)),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(23, 10, 23, 23),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  listName,
+                  widget.listName,
                   style: TextStyle(
                     fontSize: Theme.of(context).textTheme.titleLarge?.fontSize,
                     fontWeight: FontWeight.bold,
@@ -87,23 +86,21 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
 
                 const SizedBox(height: 20),
 
-                // Shopping items list
                 Expanded(
                   child: shoppingItemsVm.isLoadingItems
                       ? ShoppingItemsSkeleton()
                       : _buildShoppingItems(shoppingItemsVm),
                 ),
 
-                // Add button
                 shoppingItemsVm.isLoadingItems
                     ? Container()
                     : Container(
                         padding: const EdgeInsets.only(top: 16),
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: isCurrentOrFutureWeek == true
+                          onPressed: isCurrentOrFutureWeek
                               ? () => context.push(
-                                  '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.id}',
+                                  '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}',
                                 )
                               : null,
                           label: const Text('Ajouter un aliment'),
@@ -119,14 +116,25 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
   }
 
   Widget _buildShoppingItems(ShoppingItemsViewModel shoppingItemsVm) {
+    if (shoppingItemsVm.hasError) {
+      return SizedBox(
+        height: double.infinity,
+        width: double.infinity,
+        child: ErrorState(
+          text: shoppingItemsVm.errorMessage,
+          onRefresh: () =>
+              shoppingItemsVm.refreshShoppingItems(int.parse(widget.listId)),
+        ),
+      );
+    }
+
     if (shoppingItemsVm.shoppingItems.isEmpty) {
       return Center(
         child: Column(
-          mainAxisSize: .min,
-          spacing: 16,
+          mainAxisSize: MainAxisSize.min,
           children: [
             SvgPicture.asset('assets/images/food-not-found.svg', width: 200),
-
+            const SizedBox(height: 16),
             Text(
               'Aucun aliment ajouté dans \ncette liste',
               style: TextStyle(fontSize: 16, color: AppColors.mutedForeground),
@@ -137,20 +145,8 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
       );
     }
 
-    if (shoppingItemsVm.hasError) {
-      return SizedBox(
-        height: double.infinity,
-        width: double.infinity,
-        child: ErrorState(
-          text: shoppingItemsVm.errorMessage,
-          onRefresh: () =>
-              shoppingItemsVm.refreshShoppingItems(int.parse(widget.id)),
-        ),
-      );
-    }
-
     return ListView.separated(
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: shoppingItemsVm.shoppingItems.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {

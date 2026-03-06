@@ -117,6 +117,29 @@ class ShoppingItemsRepository:
             .where(ShoppingListItem.food_name
             .ilike(f"%{name}%"))
             .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
+            .distinct(ShoppingListItem.food_name)
+        )
+        
+        if user_id:
+            query = query.where(ShoppingList.user_id == user_id)
+                
+        shopping_item = await self.db.execute(query)
+        
+        return shopping_item.scalars().all()
+    
+    
+      
+    async def search_by_food_name_in_list(self, name: str, user_id: str, list_id: str) -> list[ShoppingListItem] :
+        """Get all items by food name in a list or global items or by item_id"""
+        query = (
+            select(ShoppingListItem)
+            .join(ShoppingListItem.shopping_list)
+            .where(and_(
+                ShoppingList.id == list_id,
+                ShoppingListItem.food_name.ilike(f"%{name}%")),   
+            )
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
+            .distinct(ShoppingListItem.food_name)
         )
         
         if user_id:
@@ -170,7 +193,6 @@ class ShoppingItemsRepository:
         self, 
         item_id: int, 
         user_id: str, 
-        list_id: int, 
         item_data: UpdateShoppingItemDTO
     ) -> Optional[ShoppingListItem] :
         """Update Shopping item"""
@@ -180,7 +202,6 @@ class ShoppingItemsRepository:
             .where(
                 and_(
                     ShoppingList.user_id == user_id,
-                    ShoppingList.id == list_id,
                     ShoppingListItem.id == item_id
                 )
            )
@@ -202,7 +223,7 @@ class ShoppingItemsRepository:
         
         return None
     
-    async def delete(self, item_id: int, user_id: str, list_id: int) -> bool:
+    async def delete(self, item_id: int, user_id: str) -> bool:
         """Delete shopping item"""
         result = await self.db.execute(
             select(ShoppingListItem)
@@ -210,7 +231,6 @@ class ShoppingItemsRepository:
             .where(
                 and_(
                     ShoppingList.user_id == user_id,
-                    ShoppingList.id == list_id,
                     ShoppingListItem.id == item_id
                 )
             )

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/delete_confirmation_dialog.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/update_list_dialog.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
@@ -28,8 +29,7 @@ class ShoppingListCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         context.push(
-          '/shopping-list/${item.id}',
-          extra: {'name': item.name, 'week_number': item.weekNumber},
+          '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${item.id}?name=${item.name}&week=${item.weekNumber}',
         );
       },
       child: Container(

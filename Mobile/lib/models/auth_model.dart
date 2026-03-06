@@ -6,6 +6,7 @@ import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
 import 'package:gaspika_mobile/models/schemas/auth_credentials.dart';
 import 'package:gaspika_mobile/services/api/auth_service.dart';
+import 'package:gaspika_mobile/services/notification_service.dart';
 import 'package:gaspika_mobile/services/secure_storage_service.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/network_error_handler.dart';
@@ -13,10 +14,17 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AuthModel {
   final AuthService _authService = AuthService();
+  final NotificationService _notificationService = NotificationService();
+
   // Login
   Future<ApiResponse<dynamic>> login(LoginCredentials credentials) async {
     try {
-      final loginResponse = await _authService.login(credentials);
+      // register the device for push notification and get the FCM token
+      final fcmToken = await _notificationService.getFCMToken();
+
+      final loginResponse = await _authService.login(
+        credentials.copyWith(fcmToken: fcmToken),
+      );
 
       if (loginResponse.isEmpty) {
         return ApiResponse(
@@ -45,7 +53,7 @@ class AuthModel {
         return ApiResponse(
           hasError: true,
           message: 'Email ou mot de passe incorrect.',
-          errorType: NetworkErrorType.conflict
+          errorType: NetworkErrorType.conflict,
         );
       }
 
@@ -77,7 +85,10 @@ class AuthModel {
   /// Register
   Future<ApiResponse<dynamic>> register(SignupCredentials credentials) async {
     try {
-      await _authService.register(credentials);
+      // register the device for push notification and get the FCM token
+      final fcmToken = await _notificationService.getFCMToken();
+
+      await _authService.register(credentials.copyWith(fcmToken: fcmToken));
 
       return ApiResponse(
         message: 'Inscription réussie ! Veuillez vous connecter aprés.',

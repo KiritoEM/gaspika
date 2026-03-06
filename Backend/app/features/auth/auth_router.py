@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.features.devices.device_repository import DeviceRepository
 from app.core.database import db_session
 from app.features.users.user_repository import UserRepository
 from app.features.users.user_schemas import UserCreateDTO, BaseUser
@@ -12,12 +13,14 @@ from app.core.utils.jwt import create_JWT
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 def get_user_services(db: AsyncSession = Depends(db_session)):
-    repo = UserRepository(db)
-    return UserServices(repo)
+    repot = UserRepository(db)
+    return UserServices(repot)
 
 def get_auth_services(db: AsyncSession = Depends(db_session)):
-    repo = UserRepository(db)
-    return AuthServices(repo)
+    user_repot = UserRepository(db)
+    device_repot = DeviceRepository(db)
+    
+    return AuthServices(user_repot, device_repot)
 
 @auth_router.post(
 "/register", 
@@ -58,7 +61,7 @@ responses={
 },  
 status_code=200
 )
-async def register( 
+async def login( 
     payload: LoginDTO,
     service: AuthServices = Depends(get_auth_services),
 ):

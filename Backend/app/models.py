@@ -51,7 +51,8 @@ class User(Base):
     
     # Relations
     shopping_lists: Mapped[List["ShoppingList"]] = relationship(back_populates="user", cascade="all, delete-orphan", lazy="selectin")
-    shopping_items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="user", cascade="all, delete-orphan", lazy="selectin")
+    shopping_items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    devices: Mapped[List["Device"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
 class FoodCategory(Base):
@@ -108,14 +109,14 @@ class ShoppingListItem(Base):
     )
     
     # Relations
-    shopping_list: Mapped["ShoppingList"] = relationship(back_populates="items", lazy="selectin")
-    category: Mapped["FoodCategory"] = relationship(back_populates="items", lazy="selectin")
-    user: Mapped["User"] = relationship(back_populates="shopping_items", lazy="selectin")
+    shopping_list: Mapped["ShoppingList"] = relationship(back_populates="items", lazy="joined")
+    category: Mapped["FoodCategory"] = relationship(back_populates="items", lazy="joined")
+    user: Mapped["User"] = relationship(back_populates="shopping_items", lazy="joined")
     image: Mapped[Optional["Image"]] = relationship(
         back_populates="shopping_item", 
         cascade="all, delete-orphan", 
         uselist=False,
-        lazy="selectin" 
+        lazy="joined"
     )
 
 class ShoppingList(Base):
@@ -140,5 +141,28 @@ class ShoppingList(Base):
     )
     
     # Relations
-    user: Mapped["User"] = relationship(back_populates="shopping_lists", lazy="selectin")
+    user: Mapped["User"] = relationship(back_populates="shopping_lists", lazy="joined")
     items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="shopping_list", cascade="all, delete-orphan", lazy="selectin")
+    
+    
+class Device(Base):
+    __tablename__ = "devices"
+    
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    fcm_token: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    device_type: Mapped[str] = mapped_column(String(200), default="android")
+    user_id: Mapped[str] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), 
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    
+    # Relations  
+    user: Mapped["User"] = relationship(back_populates="devices")

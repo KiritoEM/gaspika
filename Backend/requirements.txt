@@ -14,3 +14,7 @@ langchain
 langchain-groq
 httpx[http2]
 google-auth
+langchain_chroma
+langchain_huggingface
+langchain_text_splitters
+sentence_transformers

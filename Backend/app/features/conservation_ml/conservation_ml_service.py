@@ -7,8 +7,8 @@ from .conservation_ml_repository import ConservationMLRepository
 from app.core.langchain_model import Model
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from Backend.app.core.vectorestore import VectoreStore
-from Backend.app.core.text_splitter import TextSplitter
+from app.core.vectorestore import VectoreStore
+from app.core.text_splitter import TextSplitter
 
 class ConservationMLService:
     def __init__(self, repo: ConservationMLRepository) -> None:

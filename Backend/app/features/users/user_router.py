@@ -10,10 +10,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 user_router = APIRouter(prefix="/user", tags=["Users"], dependencies=[Depends(require_user)])
 
 async def get_users_services(db: AsyncSession = Depends(db_session)) -> UserServices:
-    user_repot = UserRepository(db)
-    device_repot = DeviceRepository(db)
+    user_repo = UserRepository(db)
+    device_repo = DeviceRepository(db)
     
-    return UserServices(user_repot, device_repot)
+    return UserServices(user_repo, device_repo)
 
 @user_router.get(
 "/me",

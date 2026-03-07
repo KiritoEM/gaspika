@@ -5,7 +5,7 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, UpdateShoppingItemDTO
 from app.core.enums import ShoppingListItemEnum
-from app.models import ShoppingList, ShoppingListItem
+from app.models import ShoppingList, ShoppingListItem, User
 
 class ShoppingItemsRepository:
     def __init__(self, db: AsyncSession):
@@ -38,7 +38,7 @@ class ShoppingItemsRepository:
         return shopping_item
     
     async def get_all(self, list_id: int) -> list[ShoppingListItem]:
-        """Get all shopping items of an user"""                
+        """Get all shopping items in a list"""                
         all_items = await self.db.execute(
             select(ShoppingListItem)
             .join(ShoppingListItem.shopping_list)
@@ -48,6 +48,20 @@ class ShoppingItemsRepository:
         )
         
         return all_items.scalars().all()
+    
+    async def get_all_by_user_id(self, user_id: int) -> list[ShoppingListItem]:
+        """Get all shopping items of an user"""                
+        all_items = await self.db.execute(
+            select(ShoppingListItem)
+            .join(ShoppingListItem.user)
+            .where(User.id == user_id)
+            .order_by(ShoppingListItem.food_name, ShoppingListItem.created_at.desc()) 
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
+            .distinct(ShoppingListItem.food_name)
+        )
+        
+        return all_items.scalars().all()
+    
     
     async def get_by_id(self, item_id: int, user_id: str) -> Optional[ShoppingListItem] :
         """Get item by id"""

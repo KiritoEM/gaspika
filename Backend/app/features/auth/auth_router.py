@@ -13,14 +13,14 @@ from app.core.utils.jwt import create_JWT
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 def get_user_services(db: AsyncSession = Depends(db_session)):
-    repot = UserRepository(db)
-    return UserServices(repot)
+    repo = UserRepository(db)
+    return UserServices(repo)
 
 def get_auth_services(db: AsyncSession = Depends(db_session)):
-    user_repot = UserRepository(db)
-    device_repot = DeviceRepository(db)
+    user_repo = UserRepository(db)
+    device_repo = DeviceRepository(db)
     
-    return AuthServices(user_repot, device_repot)
+    return AuthServices(user_repo, device_repo)
 
 @auth_router.post(
 "/register", 

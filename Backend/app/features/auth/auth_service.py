@@ -7,14 +7,14 @@ from app.features.users.user_repository import UserRepository
 class AuthServices:
     def __init__(
         self, 
-        user_repot: UserRepository,
-        device_repot: DeviceRepository
+        user_repo: UserRepository,
+        device_repo: DeviceRepository
     ): 
-        self.user_repot = user_repot
-        self.device_repot = device_repot
+        self.user_repo = user_repo
+        self.device_repo = device_repo
         
     async def login(self, data: LoginDTO):
-        user = await self.user_repot.get_user_by_email(data.email)
+        user = await self.user_repo.get_user_by_email(data.email)
         
         if not user:
             raise HTTPException(status_code=404, detail="Adresse email invalide ou inexistante.")
@@ -26,10 +26,10 @@ class AuthServices:
         
         # create device with FCM token if not exist
         try:
-            device = await self.device_repot.get_by_fcm_token(data.fcm_token)
+            device = await self.device_repo.get_by_fcm_token(data.fcm_token)
         
             if (not device):
-                await self.device_repot.create(data.fcm_token, (str(user.id)))
+                await self.device_repo.create(data.fcm_token, (str(user.id)))
         except Exception as e:
             print(f"Impossible de créer le device: {str(e)}")
             raise HTTPException(status_code=500, detail="Impossible de créer le device")

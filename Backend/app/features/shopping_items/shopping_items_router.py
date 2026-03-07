@@ -15,20 +15,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 shopping_items_router = APIRouter(prefix="/shopping-items", tags=["Shopping Items"], dependencies=[Depends(require_user)])
 
 async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) -> ShoppingItemsServices:
-    shopping_list_repot = ShoppingListRepository(db)
-    shopping_items_repot = ShoppingItemsRepository(db)
-    user_repot = UserRepository(db)
-    image_repot = ImageRepository(db)
-    device_repot = DeviceRepository(db)
+    shopping_list_repo = ShoppingListRepository(db)
+    shopping_items_repo = ShoppingItemsRepository(db)
+    user_repo = UserRepository(db)
+    image_repo = ImageRepository(db)
+    device_repo = DeviceRepository(db)
     storage_provider = ImgBBProvider()
     
     return ShoppingItemsServices(
-        shopping_list_repot,
-        shopping_items_repot,
-        image_repot, 
-        user_repot,
+        shopping_list_repo,
+        shopping_items_repo,
+        image_repo, 
+        user_repo,
         storage_provider,
-        device_repot
+        device_repo
     )
 
 @shopping_items_router.post(

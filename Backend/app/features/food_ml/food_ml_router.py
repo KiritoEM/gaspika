@@ -7,8 +7,8 @@ from .food_ml_service import FoodMlServices
 food_ml_router = APIRouter(prefix="/predict", tags=["Food Prediction"]) 
 
 def get_food_services() -> FoodMlServices:           
-    repot = FoodMLRepository()                         
-    return FoodMlServices(repot)
+    repo = FoodMLRepository()                         
+    return FoodMlServices(repo)
 
 @food_ml_router.post(
     "/quantite",

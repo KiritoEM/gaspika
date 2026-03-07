@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
-import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/models/schemas/create_item.dart';
 import 'package:gaspika_mobile/services/api/shopping_service.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/network_error_handler.dart';
@@ -16,7 +16,7 @@ class ShoppingItemsModel {
     try {
       final response = await _shoppingService.getAvalaibleFoodCount();
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 200));
 
       return ApiResponse(
         data: response['count'] as int,
@@ -45,7 +45,7 @@ class ShoppingItemsModel {
     try {
       final response = await _shoppingService.getShoppingWeekItems();
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 200));
 
       final items = response
           .map((e) => ShoppingListItem.fromJson(e as Map<String, dynamic>))
@@ -116,8 +116,6 @@ class ShoppingItemsModel {
           .map((e) => ShoppingListItem.fromJson(e as Map<String, dynamic>))
           .toList();
 
-      await Future.delayed(const Duration(milliseconds: 500));
-
       return ApiResponse(data: items, message: 'Aliments suggérés récuperés.');
     } on DioException catch (err) {
       AppLogger.logger.e(
@@ -183,8 +181,6 @@ class ShoppingItemsModel {
 
       final item = ShoppingListItem.fromJson(response);
 
-      await Future.delayed(const Duration(milliseconds: 500));
-
       return ApiResponse(data: item, message: 'Aliments recuperé avec succés.');
     } on DioException catch (err) {
       AppLogger.logger.e(
@@ -208,8 +204,6 @@ class ShoppingItemsModel {
   Future<ApiResponse<ShoppingListItem>> markAsComplete(int itemId) async {
     try {
       await _shoppingService.markItemAsComplete(itemId);
-
-      await Future.delayed(const Duration(milliseconds: 500));
 
       return ApiResponse(message: 'Aliments marqué comme acheté.');
     } on DioException catch (err) {

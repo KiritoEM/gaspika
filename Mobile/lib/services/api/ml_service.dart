@@ -1,6 +1,6 @@
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
-import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/models/schemas/create_item.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
 
 class MlService {

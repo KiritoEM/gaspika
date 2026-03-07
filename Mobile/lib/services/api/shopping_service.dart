@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
-import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/models/schemas/create_item.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 
 class ShoppingService {
@@ -116,6 +116,7 @@ class ShoppingService {
     final response = await _dio.get(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
     );
+
     return response.data['data'];
   }
 

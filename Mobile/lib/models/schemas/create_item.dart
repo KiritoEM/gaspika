@@ -1,4 +1,4 @@
-// models/schemas/createItem.dart
+// models/schemas/create_item.dart
 
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 
@@ -10,15 +10,15 @@ extension QuantityUnitExtension on QuantityUnit {
 
 class CreateShoppingItemSchema {
   String foodName = '';
-  double recommendedQuantity = 0.0;
+  double recommendedQuantity;
   QuantityUnit unit = QuantityUnit.unit;
-  double price = 0.0;
-  String notes = '';
-  int personNumber = 1;
-  String? storageTips = '';
-  int categoryId = 0;
-  int humidity = 10;
-  String backendCategory = '';
+  double price;
+  String notes;
+  int personNumber;
+  String? storageTips;
+  int categoryId;
+  int humidity;
+  String backendCategory;
   int? conservationDuration;
 
   CreateShoppingItemSchema({
@@ -30,7 +30,7 @@ class CreateShoppingItemSchema {
     required this.personNumber,
     this.storageTips = '',
     required this.categoryId,
-    this.humidity = 10,
+    this.humidity = 98,
     this.backendCategory = '',
     this.conservationDuration,
   });

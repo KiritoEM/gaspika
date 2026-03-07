@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/food_details/viewmodels/food_details_viewmodel.dart';
 import 'package:gaspika_mobile/features/food_details/widgets/food_details_appbar.dart';
 import 'package:gaspika_mobile/features/food_details/widgets/food_details_bottomsheet.dart';
@@ -93,7 +94,11 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
                 _handleDeleteItem(context, int.parse(widget.id), foodDetailsVm),
           );
         },
-        onGoBack: () => context.pop(true),
+        onGoBack: () => {
+          context.pop(
+            '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/${widget.id}',
+          ),
+        },
       ),
       body: SafeArea(
         child: Padding(

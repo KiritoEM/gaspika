@@ -30,8 +30,7 @@ class ShoppingItemsServices:
         self.imageRepo = image_repo
         self.storage_provider = storage_provider
         self.device_repo = device_repo
-        self.redis_client = get_redis_client()
-        
+        self.redis_client = get_redis_client()        
         
     async def search_food_by_name(self,  user_id: str, query: str):
         # get chached items if already cached

@@ -42,18 +42,18 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
   ];
 
   List<Map<String, dynamic>> conservationMethods = [
-    {'label': 'Réfrigération', 'value': 90},
-    {'label': 'Congélation', 'value': 65},
-    {'label': 'Séchage', 'value': 15},
-    {'label': 'Déshydratation', 'value': 10},
-    {'label': 'Fumage', 'value': 55},
-    {'label': 'Salaison', 'value': 66},
-    {'label': 'Sucrage confiture', 'value': 35},
-    {'label': 'Mise sous vide', 'value': 70},
-    {'label': 'Saucisson en saumure', 'value': 95},
-    {'label': 'Appertisation (conserves)', 'value': 92},
-    {'label': 'Fermentation', 'value': 85},
-    {'label': 'Stockage sec (céréales)', 'value': 40},
+    {'label': 'Mettre au réfrigérateur', 'value': 98},
+    {'label': 'Mettre sous vide', 'value': 97},
+    {'label': 'Mettre en bocal (saumure)', 'value': 91},
+    {'label': 'Mettre en conserve', 'value': 90},
+    {'label': 'Fermenter', 'value': 88},
+    {'label': 'Saler et sécher', 'value': 87},
+    {'label': 'Fumer', 'value': 85},
+    {'label': 'Mettre au congélateur', 'value': 80},
+    {'label': 'Faire une confiture', 'value': 75},
+    {'label': 'Faire sécher', 'value': 65},
+    {'label': 'Stocker au sec', 'value': 62},
+    {'label': 'Déshydrater', 'value': 58},
   ];
 
   final List<Map<String, dynamic>> categoryData = [
@@ -123,7 +123,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
 
     _debouncedSearch = DebounceUtils.debounce<List<ShoppingListItem>?, String>(
       createShoppingItemVm.searchFoodName,
-      const Duration(milliseconds: 250),
+      const Duration(milliseconds: 100),
     );
   }
 

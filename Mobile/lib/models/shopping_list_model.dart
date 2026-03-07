@@ -24,8 +24,6 @@ class ShoppingListModel {
             : null,
       );
 
-      await Future.delayed(const Duration(milliseconds: 500));
-
       final items = response
           .map((e) => ShoppingList.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -59,8 +57,6 @@ class ShoppingListModel {
   ) async {
     try {
       await _shoppingService.generateShoppingList(weekNumber, listName);
-
-      await Future.delayed(const Duration(milliseconds: 500));
 
       return ApiResponse(message: 'Liste de courses générée avec succès.');
     } on DioException catch (err) {
@@ -98,8 +94,6 @@ class ShoppingListModel {
   ) async {
     try {
       await _shoppingService.updateShoppingList(listId, newListName);
-
-      await Future.delayed(const Duration(milliseconds: 500));
 
       return ApiResponse(message: 'Liste de courses modifiée avec succès.');
     } on DioException catch (err) {

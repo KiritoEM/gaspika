@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
-import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/models/schemas/create_item.dart';
 import 'package:gaspika_mobile/services/api/ml_service.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/network_error_handler.dart';

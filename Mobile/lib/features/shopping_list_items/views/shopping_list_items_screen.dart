@@ -119,7 +119,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
                         child: ElevatedButton.icon(
                           onPressed: isCurrentOrFutureWeek
                               ? () => context.push(
-                                  '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}',
+                                  '${NavigationConstant.CREATE_SHOPPING_ITEM_ROUTE}/${widget.listId}?name=${widget.listName}&week=${widget.weekNumber}',
                                 )
                               : null,
                           label: const Text('Ajouter un aliment'),

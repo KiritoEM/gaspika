@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_shopping_item_viewmodel.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/finalize_shopping_item_form.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/stepper_header.dart';
 import 'package:gaspika_mobile/shared/progress_indicator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -86,25 +86,10 @@ class _FinalizeShoppingItemScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //Header
-            Column(
-              crossAxisAlignment: .start,
-              spacing: 8,
-              children: [
-                Text(
-                  'Informations complémentaires',
-                  style: TextStyle(
-                    fontSize: Theme.of(
-                      context,
-                    ).textTheme.headlineSmall?.fontSize!,
-                    fontWeight: .bold,
-                  ),
-                ),
-
-                Text(
+            StepperHeader(
+              title: 'Informations complémentaires',
+              description:
                   'Consultez les informations prédites et téléchargez une image de l\'aliment pour finaliser l\'ajout.',
-                  style: TextStyle(color: AppColors.mutedForeground),
-                ),
-              ],
             ),
 
             SizedBox(height: 32),

@@ -68,6 +68,7 @@ class ShoppingItemsServices:
                     "category": {
                         "id": item.category.id,
                         "name": item.category.name,
+                        "ml_category": item.category.ml_category
                     } if item.category else None,
                     "image": {
                         "id": str(item.image.id),

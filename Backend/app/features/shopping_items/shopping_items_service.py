@@ -2,8 +2,7 @@ from datetime import datetime, date, time
 import json
 import re
 from typing import List
-from fastapi import Depends, HTTPException
-from app.core.utils.sql_alchemy import to_dict
+from fastapi import HTTPException
 from app.core.redis_client import get_redis_client
 from app.features.devices.device_repository import DeviceRepository
 from app.core.notification_push import send_android_notification

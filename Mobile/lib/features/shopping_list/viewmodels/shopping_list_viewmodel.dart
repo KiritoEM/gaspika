@@ -9,15 +9,13 @@ class ShoppingListViewModel extends ChangeNotifier {
   // Models
   final ShoppingListModel _shoppingListModel = ShoppingListModel();
 
-  TextEditingController listNameController = TextEditingController(text: '');
+  late TextEditingController listNameController;
 
   ShoppingListViewModel() {
     listNameController = TextEditingController(
       text:
           'Courses semaine ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(_selectedDate))}',
     );
-
-    listNameController.addListener(_onListNameChanged);
   }
 
   bool _isLoadingList = true;
@@ -246,10 +244,6 @@ class ShoppingListViewModel extends ChangeNotifier {
     notifyListeners();
 
     await fetchShoppingList();
-  }
-
-  void _onListNameChanged() {
-    notifyListeners();
   }
 
   // reset all states

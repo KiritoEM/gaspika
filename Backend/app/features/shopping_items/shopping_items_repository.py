@@ -210,10 +210,8 @@ class ShoppingItemsRepository:
         item_data: UpdateShoppingItemDTO
     ) -> Optional[ShoppingListItem] :
         """Update Shopping item"""
-        result = await self.get_by_id(item_id, user_id)
-        
-        shopping_item = result.scalar_one_or_none()
-        
+        shopping_item = await self.get_by_id(item_id, user_id)
+                
         # Update changed field
         if shopping_item:
             for field, value in item_data.model_dump(exclude_unset=True).items():

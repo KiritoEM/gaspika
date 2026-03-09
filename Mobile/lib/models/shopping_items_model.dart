@@ -5,12 +5,52 @@ import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/api_response.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/schemas/create_item_schema.dart';
+import 'package:gaspika_mobile/models/schemas/update_item_schema.dart';
 import 'package:gaspika_mobile/services/api/shopping_service.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:gaspika_mobile/utils/network_error_handler.dart';
 
 class ShoppingItemsModel {
   final ShoppingService _shoppingService = ShoppingService();
+
+  Future<ApiResponse> createShoppingItem(
+    CreateShoppingItemSchema item,
+    int listId,
+    File? image,
+  ) async {
+    try {
+      await _shoppingService.createShoppingItem(item, listId, image);
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      return ApiResponse(message: 'Aliment ajouté avec succés.');
+    } on DioException catch (err) {
+      AppLogger.logger.e(
+        'DioException while creating shopping item: ${err.response?.statusCode} - ${err.message}',
+      );
+
+      if (err.response?.statusCode == 409) {
+        return ApiResponse(
+          hasError: true,
+          message: 'Un aliment avec ce nom existe déja dans cette semaine.',
+          errorType: NetworkErrorType.conflict,
+        );
+      }
+
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
+    } catch (err) {
+      AppLogger.logger.e('Error while creating shopping item: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de créer l\'aliment.',
+      );
+    }
+  }
 
   Future<ApiResponse<int?>> getAvalaibleFoodCount() async {
     try {
@@ -136,45 +176,6 @@ class ShoppingItemsModel {
     }
   }
 
-  Future<ApiResponse> createShoppingItem(
-    CreateShoppingItemSchema item,
-    int listId,
-    File? image,
-  ) async {
-    try {
-      await _shoppingService.createShoppingItem(item, listId, image);
-
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      return ApiResponse(message: 'Aliment ajouté avec succés.');
-    } on DioException catch (err) {
-      AppLogger.logger.e(
-        'DioException while creating shopping item: ${err.response?.statusCode} - ${err.message}',
-      );
-
-      if (err.response?.statusCode == 409) {
-        return ApiResponse(
-          hasError: true,
-          message: 'Un aliment avec ce nom existe déja dans cette semaine.',
-          errorType: NetworkErrorType.conflict,
-        );
-      }
-
-      return ApiResponse(
-        hasError: true,
-        message: NetworkErrorHandler.handleError(err)['message'],
-        errorType:
-            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
-      );
-    } catch (err) {
-      AppLogger.logger.e('Error while creating shopping item: $err');
-      return ApiResponse(
-        hasError: true,
-        message: 'Impossible de créer l\'aliment.',
-      );
-    }
-  }
-
   Future<ApiResponse<ShoppingListItem>> getShoppingItemById(int itemId) async {
     try {
       final response = await _shoppingService.getShoppingItemById(itemId);
@@ -197,6 +198,34 @@ class ShoppingItemsModel {
       return ApiResponse(
         hasError: true,
         message: 'Impossible de récupérer l\'aliment.',
+      );
+    }
+  }
+
+  Future<ApiResponse<String>> updateShoppingItem(
+    int itemId,
+    UpdateShoppingItemSchema newData,
+  ) async {
+    try {
+      await _shoppingService.updateShoppingItem(itemId, newData);
+
+      return ApiResponse(message: 'Aliment modifié avec succès.');
+    } on DioException catch (err) {
+      AppLogger.logger.e(
+        'DioException while updating shopping item: ${err.response?.statusCode} - ${err.message}',
+      );
+
+      return ApiResponse(
+        hasError: true,
+        message: NetworkErrorHandler.handleError(err)['message'],
+        errorType:
+            NetworkErrorHandler.handleError(err)['type'] as NetworkErrorType,
+      );
+    } catch (err) {
+      AppLogger.logger.e('Error while updating shopping item: $err');
+      return ApiResponse(
+        hasError: true,
+        message: 'Impossible de modifier l\'aliment',
       );
     }
   }

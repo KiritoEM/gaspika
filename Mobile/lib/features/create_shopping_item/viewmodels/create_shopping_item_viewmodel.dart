@@ -67,8 +67,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   }
 
   void setPrice(String value) {
-    final cleaned = value.trim().replaceAll(',', '.');
-    _data.price = double.tryParse(cleaned) ?? 0.0;
+    _data.price = int.tryParse(value) ?? 0;
     notifyListeners();
   }
 

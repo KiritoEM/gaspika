@@ -62,7 +62,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          elevation: 0.5,
+          elevation: 0.3,
           disabledForegroundColor: AppColors.mutedForeground,
         ),
       ),
@@ -70,12 +70,13 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           textStyle: GoogleFonts.montserrat(fontWeight: FontWeight.w600),
+          foregroundColor: AppColors.foreground,
+          side: BorderSide(color: Colors.grey[400]!),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: AppColors.surface),
           ),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          elevation: 0.5,
+          elevation: 0.3,
         ),
       ),
 

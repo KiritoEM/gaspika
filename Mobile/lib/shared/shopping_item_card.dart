@@ -114,7 +114,7 @@ class ShoppingItemCard extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            '${item.price.toString()} Ar',
+                            '${item.totalPrice.toString()} Ar',
                             textAlign: TextAlign.start,
                             style: TextStyle(
                               fontSize: 16,

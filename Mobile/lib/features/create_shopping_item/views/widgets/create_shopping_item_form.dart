@@ -8,7 +8,7 @@ import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_shopping_item_viewmodel.dart';
 import 'package:gaspika_mobile/shared/loader_with_overlay.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/food_autocomplete_view.dart';
-import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/selectable_item.dart';
+import 'package:gaspika_mobile/shared/selectable_item.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/form_block.dart';
 import 'package:gaspika_mobile/utils/debounce_timer.dart';
@@ -144,7 +144,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
                   ) {
                     return TextFormField(
                       decoration: const InputDecoration(
-                        hintText: 'Ex: Tomate, Riz, Poulet...',
+                        hintText: 'ex: Tomate, Riz, Poulet...',
                       ),
                       focusNode: focusNode,
                       controller: textEditingController,
@@ -200,7 +200,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
             label: 'Prix(en Ariary)',
             isRequired: true,
             child: TextFormField(
-              decoration: const InputDecoration(hintText: 'Ex: 2000'),
+              decoration: const InputDecoration(hintText: 'ex: 2000'),
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               validator: (value) {
@@ -270,7 +270,7 @@ class _CreateShoppingItemFormState extends State<CreateShoppingItemForm> {
             isRequired: true,
             child: TextFormField(
               decoration: const InputDecoration(
-                hintText: 'Ex: 4',
+                hintText: 'ex: 4',
                 suffixIcon: Icon(Icons.people_outline),
               ),
               keyboardType: TextInputType.number,

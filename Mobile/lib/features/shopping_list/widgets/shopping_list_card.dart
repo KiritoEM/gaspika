@@ -100,16 +100,41 @@ class ShoppingListCard extends StatelessWidget {
                         ),
                       ],
                     ),
+
                     const SizedBox(height: 5),
-                    Text(
-                      '${item.itemsCount > 0 ? item.itemsCount : 'Aucun'} aliment${item.itemsCount > 1 ? 's' : ''}',
-                      style: TextStyle(
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.fontSize!,
-                        color: AppColors.mutedForeground,
-                        fontWeight: FontWeight.w600,
-                      ),
+
+                    Row(
+                      children: [
+                        Text(
+                          '${item.itemsCount > 0 ? item.itemsCount : 'Aucun'} aliment${item.itemsCount > 1 ? 's' : ''}',
+                          style: TextStyle(
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize!,
+                            color: AppColors.mutedForeground,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          ' · ',
+                          style: TextStyle(
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize!,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                        Text(
+                          '${item.totalEstimatedCost} Ar',
+                          style: TextStyle(
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize!,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use, unnecessary_underscores
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -30,6 +30,8 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
     int itemId,
     FoodDetailsViewmodel foodDetailsVm,
   ) async {
+    final rootContext = Navigator.of(context, rootNavigator: true).context;
+
     showGeneralDialog(
       context: context,
       barrierColor: Colors.transparent,
@@ -43,14 +45,51 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
 
     await foodDetailsVm.deleteItem(itemId);
 
-    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.of(context, rootNavigator: true).pop(true);
 
     if (!foodDetailsVm.hasDeleteError && !foodDetailsVm.isDeletingItem) {
       context.pop(true);
     } else {
       Toastify.show(
-        context,
+        rootContext,
         message: foodDetailsVm.deleteErrorMessage,
+        type: ToastType.error,
+      );
+    }
+  }
+
+  Future _handleUpdateItem(
+    BuildContext context,
+    int itemId,
+    FoodDetailsViewmodel foodDetailsVm,
+  ) async {
+    final rootContext = Navigator.of(context, rootNavigator: true).context;
+
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, __) {
+        return LoaderWithOverlay(text: 'Mise à jour en cours');
+      },
+    );
+
+    await foodDetailsVm.updateItem(itemId);
+
+    Navigator.of(context, rootNavigator: true).pop(true);
+
+    if (!foodDetailsVm.hasUpdateError && !foodDetailsVm.isUpdatingItem) {
+      Toastify.show(
+        rootContext,
+        message: 'Aliment mis à jour avec succès',
+        type: ToastType.success,
+      );
+    } else {
+      Toastify.show(
+        rootContext,
+        message: foodDetailsVm.updateErrorMessage,
         type: ToastType.error,
       );
     }
@@ -99,9 +138,10 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
       appBar: FoodDetailsAppbar(
         onOpenAction: () {
           FoodDetailsBottomsheet.show(
-            context,
-            foodDetailsVm,
-            () =>
+            context: context,
+            onUpdate: () =>
+                _handleUpdateItem(context, int.parse(widget.id), foodDetailsVm),
+            onDelete: () =>
                 _handleDeleteItem(context, int.parse(widget.id), foodDetailsVm),
           );
         },

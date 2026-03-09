@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
 import 'package:gaspika_mobile/shared/form_block.dart';
 import 'package:provider/provider.dart';
 
-class UpdateListDialog extends StatelessWidget {
+class UpdateListDialog extends StatefulWidget {
   final String listName;
   final VoidCallback onUpdate;
 
@@ -15,17 +14,25 @@ class UpdateListDialog extends StatelessWidget {
   });
 
   @override
+  State<UpdateListDialog> createState() => _UpdateListDialogState();
+}
+
+class _UpdateListDialogState extends State<UpdateListDialog> {
+  late ShoppingListViewModel shoppingListVm;
+
+  @override
+  void initState() {
+    super.initState();
+    shoppingListVm = Provider.of<ShoppingListViewModel>(context, listen: false);
+    shoppingListVm.listNameController.text = widget.listName;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final shoppingListVm = Provider.of<ShoppingListViewModel>(
-      context,
-      listen: false,
-    );
-
-    // initialize value of textController with current listName
-    shoppingListVm.listNameController.text = listName;
-
     return AlertDialog(
       insetPadding: EdgeInsets.symmetric(horizontal: 23),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      backgroundColor: Colors.white,
       title: Text(
         'Modifier la liste',
         style: TextStyle(fontWeight: FontWeight.bold),
@@ -36,7 +43,7 @@ class UpdateListDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             FormBlock(
-              label: 'Nouveau nom de la liste',
+              label: 'Nom de la liste',
               child: TextField(
                 controller: shoppingListVm.listNameController,
                 decoration: InputDecoration(
@@ -49,7 +56,6 @@ class UpdateListDialog extends StatelessWidget {
           ],
         ),
       ),
-      backgroundColor: Colors.white,
       actions: [
         Row(
           children: [
@@ -58,23 +64,26 @@ class UpdateListDialog extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.mutedForeground,
-                ),
                 child: const Text('Annuler'),
               ),
             ),
             SizedBox(width: 8),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(foregroundColor: Colors.white),
-                onPressed: shoppingListVm.listNameController.text.isEmpty
-                    ? null
-                    : () {
-                        Navigator.pop(context);
-                        onUpdate();
-                      },
-                child: const Text('Modifier'),
+              child: Consumer<ShoppingListViewModel>(
+                builder: (context, vm, _) {
+                  return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: vm.listNameController.text.isEmpty
+                        ? null
+                        : () {
+                            Navigator.pop(context);
+                            widget.onUpdate();
+                          },
+                    child: const Text('Modifier'),
+                  );
+                },
               ),
             ),
           ],

@@ -1,5 +1,3 @@
-// models/schemas/create_item.dart
-
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/domains-object/category.dart';
 
@@ -13,7 +11,7 @@ class CreateShoppingItemSchema {
   String foodName = '';
   double recommendedQuantity;
   QuantityUnit unit = QuantityUnit.unit;
-  double price;
+  int price;
   String notes;
   int personNumber;
   String? storageTips;
@@ -29,7 +27,7 @@ class CreateShoppingItemSchema {
     required this.consumptionDuration,
     this.recommendedQuantity = 0.0,
     this.unit = QuantityUnit.unit,
-    this.price = 0.0,
+    this.price = 0,
     this.notes = '',
     this.storageTips = '',
     this.category,

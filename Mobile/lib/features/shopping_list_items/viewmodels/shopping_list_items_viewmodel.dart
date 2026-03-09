@@ -16,22 +16,25 @@ class ShoppingItemsViewModel extends ChangeNotifier {
   bool _isLoadingItems = true;
   List<ShoppingListItem> _shoppingItems = [];
   bool _hasError = false;
-  String _errrorMessage = '';
-  NetworkErrorType? _errorType;
+  String _errorMessage = '';
 
   // Getters
   bool get isLoadingItems => _isLoadingItems;
   List<ShoppingListItem> get shoppingItems => _shoppingItems;
   bool get hasError => _hasError;
-  String get errorMessage => _errrorMessage;
-  NetworkErrorType? get errorType => _errorType;
+  String get errorMessage => _errorMessage;
+
+  // clear error
+  void clearError() {
+    _hasError = false;
+    _errorMessage = '';
+    notifyListeners();
+  }
 
   // Get shopping items by list ID
   Future fetchShoppingItems(int listId) async {
     _isLoadingItems = true;
-    _hasError = false;
-    _errorType = null;
-    _errrorMessage = '';
+    clearError();
     notifyListeners();
 
     final response = await _shoppingItemsModel.getShoppingItems(listId);
@@ -39,8 +42,7 @@ class ShoppingItemsViewModel extends ChangeNotifier {
     if (response.hasError == true) {
       _isLoadingItems = false;
       _hasError = true;
-      _errorType = response.errorType;
-      _errrorMessage = response.message!;
+      _errorMessage = response.message!;
       notifyListeners();
 
       return;
@@ -63,9 +65,7 @@ class ShoppingItemsViewModel extends ChangeNotifier {
   Future refreshShoppingItems(int listId) async {
     _shoppingItems = [];
     _isLoadingItems = true;
-    _hasError = false;
-    _errorType = null;
-    _errrorMessage = '';
+    clearError();
     notifyListeners();
 
     await fetchShoppingItems(listId);

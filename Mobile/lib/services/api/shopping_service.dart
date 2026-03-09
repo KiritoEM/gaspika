@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
 import 'package:gaspika_mobile/models/schemas/create_item_schema.dart';
+import 'package:gaspika_mobile/models/schemas/update_item_schema.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 
 class ShoppingService {
@@ -55,6 +56,31 @@ class ShoppingService {
     return response.data;
   }
 
+  Future createShoppingItem(
+    CreateShoppingItemSchema item,
+    int listId,
+    File? image,
+  ) async {
+    FormData formData = FormData.fromMap({...item.toMap()});
+
+    if (image != null) {
+      formData.files.add(
+        MapEntry(
+          'image',
+          await MultipartFile.fromFile(
+            image.path,
+            filename: image.path.split('/').last,
+          ),
+        ),
+      );
+    }
+
+    await _dio.post(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',
+      data: formData,
+    );
+  }
+
   Future updateShoppingList(int listId, String newListName) async {
     await _dio.patch(
       '${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId',
@@ -62,10 +88,13 @@ class ShoppingService {
     );
   }
 
-  Future updateShoppingItem(int itemId, String newListName) async {
+  Future updateShoppingItem(
+    int itemId,
+    UpdateShoppingItemSchema newData,
+  ) async {
     await _dio.patch(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
-      data: {'name': newListName},
+      data: newData.toMap(),
     );
   }
 
@@ -92,31 +121,6 @@ class ShoppingService {
     );
 
     return response.data['data'] as List<dynamic>;
-  }
-
-  Future createShoppingItem(
-    CreateShoppingItemSchema item,
-    int listId,
-    File? image,
-  ) async {
-    FormData formData = FormData.fromMap({...item.toMap()});
-
-    if (image != null) {
-      formData.files.add(
-        MapEntry(
-          'image',
-          await MultipartFile.fromFile(
-            image.path,
-            filename: image.path.split('/').last,
-          ),
-        ),
-      );
-    }
-
-    await _dio.post(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/add',
-      data: formData,
-    );
   }
 
   Future<Map<String, dynamic>> getShoppingItemById(int itemId) async {

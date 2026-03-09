@@ -8,7 +8,7 @@ class ShoppingListItem {
   final String foodName;
   final int? shoppingListId;
   final double recommendedQuantity;
-  final double price;
+  final int price;
   final ShoppingItemStatus status;
   final int personNumber;
   final String? notes;
@@ -49,7 +49,7 @@ class ShoppingListItem {
       shoppingListId: json['shopping_list_id'] as int?,
       recommendedQuantity:
           (json['recommended_quantity'] as num?)?.toDouble() ?? 1,
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      price: (json['price'] as num?)?.toInt() ?? 0,
       notes: json['notes'] as String?,
       storageTips: json['storage_tips'] as String?,
       categoryId: json['food_category_id'] as int?,
@@ -90,6 +90,8 @@ class ShoppingListItem {
     };
   }
 
+  int get totalPrice => (recommendedQuantity * price).toInt();
+
   @override
   String toString() {
     return 'ShoppingListItem{id: $id, foodName: $foodName, shoppingListId: $shoppingListId, recommendedQuantity: $recommendedQuantity, price: $price, status: $status, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, categoryId: $categoryId, unit: $quantityUnit}';
@@ -102,7 +104,7 @@ class ShoppingList {
   final int weekNumber;
   final String? name;
   final ShoppingListStatus status;
-  final double totalEstimatedCost;
+  final int totalEstimatedCost;
   final String? userId;
   final int itemsCount;
   final String createdAt;
@@ -128,8 +130,7 @@ class ShoppingList {
       status: ShoppingListStatus.values.byName(
         (json['status'] ?? 'UNFINISHED').toLowerCase(),
       ),
-      totalEstimatedCost:
-          (json['total_estimated_cost'] as num?)?.toDouble() ?? 0.0,
+      totalEstimatedCost: (json['total_estimated_cost'] as num?)?.toInt() ?? 0,
       userId: json['user_id'] as String?,
       itemsCount: (json['items_count'] as int?) ?? 0,
       createdAt: json['created_at'],

@@ -15,6 +15,8 @@ class DeleteConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       insetPadding: EdgeInsets.symmetric(horizontal: 23),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      backgroundColor: Colors.white,
       title: const Text(
         'Supprimer l\'aliment',
         style: TextStyle(fontWeight: .bold),
@@ -23,7 +25,6 @@ class DeleteConfirmationDialog extends StatelessWidget {
         'Voulez-vous vraiment supprimer l\'aliment "$foodName" ?',
         style: TextStyle(color: AppColors.mutedForeground),
       ),
-      backgroundColor: Colors.white,
 
       actions: [
         Row(

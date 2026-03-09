@@ -245,7 +245,19 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
               style: TextStyle(fontSize: 18, color: AppColors.primary),
             ),
             Text(
-              '${item.price} Ar',
+              '${item.price} Ar/$unitText',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+              ),
+            ),
+            const Text(
+              ' · ',
+              style: TextStyle(fontSize: 18, color: AppColors.primary),
+            ),
+            Text(
+              '${item.totalPrice} Ar',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,

@@ -58,12 +58,14 @@ class ShoppingListRepository:
         # Pagination
         return await paginate(self.db, PageParams(page=page, size=limit), query, BaseShoppingList)
     
-    async def get_by_id(self, list_id: int, user_id: int) -> ShoppingList:
+    async def get_by_id(self, list_id: int, user_id: str) -> ShoppingList:
         """Get shopping list by Id"""
         shopping_list = await self.db.execute(
             select(ShoppingList).where(
+               and_(
                 ShoppingList.user_id == user_id,
                 ShoppingList.id == list_id
+               )
             )
         )
         
@@ -97,17 +99,9 @@ class ShoppingListRepository:
         
         return shopping_list.scalar_one_or_none()
     
-    async def update_list(self, shopping_lists_id: int, user_id: str, update_data: UpdateShoppingListDTO) -> Optional[ShoppingList]:
+    async def update_list(self, list_id: int, user_id: str, update_data: UpdateShoppingListDTO) -> Optional[ShoppingList]:
         """Update shopping list name or week_number"""
-        result = await self.db.execute(
-            select(ShoppingList)
-            .where(
-                and_(
-                    ShoppingList.id == shopping_lists_id,
-                    ShoppingList.user_id == user_id
-                )
-        ))
-        shopping_list = result.scalar_one_or_none()
+        shopping_list = await self.get_by_id(list_id, user_id)
         
         if shopping_list:
             shopping_list.name = update_data.name
@@ -157,17 +151,7 @@ class ShoppingListRepository:
      
     async def complete_list(self, list_id: int, user_id: str) -> Optional[ShoppingList]:
         """Change status of shopping list to complete"""
-        result = await self.db.execute(
-            select(ShoppingList)
-           .where(
-                and_(                    
-                    ShoppingList.id == list_id,
-                    ShoppingList.user_id == user_id
-                )
-           )
-        )
-        
-        shopping_list = result.scalar_one_or_none()
+        shopping_list = await self.get_by_id(list_id, user_id)
         
         if shopping_list:
             shopping_list.status = ShoppingListStatusEnum.COMPLETED
@@ -181,17 +165,7 @@ class ShoppingListRepository:
     
     async def rollback_list_to_unfinished(self, list_id: int, user_id: str) -> Optional[ShoppingList]:
         """Change status of shopping list to unfinished"""
-        result = await self.db.execute(
-            select(ShoppingList)
-           .where(
-                and_(                    
-                    ShoppingList.id == list_id,
-                    ShoppingList.user_id == user_id
-                )
-           )
-        )
-        
-        shopping_list = result.scalar_one_or_none()
+        shopping_list = await self.get_by_id(list_id, user_id)
         
         if shopping_list:
             shopping_list.status = ShoppingListStatusEnum.UNFINISHED
@@ -205,15 +179,7 @@ class ShoppingListRepository:
 
     async def delete_list(self, list_id: int, user_id: str) -> bool:
         """Delete shopping list and cascade items"""
-        result = await self.db.execute(
-            select(ShoppingList)
-            .where(
-                and_(
-                    ShoppingList.id == list_id,
-                    ShoppingList.user_id == user_id
-                )    
-            ))
-        shopping_list = result.scalar_one_or_none()
+        shopping_list = await self.get_by_id(list_id, user_id)
         
         if shopping_list:
             await self.db.delete(shopping_list)
@@ -221,5 +187,3 @@ class ShoppingListRepository:
             return True
         
         return False
-    
-  

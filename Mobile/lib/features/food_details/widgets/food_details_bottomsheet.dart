@@ -20,13 +20,15 @@ class FoodDetailsBottomsheet {
             mainAxisSize: MainAxisSize.min,
             spacing: 8,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
 
-              // BottomsheetAction(
-              //   label: 'Modifier',
-              //   icon: SvgPicture.asset('assets/icons/edit.svg', width: 18),
-              //   onTap: () => {},
-              // ),
+              BottomsheetAction(
+                label: 'Modifier',
+                icon: SvgPicture.asset('assets/icons/edit.svg', width: 18),
+                onTap: () => {},
+              ),
+
+              const SizedBox(height: 16),
 
               // const SizedBox(height: 16),
               BottomsheetAction(

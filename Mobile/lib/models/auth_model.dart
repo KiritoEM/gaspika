@@ -85,10 +85,7 @@ class AuthModel {
   /// Register
   Future<ApiResponse<dynamic>> register(SignupCredentials credentials) async {
     try {
-      // register the device for push notification and get the FCM token
-      final fcmToken = await _notificationService.getFCMToken();
-
-      await _authService.register(credentials.copyWith(fcmToken: fcmToken));
+      await _authService.register(credentials);
 
       return ApiResponse(
         message: 'Inscription réussie ! Veuillez vous connecter aprés.',

@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
-import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/food_details/viewmodels/food_details_viewmodel.dart';
 import 'package:gaspika_mobile/features/food_details/widgets/food_details_appbar.dart';
 import 'package:gaspika_mobile/features/food_details/widgets/food_details_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/badge_field.dart';
 import 'package:gaspika_mobile/shared/button_with_loader.dart';
+import 'package:gaspika_mobile/shared/loader_with_overlay.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_toastify/my_toastify.dart';
@@ -30,9 +30,20 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
     int itemId,
     FoodDetailsViewmodel foodDetailsVm,
   ) async {
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, __) {
+        return LoaderWithOverlay(text: 'Supression en cours');
+      },
+    );
+
     await foodDetailsVm.deleteItem(itemId);
 
-    if (!mounted) return;
+    Navigator.of(context, rootNavigator: true).pop();
 
     if (!foodDetailsVm.hasDeleteError && !foodDetailsVm.isDeletingItem) {
       context.pop(true);
@@ -94,11 +105,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
                 _handleDeleteItem(context, int.parse(widget.id), foodDetailsVm),
           );
         },
-        onGoBack: () => {
-          context.pop(
-            '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/${widget.id}',
-          ),
-        },
+        onGoBack: () => {context.pop(true)},
       ),
       body: SafeArea(
         child: Padding(

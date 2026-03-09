@@ -17,15 +17,13 @@ class UserServices:
             raise HTTPException(status_code=409, detail="Un compte avec cet email existe déja.")
         
         created_user = await self.repo.create(**data.model_dump())
-        
-        print(data)
-          
+                  
         # create device with FCM token 
-        try:
-            await self.device_repo.create(data.fcm_token, str(created_user.id))
-        except Exception as e:
-            print(f"Impossible de créer le device: {str(e)}")
-            raise HTTPException(status_code=500, detail="Impossible de créer le device")
+        # try:
+        #     await self.device_repo.create(data.fcm_token, str(created_user.id))
+        # except Exception as e:
+        #     print(f"Impossible de créer le device: {str(e)}")
+        #     raise HTTPException(status_code=500, detail="Impossible de créer le device")
             
         
         return created_user

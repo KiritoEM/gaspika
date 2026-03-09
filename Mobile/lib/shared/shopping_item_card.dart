@@ -86,7 +86,9 @@ class ShoppingItemCard extends StatelessWidget {
                                 child: Text(
                                   item.foodName,
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium?.fontSize,
                                     fontWeight: FontWeight.bold,
                                     color: isCompleted
                                         ? Colors.white

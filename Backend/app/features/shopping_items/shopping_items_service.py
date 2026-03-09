@@ -208,9 +208,10 @@ class ShoppingItemsServices:
         if not shopping_item:
             raise HTTPException(status_code=404, detail="Aliment introuvable.")
         
-        deleted_image = await self.storage_provider.delete({"delete_url" : shopping_item.image.delete_url})
+        if shopping_item.image:
+            deleted_image = await self.storage_provider.delete({"delete_url" : shopping_item.image.delete_url})
         
-        if not deleted_image:
-            raise HTTPException(status_code=502, detail="Impossible de supprimer l'image depuis le cloud.")
+            if not deleted_image:
+             raise HTTPException(status_code=502, detail="Impossible de supprimer l'image depuis le cloud.")
         
         return await self.shopping_item_repo.delete(item_id, user_id)

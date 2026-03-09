@@ -21,15 +21,10 @@ class AuthServices:
         
         if not verify_hash(data.password, user.password):
             raise HTTPException(status_code=401, detail="Mot de passe incorrect.")
-        
-        print(data)
-        
+                
         # create device with FCM token if not exist
         try:
-            device = await self.device_repo.get_by_fcm_token(data.fcm_token)
-        
-            if (not device):
-                await self.device_repo.create(data.fcm_token, (str(user.id)))
+            await self.device_repo.create(data.fcm_token, (str(user.id)))
         except Exception as e:
             print(f"Impossible de créer le device: {str(e)}")
             raise HTTPException(status_code=500, detail="Impossible de créer le device")

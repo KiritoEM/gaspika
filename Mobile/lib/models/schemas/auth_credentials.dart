@@ -36,13 +36,13 @@ class SignupCredentials {
   String fullname = '';
   String email = '';
   String password = '';
-  String? fcmToken;
+  // String? fcmToken;
 
   SignupCredentials({
     required this.fullname,
     required this.email,
     required this.password,
-    this.fcmToken,
+    // this.fcmToken,
   });
 
   Map<String, dynamic> toMap() {
@@ -50,7 +50,7 @@ class SignupCredentials {
       'email': email,
       'password': password,
       'fullname': fullname,
-      'fcm_token': fcmToken,
+      // 'fcm_token': fcmToken,
     };
   }
 
@@ -64,7 +64,7 @@ class SignupCredentials {
       fullname: fullname ?? this.fullname,
       email: email ?? this.email,
       password: password ?? this.password,
-      fcmToken: fcmToken ?? this.fcmToken,
+      // fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 }

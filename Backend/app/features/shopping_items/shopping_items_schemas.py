@@ -74,10 +74,11 @@ class BaseShoppingListItem(BaseModel):
 
 # Update shopping item schema
 class UpdateShoppingItemDTO(BaseModel):
-    food_name: Optional[str] = Field(None, max_length=100, description="Nom du produit")
-    price: Optional[float] = Field(None, gt=0, description="Prix unitaire")
-    unit: Optional[UnitEnum] = Field(None, description="Unité de mesure")
-    notes: Optional[str] = Field(None, description="Notes additionnelles")
+    food_name: Optional[str] = Field(None, max_length=100)
+    price: Optional[float] = Field(None, gt=0)
+    unit: Optional[UnitEnum] = Field(None)
+    recommanded_quantity: Optional[float] = Field(None, gt=0)
+    notes: Optional[str] = Field(None)
 
 # Update shopping item response schema
 class UpdateShoppingItemOutDTO(BaseModel):

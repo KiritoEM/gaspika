@@ -62,6 +62,13 @@ class ShoppingService {
     );
   }
 
+  Future updateShoppingItem(int itemId, String newListName) async {
+    await _dio.patch(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
+      data: {'name': newListName},
+    );
+  }
+
   Future deleteShoppingList(int listId) async {
     await _dio.delete('${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId');
   }

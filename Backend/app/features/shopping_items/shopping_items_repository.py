@@ -210,20 +210,11 @@ class ShoppingItemsRepository:
         item_data: UpdateShoppingItemDTO
     ) -> Optional[ShoppingListItem] :
         """Update Shopping item"""
-        result = await self.db.execute(
-            select(ShoppingListItem)
-            .join(ShoppingListItem.shopping_list)
-            .where(
-                and_(
-                    ShoppingList.user_id == user_id,
-                    ShoppingListItem.id == item_id
-                )
-           )
-        )   
+        result = await self.get_by_id(item_id, user_id)
         
         shopping_item = result.scalar_one_or_none()
         
-        # Update change field
+        # Update changed field
         if shopping_item:
             for field, value in item_data.model_dump(exclude_unset=True).items():
                 setattr(shopping_item, field, value)

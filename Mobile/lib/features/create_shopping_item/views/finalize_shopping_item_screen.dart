@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_shopping_item_viewmodel.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/finalize_shopping_item_form.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/stepper_header.dart';
+import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:gaspika_mobile/shared/progress_indicator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -79,6 +80,20 @@ class _FinalizeShoppingItemScreenState
   }
 
   Widget _buildContent(BuildContext context) {
+    final createShoppingItemVm = Provider.of<CreateShoppingItemViewModel>(
+      context,
+    );
+
+    if (createShoppingItemVm.hasFetchCategoriesError) {
+      return SizedBox(
+        width: double.infinity,
+        child: ErrorState(
+          text: createShoppingItemVm.fetchCategoriesErrorMessage!,
+          onRefresh: () => createShoppingItemVm.refreshCategories(),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),

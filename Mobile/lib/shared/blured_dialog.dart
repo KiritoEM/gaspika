@@ -22,11 +22,13 @@ class BluredDialog extends StatelessWidget {
       builder: (context, value, _) {
         return Stack(
           children: [
-            GestureDetector(
-              onTap: popOnOutsideDialogTap ? () => context.pop() : null,
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(color: Color.fromARGB(88, 228, 226, 226)),
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: popOnOutsideDialogTap ? () => context.pop() : null,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 6.5, sigmaY: 6.5),
+                  child: Container(color: Color.fromARGB(88, 228, 226, 226)),
+                ),
               ),
             ),
 

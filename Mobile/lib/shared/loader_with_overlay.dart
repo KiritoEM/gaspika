@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/shared/blured_dialog.dart';
 
-class AnalysisOverlay extends StatelessWidget {
-  const AnalysisOverlay({super.key});
+class LoaderWithOverlay extends StatelessWidget {
+  final String text;
+
+  const LoaderWithOverlay({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class AnalysisOverlay extends StatelessWidget {
           const SizedBox(height: 18),
 
           Text(
-            'Analyse en cours...',
+            text,
             style: TextStyle(
               fontSize: Theme.of(context).textTheme.titleMedium!.fontSize,
               fontWeight: FontWeight.bold,

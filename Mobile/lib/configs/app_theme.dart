@@ -25,6 +25,7 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
+        hintStyle: TextStyle(color: AppColors.inputPlaceholderColor),
         labelStyle: TextStyle(
           fontWeight: FontWeight.w600,
           color: Colors.grey[500],
@@ -58,7 +59,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           textStyle: GoogleFonts.montserrat(fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           elevation: 0.5,
@@ -70,7 +71,7 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           textStyle: GoogleFonts.montserrat(fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
             side: BorderSide(color: AppColors.surface),
           ),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),

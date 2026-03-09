@@ -37,4 +37,4 @@ class DeviceRepository:
             )
         )
         
-        return device.scalar_one_or_none()
+        return device.scalars().first()

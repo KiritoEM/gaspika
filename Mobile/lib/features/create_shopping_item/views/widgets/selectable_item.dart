@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 
-class UnitItem extends StatelessWidget {
+class SelectableItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final Function onSelect;
 
-  const UnitItem({
+  const SelectableItem({
     super.key,
     required this.label,
     required this.onSelect,
@@ -34,14 +34,14 @@ class UnitItem extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             child: Center(
               child: Text(
                 label,
                 style: TextStyle(
                   color: isActive ? AppColors.primary : AppColors.foreground,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
-                  fontSize: 13,
+                  fontSize: 12,
                 ),
               ),
             ),

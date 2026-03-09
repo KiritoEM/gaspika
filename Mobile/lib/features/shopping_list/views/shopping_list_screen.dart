@@ -12,17 +12,18 @@ import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_card
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_status_filter.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/empty_state.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
+import 'package:gaspika_mobile/shared/loader_with_overlay.dart';
 import 'package:my_toastify/my_toastify.dart';
 import 'package:provider/provider.dart';
 
-class ShopListScreen extends StatefulWidget {
-  const ShopListScreen({super.key});
+class ShoppingListScreen extends StatefulWidget {
+  const ShoppingListScreen({super.key});
 
   @override
-  State<ShopListScreen> createState() => _ShopListScreenState();
+  State<ShoppingListScreen> createState() => _ShoppingListScreenState();
 }
 
-class _ShopListScreenState extends State<ShopListScreen> {
+class _ShoppingListScreenState extends State<ShoppingListScreen> {
   // list of status for filtering
   List<Map<String, dynamic>> statusDataFilter = [
     {'label': 'Tout', 'value': ShoppingListStatus.all},
@@ -34,6 +35,17 @@ class _ShopListScreenState extends State<ShopListScreen> {
     int listId,
     ShoppingListViewModel shoppingListVm,
   ) async {
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, __) {
+        return LoaderWithOverlay(text: 'Supression en cours');
+      },
+    );
+
     await shoppingListVm.deleteShoppingList(listId);
 
     if (!mounted) return;
@@ -51,12 +63,25 @@ class _ShopListScreenState extends State<ShopListScreen> {
         type: ToastType.error,
       );
     }
+
+    Navigator.of(context, rootNavigator: true).pop(true);
   }
 
   Future handleUpdateList(
     int listId,
     ShoppingListViewModel shoppingListVm,
   ) async {
+    showGeneralDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      transitionDuration: Duration.zero,
+      pageBuilder: (dialogContext, _, __) {
+        return LoaderWithOverlay(text: 'Mis à jour en cours');
+      },
+    );
+
     await shoppingListVm.updateShoppingList(listId);
 
     if (!mounted) return;
@@ -74,6 +99,8 @@ class _ShopListScreenState extends State<ShopListScreen> {
         type: ToastType.error,
       );
     }
+
+    Navigator.of(context, rootNavigator: true).pop(true);
   }
 
   @override
@@ -95,6 +122,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      extendBody: true,
       extendBodyBehindAppBar: true,
       appBar: ShoppingListAppbar(
         onFilter: () {

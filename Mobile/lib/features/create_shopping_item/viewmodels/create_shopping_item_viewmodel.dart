@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/models/categories_model.dart';
+import 'package:gaspika_mobile/models/domains-object/category.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/ml_model.dart';
 import 'package:gaspika_mobile/models/shopping_items_model.dart';
-import 'package:gaspika_mobile/models/schemas/create_item.dart';
+import 'package:gaspika_mobile/models/schemas/create_item_schema.dart';
 import 'package:gaspika_mobile/utils/app_loger.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -21,7 +22,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   final CreateShoppingItemSchema _data = CreateShoppingItemSchema(
     foodName: '',
     personNumber: 1,
-    categoryId: 0,
+    consumptionDuration: 1,
   );
 
   File? _image;
@@ -35,6 +36,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   String _createFoodErrorMessage = '';
   NetworkErrorType? _createFoodErrorType;
   bool _isLoadingCategories = false;
+  List<Category> _categories = [];
   String _fetchCategoriesErrorMessage = '';
   bool _hasFetchCategoriesError = false;
   NetworkErrorType? _fetchCategoriesErrorType;
@@ -53,6 +55,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
   String? get createFoodErrorMessage => _createFoodErrorMessage;
   NetworkErrorType? get createFoodErrorType => _createFoodErrorType;
   bool get isLoadingCategories => _isLoadingCategories;
+  List<Category> get categories => _categories;
   String? get fetchCategoriesErrorMessage => _fetchCategoriesErrorMessage;
   bool get hasFetchCategoriesError => _hasFetchCategoriesError;
   NetworkErrorType? get fetchCategoriesErrorType => _fetchCategoriesErrorType;
@@ -97,18 +100,40 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCategoryId(int id) {
-    _data.categoryId = id;
-    notifyListeners();
-  }
-
   void setHumidity(int humidity) {
     _data.humidity = humidity;
     notifyListeners();
   }
 
-  void setBackendCategory(String category) {
-    _data.backendCategory = category;
+  void setMealFrequency(String mealFrequency) {
+    _data.mealFrequency = mealFrequency;
+    notifyListeners();
+  }
+
+  void setConsumptionDuration(int consumptionDuration) {
+    _data.consumptionDuration = consumptionDuration;
+    notifyListeners();
+  }
+
+  void setCategory({
+    required int categoryId,
+    required String categoryName,
+    required String mlCategory,
+  }) {
+    if (_data.category == null) {
+      _data.category = Category(
+        id: categoryId,
+        name: categoryName,
+        mlCategory: mlCategory,
+      );
+    } else {
+      _data.category = _data.category!.copyWith(
+        id: categoryId,
+        name: categoryName,
+        mlCategory: mlCategory,
+      );
+    }
+
     notifyListeners();
   }
 
@@ -161,7 +186,7 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
     if (!_formkey.currentState!.validate()) {
       _isPredicting = false;
       notifyListeners();
-      return 'Veuillez remplir tous les champs requis';
+      return;
     }
 
     _formkey.currentState!.save();
@@ -241,9 +266,6 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
       _image,
     );
 
-    _isCreating = false;
-    notifyListeners();
-
     if (response.hasError == true) {
       _hasCreateFoodError = true;
       _createFoodErrorMessage = response.message!;
@@ -289,7 +311,18 @@ class CreateShoppingItemViewModel extends ChangeNotifier {
     }
 
     _isLoadingCategories = false;
+    _categories = response.data!;
     notifyListeners();
+  }
+
+  // refresh when an error occurs when fetching categories
+  void refreshCategories() {
+    _hasFetchCategoriesError = false;
+    _fetchCategoriesErrorMessage = '';
+    _fetchCategoriesErrorType = null;
+
+    notifyListeners();
+    getAllCategories();
   }
 
   @override

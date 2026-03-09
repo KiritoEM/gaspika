@@ -10,7 +10,7 @@ import 'package:gaspika_mobile/features/create_shopping_item/views/finalize_shop
 import 'package:gaspika_mobile/features/food_details/views/food_details_screen.dart';
 import 'package:gaspika_mobile/features/home/views/home_screen.dart';
 import 'package:gaspika_mobile/features/onboarding/views/onboarding_screen.dart';
-import 'package:gaspika_mobile/features/shopping_list/views/shop_list_screen.dart';
+import 'package:gaspika_mobile/features/shopping_list/views/shopping_list_screen.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/shopping_list_items_screen.dart';
 import 'package:gaspika_mobile/shared/scaffold_navigation_bar.dart';
 import 'package:gaspika_mobile/utils/guards/role_guard.dart';
@@ -44,7 +44,7 @@ class AppRouter {
           ),
           GoRoute(
             path: NavigationConstant.SHOPPING_LISTS_ROUTE,
-            builder: (_, state) => ShopListScreen(),
+            builder: (_, state) => ShoppingListScreen(),
             redirect: (context, state) => RoleGuard().checkAccess(),
           ),
         ],

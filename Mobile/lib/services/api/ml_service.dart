@@ -1,6 +1,6 @@
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
-import 'package:gaspika_mobile/models/schemas/create_item.dart';
+import 'package:gaspika_mobile/models/schemas/create_item_schema.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
 
 class MlService {
@@ -15,9 +15,9 @@ class MlService {
         'food': data.foodName,
         'nombre_personnes': data.personNumber,
         'unite': UnitUtils.convertUnitToBackend(data.unit),
-        'duree_jours': 7,
-        'type_repas': 'dejeuner',
-        'categorie': data.backendCategory,
+        'duree_jours': data.consumptionDuration,
+        'type_repas': data.mealFrequency,
+        'categorie': data.category?.mlCategory,
       },
     );
 
@@ -31,7 +31,7 @@ class MlService {
       ApiConstant.PREDICT_CONSERVATION,
       data: {
         'humidite_relative': data.humidity,
-        'categorie': data.backendCategory,
+        'categorie': data.category?.mlCategory,
       },
     );
 

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
-import 'package:gaspika_mobile/models/schemas/create_item.dart';
+import 'package:gaspika_mobile/models/schemas/create_item_schema.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 
 class ShoppingService {

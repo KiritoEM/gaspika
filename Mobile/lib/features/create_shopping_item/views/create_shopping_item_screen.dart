@@ -23,6 +23,7 @@ class CreateShoppingItemScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      extendBody: true,
       appBar: AppBar(
         scrolledUnderElevation: 0,
         elevation: 0,

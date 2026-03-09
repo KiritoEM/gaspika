@@ -132,6 +132,7 @@ class ShoppingItemsServices:
                         
         await self.shopping_list_repo.rollback_list_to_unfinished(list_id, user_id)
 
+        # update total price of the list
         total_list_prices = await self.shopping_item_repo.get_total_price(user_id, list_id)
         await self.shopping_list_repo.replace_total_cost(list_id, total_list_prices)
         
@@ -196,6 +197,7 @@ class ShoppingItemsServices:
         if not shopping_item:
             raise HTTPException(status_code=400, detail="Impossible de mettre a jour cet aliment.")
         
+        # update total price of the list
         total_list_prices = await self.shopping_item_repo.get_total_price(user_id, shopping_item.shopping_list_id)
         await self.shopping_list_repo.replace_total_cost(shopping_item.shopping_list_id, total_list_prices)
                 
@@ -203,6 +205,11 @@ class ShoppingItemsServices:
     
     
     async def delete_shopping_item(self, item_id: int, user_id: str):   
+        shopping_list = await self.shopping_list_repo.get_by_item_id(item_id)
+        
+        if not shopping_list:
+            raise HTTPException(status_code=404, detail="Liste introuvable pour cet aliment.")
+        
         shopping_item = await self.shopping_item_repo.get_by_id(item_id, user_id)
         
         if not shopping_item:
@@ -213,5 +220,12 @@ class ShoppingItemsServices:
         
             if not deleted_image:
              raise HTTPException(status_code=502, detail="Impossible de supprimer l'image depuis le cloud.")
+         
+        
+        await self.shopping_list_repo.rollback_list_to_unfinished(shopping_list.id, user_id)
+        
+        # update total price of the list
+        total_list_prices = await self.shopping_item_repo.get_total_price(user_id, shopping_list.id)
+        await self.shopping_list_repo.replace_total_cost(shopping_list.id, total_list_prices)
         
         return await self.shopping_item_repo.delete(item_id, user_id)

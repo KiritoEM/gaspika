@@ -6,7 +6,7 @@ from app.features.shopping_lists.shopping_list_schemas import BaseShoppingList, 
 from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 from app.core.utils.pagination import paginate
 from app.core.schemas import PageParams
-from app.models import ShoppingList
+from app.models import ShoppingList, ShoppingListItem
 from sqlalchemy.orm import selectinload 
 
 class ShoppingListRepository:
@@ -69,7 +69,22 @@ class ShoppingListRepository:
             )
         )
         
-        return shopping_list.scalar_one_or_none()
+        return shopping_list.scalars().first()
+    
+    
+    async def get_by_item_id(self, item_id: int) -> ShoppingList:
+        """Get shopping list by item id"""
+        shopping_list = await self.db.execute(
+            select(ShoppingList)
+            .join(ShoppingList.items)
+            .where(
+               and_(
+                ShoppingListItem.id == item_id
+               )
+            )
+        )
+        
+        return shopping_list.scalars().first()
     
     async def create(self, week_number: int, user_id: str, name: str) -> ShoppingList:
         """Create new shopping list"""
@@ -97,7 +112,7 @@ class ShoppingListRepository:
             
         shopping_list = await self.db.execute(query)            
         
-        return shopping_list.scalar_one_or_none()
+        return shopping_list.scalars().first()
     
     async def update_list(self, list_id: int, user_id: str, update_data: UpdateShoppingListDTO) -> Optional[ShoppingList]:
         """Update shopping list name or week_number"""

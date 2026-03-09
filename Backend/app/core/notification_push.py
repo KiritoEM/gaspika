@@ -19,7 +19,6 @@ async def send_android_notification(
     body: str,
     data
 ):
-    print(f"send notification: {str(fcm_token)} | title: {title} | body: {body} | data: {data}")
     url = (f"https://fcm.googleapis.com/v1/projects/"
            f"{settings.firebase_project_id}/messages:send")
     payload = {"message": {

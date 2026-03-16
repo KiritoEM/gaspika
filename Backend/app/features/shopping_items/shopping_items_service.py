@@ -135,22 +135,28 @@ class ShoppingItemsServices:
         # update total price of the list
         total_list_prices = await self.shopping_item_repo.get_total_price(user_id, list_id)
         await self.shopping_list_repo.replace_total_cost(list_id, total_list_prices)
-        
-        device = await self.device_repo.get_by_user_id(user_id)
-        
-        if not device:
-            raise HTTPException(status_code=404, detail="Impossible de trouver le device")
+
         
         # invalidate cache
         await self.redis_client.delete(f"shopping-items:{user_id}")
         
-        await send_android_notification(
-            fcm_token=device.fcm_token,
-            title="Aliment ajouté !",
-            body=f"« {payload.food_name} » a été ajouté à votre liste de courses.",
-            data={"route": f"/shopping-list/{str(list_id)}?name={shopping_list.name}&week={shopping_list.week_number}"}
-        )
-                    
+        devices = await self.device_repo.get_by_user_id(user_id)
+        
+        if not len(devices):
+            raise HTTPException(status_code=500, detail="Impossible de trouver le device")
+               
+       # send notification
+        for device in devices:
+            try:
+                await send_android_notification(
+                    fcm_token=device.fcm_token,
+                    title="Aliment ajouté !",
+                    body=f"« {payload.food_name} » a été ajouté à votre liste de courses.",
+                    data={...}
+                )
+            except Exception as e:
+                print(f"Notification échouée pour device {device.id}: {e}")
+
     async def get_all_items(self, list_id: int, user_id: str) -> list[dict]:
         shopping_list = await self.shopping_list_repo.get_by_id(list_id, user_id)
         

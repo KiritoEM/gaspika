@@ -42,6 +42,9 @@ class AuthModel {
         );
       }
 
+      // store fcm_token
+      SecureStorageService.write('fcm_token', fcmToken);
+
       return ApiResponse(data: loginResponse);
     } on DioException catch (err) {
       AppLogger.logger.e(

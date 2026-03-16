@@ -2,13 +2,14 @@
 
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gaspika_mobile/configs/app_router.dart';
 import 'package:gaspika_mobile/firebase_options.dart';
+import 'package:gaspika_mobile/services/api/device_service.dart';
+import 'package:gaspika_mobile/services/secure_storage_service.dart';
 
 @pragma('vm:entry-point')
 void onLocalNotificationTap(NotificationResponse response) {
@@ -30,12 +31,14 @@ void onLocalNotificationBackground(NotificationResponse response) {
 }
 
 class NotificationService {
-  //
+  // singleton
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
 
   late final _messaging;
+
+  DeviceService _deviceService = DeviceService();
 
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
@@ -77,7 +80,7 @@ class NotificationService {
     await _localNotifications.initialize(
       settings: initSettings,
       onDidReceiveNotificationResponse: onLocalNotificationTap,
-      onDidReceiveBackgroundNotificationResponse: onLocalNotificationBackground,      
+      onDidReceiveBackgroundNotificationResponse: onLocalNotificationBackground,
     );
 
     // ios permission request
@@ -99,10 +102,6 @@ class NotificationService {
 
     // foreground notifications handling
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-        "Foreground message: ${message.messageId} | message: ${message.data}",
-      );
-
       final notification = message.notification;
       if (notification == null) return;
 
@@ -142,9 +141,20 @@ class NotificationService {
       });
     }
 
-    // refresh token
-    _messaging.onTokenRefresh.listen((newToken) {
-      getFCMToken();
+    // refresh fcm token
+    _messaging.onTokenRefresh.listen((newToken) async {
+      String? currentFcmToken = await SecureStorageService.read('fcm_token');
+
+      if (currentFcmToken == null) return;
+
+      // replace current fcm token in storage
+      await SecureStorageService.update('fcm_token', newToken);
+
+      try {
+        await _deviceService.updateFcmToken(currentFcmToken, newToken);
+      } catch (err) {
+        debugPrint('[FCM] Failed to refresh FCM token: $err');
+      }
     });
   }
 
@@ -152,11 +162,7 @@ class NotificationService {
   void _handleNavigate(Map<String, dynamic> data) {
     final routeName = data['route'] as String?;
 
-    debugPrint("Handling navigation for route: $routeName with data: $data");
-
     if (routeName == null) return;
-
-    debugPrint("Navigating to route: $routeName");
 
     AppRouter.router.go(routeName);
   }

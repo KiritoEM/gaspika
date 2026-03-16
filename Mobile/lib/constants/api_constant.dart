@@ -25,4 +25,5 @@ class ApiConstant {
   static const String PREDICT_QUANTITY = '/predict/quantite';
   static const String PREDICT_CONSERVATION = '/predict/conservation';
   static const String CATEGORIES_ENDPOINT = '/categories';
+  static const String DEVICE_ENDPOINT = '/devices';
 }

@@ -8,6 +8,7 @@ from app.features.categories.category_router import category_router
 from app.features.shopping_items.shopping_items_router import shopping_items_router
 from app.features.food_ml.food_ml_router import food_ml_router
 from app.features.conservation_ml.conservation_ml_router import conservation_ml_router
+from app.features.devices.device_router import device_router
 
 app = FastAPI(
     title="Gaspika API",
@@ -28,6 +29,7 @@ api_router.include_router(shopping_items_router)
 api_router.include_router(user_router)
 api_router.include_router(food_ml_router)
 api_router.include_router(conservation_ml_router)
+api_router.include_router(device_router)
 
 app.include_router(api_router)
 

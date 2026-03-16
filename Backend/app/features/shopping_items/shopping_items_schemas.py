@@ -83,17 +83,11 @@ class UpdateShoppingItemDTO(BaseModel):
 # Update shopping item response schema
 class UpdateShoppingItemOutDTO(BaseModel):
     message: str
-        
-    class Config:
-        from_attributes = True
 
 
 # Create shopping item response schema
 class CreateShoppingItemOutDTO(BaseModel):
     message: str = Field(str, description="Message de confirmation")
-
-    class Config:
-        from_attributes = True
 
 # Get shopping item response schema
 class GetShoppingItemOutDTO(BaseModel):

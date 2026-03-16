@@ -11,7 +11,7 @@ class DeviceRepository:
         device = Device(
             fcm_token=fcm_token,
             user_id=user_id,
-        )
+        ) 
         
         self.db.add(device)
         await self.db.commit()
@@ -27,7 +27,7 @@ class DeviceRepository:
         
         return device.scalar_one_or_none()
     
-    async def get_by_user_id(self, user_id: str):
+    async def get_by_user_id(self, user_id: str) -> list[Device]:
         """Find device by fcm_token"""
         device = await self.db.execute(
             select(Device)
@@ -37,4 +37,16 @@ class DeviceRepository:
             )
         )
         
-        return device.scalars().first()
+        return device.scalars().all() 
+
+    async def delete_by_fcm_token(self, fcm_token):
+        """Delete a device by fcm token"""
+        device = await self.get_by_fcm_token(fcm_token)
+        
+        if device:
+            await self.db.delete(device)
+            await self.db.commit()
+            
+            return True
+        
+        return False

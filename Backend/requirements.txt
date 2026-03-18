@@ -19,3 +19,6 @@ langchain_huggingface
 langchain_text_splitters
 sentence_transformers
 redis
+apscheduler
+pandas
+scikit-learn

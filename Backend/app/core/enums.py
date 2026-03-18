@@ -21,3 +21,7 @@ class UnitEnum(enum.Enum):
     MILLILITER = "MILLILITER"
     LITER = "LITER"
     GRAM = "GRAM"
+
+class NotificationType(enum.Enum):
+    FOOD_EXPIRATION="FOOD_EXPIRATION"
+    LIST_EXPIRATION="LIST_EXPIRATION"

@@ -27,7 +27,7 @@ class DeviceRepository:
         
         return device.scalar_one_or_none()
     
-    async def get_by_user_id(self, user_id: str) -> list[Device]:
+    async def get_by_user_id(self, user_id: str) -> Sequence[Device]:
         """Find device by fcm_token"""
         device = await self.db.execute(
             select(Device)

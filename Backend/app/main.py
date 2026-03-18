@@ -9,6 +9,17 @@ from app.features.shopping_items.shopping_items_router import shopping_items_rou
 from app.features.food_ml.food_ml_router import food_ml_router
 from app.features.conservation_ml.conservation_ml_router import conservation_ml_router
 from app.features.devices.device_router import device_router
+from contextlib import asynccontextmanager
+from core.scheduler import   scheduler
+
+# cron jobs
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler.start()                
+    yield
+    scheduler.shutdown()
+
 
 app = FastAPI(
     title="Gaspika API",

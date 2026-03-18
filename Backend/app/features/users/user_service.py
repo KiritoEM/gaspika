@@ -1,5 +1,4 @@
 from fastapi import HTTPException 
-from app.features.devices.device_repository import DeviceRepository
 from app.features.users.user_repository import UserRepository
 from app.features.users.user_schemas import UserCreateDTO
 
@@ -7,16 +6,14 @@ class UserServices:
     def __init__(
         self, 
         user_repo: UserRepository,
-        device_repo: DeviceRepository
     ):
         self.user_repo = user_repo
-        self.device_repo = device_repo
         
     async def create_user(self, data: UserCreateDTO):
-        if (await self.repo.get_user_by_email(data.email)):
+        if (await self.user_repo.get_user_by_email(data.email)):
             raise HTTPException(status_code=409, detail="Un compte avec cet email existe déja.")
         
-        created_user = await self.repo.create(**data.model_dump())
+        created_user = await self.user_repo.create(**data.model_dump())
                   
         # create device with FCM token 
         # try:

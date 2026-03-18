@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from fastapi import HTTPException
 from app.models import ShoppingList
@@ -20,7 +21,7 @@ class ShoppingListServices:
         )
         
     async def generate_list(self, week_number: int, user_id: str, name: Optional[str] = None):
-        existing_list = await self.shoppingListRepo.get_list_by_week(week_number, user_id, None)
+        existing_list = await self.shoppingListRepo.get_list_by_week(week_number, None, datetime.now().year, user_id)
         
         if existing_list:
             raise HTTPException(409, "Une liste existe deja pour cette semaine")

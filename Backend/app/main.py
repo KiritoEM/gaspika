@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from app.features.food_ml import food_ml_router
@@ -10,27 +11,36 @@ from app.features.food_ml.food_ml_router import food_ml_router
 from app.features.conservation_ml.conservation_ml_router import conservation_ml_router
 from app.features.devices.device_router import device_router
 from contextlib import asynccontextmanager
-from core.scheduler import   scheduler
+from app.core.scheduler import run_jobs, scheduler
 
-# cron jobs
+logging.basicConfig(
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__) 
 
+# cron jobs  
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    scheduler.start()                
+    logger.info("Running jobs...")
+    
+    run_jobs()               
     yield
-    scheduler.shutdown()
-
+    
+    logger.info("Stopping jobs...")
+    scheduler.shutdown()    
 
 app = FastAPI(
     title="Gaspika API",
     description="API pour l'application Gaspika",
+    lifespan=lifespan
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=True
 )
+
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)

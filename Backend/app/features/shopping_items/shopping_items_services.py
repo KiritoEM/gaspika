@@ -162,7 +162,7 @@ class ShoppingItemsServices:
     async def get_all_items(self, list_id: int, user_id: str) -> list[dict]:
         shopping_list = await self.shopping_list_repo.get_by_id(list_id, user_id)
         
-        if not shopping_list:
+        if len(shopping_list) == 0:
             raise HTTPException(status_code=404, detail="Liste introuvable.")
                 
         return await self.shopping_item_repo.get_all(shopping_list.id)
@@ -173,7 +173,7 @@ class ShoppingItemsServices:
     async def get_available_items_count(self, user_id: str,week_number: int):
         shopping_list = await self.shopping_list_repo.get_list_by_week(week_number, datetime.now().year, user_id)
         
-        if not shopping_list:
+        if len(shopping_list) == 0:
             return 0
         
         return await self.shopping_item_repo.get_items_count(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
@@ -181,7 +181,7 @@ class ShoppingItemsServices:
     async def get_available_items(self, user_id: str,week_number: int):
         shopping_list = await self.shopping_list_repo.get_list_by_week(week_number, datetime.now().year, user_id)
   
-        if not shopping_list:
+        if len(shopping_list) == 0:
             raise HTTPException(status_code=404, detail="Pas de liste disponible pour la semaine.")
         
         return await self.shopping_item_repo.get_items_of_list(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)

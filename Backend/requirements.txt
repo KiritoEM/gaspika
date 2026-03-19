@@ -21,4 +21,5 @@ sentence_transformers
 redis
 apscheduler
 pandas
+python-multipart
 scikit-learn

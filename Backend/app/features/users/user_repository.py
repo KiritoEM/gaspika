@@ -2,6 +2,7 @@ from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import User
 from app.core.utils.hashing import hash_string
+from typing import Optional, Sequence
 
 class UserRepository:
     def __init__(self, db: AsyncSession):
@@ -22,16 +23,21 @@ class UserRepository:
         
         return user
     
-    async def get_user_by_email(self, email: str) -> User | None:
+    async def get_all(self) -> Sequence[User]:
+        """Get all users"""
+        users = await self.db.execute(Select(User))
+        
+        return users.scalars()
+    
+    async def get_user_by_email(self, email: str) -> Optional[User]:
         """Find if email already exist"""
         user = await self.db.execute(Select(User).where(User.email == email))
         
-        return user.scalar_one_or_none()
+        return user.scalars().first()
     
-    async def get_user_by_id(self, user_id: str) -> User | None:
+    async def get_user_by_id(self, user_id: str) -> Optional[User]:
         """Find user by id"""
         user = await self.db.execute(Select(User).where(User.id == user_id))
         
-        return user.scalar_one_or_none()
-        
+        return user.scalars().first()        
      

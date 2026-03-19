@@ -7,7 +7,7 @@ from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.shopping_items.shopping_items_repository import ShoppingItemsRepository
 from app.core.database import db_session
-from Backend.app.features.shopping_items.shopping_items_services import ShoppingItemsServices
+from app.features.shopping_items.shopping_items_services import ShoppingItemsServices
 from app.core.middlewares.auth_middleware import require_user
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, CreateShoppingItemOutDTO, FoodSuggestionFilterParams, GetAllShoppingItemsDTO, BaseShoppingListItem, UpdateShoppingItemDTO, GetShoppingItemOutDTO, UpdateShoppingItemOutDTO
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -59,7 +59,7 @@ class ShoppingListRepository:
         # Pagination
         return await paginate(self.db, PageParams(page=page, limit=limit), query, BaseShoppingList)
     
-    async def get_by_id(self, list_id: int, user_id: str) -> ShoppingList:
+    async def get_by_id(self, list_id: int, user_id: str) -> ShoppingList | None:
         """Get shopping list by Id"""
         shopping_list = await self.db.execute(
             select(ShoppingList).where(
@@ -99,7 +99,7 @@ class ShoppingListRepository:
         await self.db.commit()
         await self.db.refresh(new_shopping_list) 
         
-    async def get_list_by_week(self, week_number: int, year: Optional[int], user_id: Optional[str]) -> Sequence[ShoppingList]:
+    async def get_list_by_week(self, week_number: int, year: Optional[int], user_id: Optional[str]) -> ShoppingList | None:
         """Get List by specific week"""
         query = (
             select(ShoppingList)
@@ -121,7 +121,7 @@ class ShoppingListRepository:
             
         shopping_list = await self.db.execute(query)            
         
-        return shopping_list.scalars()
+        return shopping_list.scalars().first()
     
     async def update_list(self, list_id: int, user_id: str, update_data: UpdateShoppingListDTO) -> Optional[ShoppingList]:
         """Update shopping list name or week_number"""

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.features.devices.device_repository import DeviceRepository
 from app.features.users.user_schemas import GetUserDTO
 from app.features.users.user_repository import UserRepository
 from app.features.users.user_service import UserServices
@@ -11,9 +10,8 @@ user_router = APIRouter(prefix="/user", tags=["Users"], dependencies=[Depends(re
 
 async def get_users_services(db: AsyncSession = Depends(db_session)) -> UserServices:
     user_repo = UserRepository(db)
-    device_repo = DeviceRepository(db)
     
-    return UserServices(user_repo, device_repo)
+    return UserServices(user_repo)
 
 @user_router.get(
 "/me",

@@ -1,5 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, Form, HTTPException, Path, Request
+from app.features.notifications.notifications_respository import NotificationsRepository
+from app.features.notifications.notifications_services import NotificationsServices
 from app.features.devices.device_repository import DeviceRepository
 from app.core.storages.imgbb import ImgBBProvider
 from app.features.images_upload.image_upload_repository import ImageRepository
@@ -21,6 +23,13 @@ async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) ->
     image_repo = ImageRepository(db)
     device_repo = DeviceRepository(db)
     storage_provider = ImgBBProvider()
+    notifications_repo = NotificationsRepository(db)
+    notifications_services = NotificationsServices(
+        notifications_repo, 
+        shopping_list_repo,
+        device_repo,
+        user_repo
+    )
     
     return ShoppingItemsServices(
         shopping_list_repo,
@@ -28,7 +37,8 @@ async def get_shopping_items_services(db: AsyncSession = Depends(db_session)) ->
         image_repo, 
         user_repo,
         storage_provider,
-        device_repo
+        device_repo,
+        notifications_services
     )
 
 @shopping_items_router.post(

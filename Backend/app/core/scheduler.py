@@ -23,19 +23,29 @@ async def notifications_job():
         )
 
         await notifications_service.check_all_shopping_list()
+        
+async def add_job(func, job_id: str, trigger: str = None, args=None, kwargs=None, **trigger_kwargs):
+    scheduler.add_job(
+        func=func,
+        trigger=trigger,
+        id=job_id,
+        args=args or [],
+        kwargs=kwargs or {},
+        coalesce=True,
+        max_instances=1,
+        **trigger_kwargs
+    )
 
-def run_jobs():
+async def run_jobs():
     if scheduler.running:
         return
-
-    scheduler.add_job(
-        notifications_job,
-        trigger="interval",
+    
+    await add_job(
+        func=notifications_job,
+        trigger="cron",
         day_of_week="fri",
-        hour=23
-        id="shopping_list_remaining",
-        coalesce=True,
-        max_instances=1
+        hour=23,
+        job_id="shopping_list_remaining"
     )
 
     scheduler.start()

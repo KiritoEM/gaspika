@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     logger.info("Running jobs...")
     
-    run_jobs()               
+    await run_jobs()               
     yield
     
     logger.info("Stopping jobs...")

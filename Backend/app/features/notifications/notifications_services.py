@@ -1,3 +1,6 @@
+from typing import Optional
+
+from app.core.enums import NotificationType
 from app.features.users.user_repository import UserRepository
 from app.core.notification_push import send_android_notification
 from app.features.devices.device_repository import DeviceRepository
@@ -18,60 +21,100 @@ class NotificationsServices:
       self.notifications_repo = notifications_repo
       self.shopping_list_repo = shopping_list_repo
       self.device_repo = device_repo
-      self.user_repo = user_repo
+      self.user_repo = user_repo 
       
     async def check_all_shopping_list(self):
         all_users = await self.user_repo.get_all()
         
         for user in all_users:
-            await self._create_shopping_list_notif(user.id)
-    
-    async def _create_shopping_list_notif(self, user_id: str):
-        """create notification for all lists of current week"""
+            await self._create_shopping_list_remaining_notif(user.id)
+            
+    async def check_near_expiry_food(
+        self,
+        user_id: str,
+        food_name: str,
+        shopping_item_id: int
+    ):
+        body = (
+            f"L’aliment «{food_name}» arrive bientôt à expiration. "
+            f"Pensez à le consommer rapidement."
+        )
         
+        route = f"/shopping-list-items/{shopping_item_id}"
+
+        await self._send_notification(
+            user_id=user_id,
+            title="Aliment proche de péremption",
+            body=body,
+            route=route,
+            type=NotificationType.FOOD_EXPIRATION
+        )
+
+    
+    async def _create_shopping_list_remaining_notif(self, user_id: str):
         current_week = get_week_number(date.today())
-        all_shopping_week_list = await self.shopping_list_repo.get_list_by_week(current_week, datetime.now().year, user_id)
-
-        for shopping_list  in all_shopping_week_list:
-            items_count = len(shopping_list.items or [])
-            
-            print(f"Envoie de la notification pour la liste: {shopping_list.name} |  user_id: {user_id}")
-            
-            if items_count == 0:
-                continue
-            else:                
-                notification_body = (
-                f"La semaine touche à sa fin… "
-                f"Il reste encore {items_count} aliment{'s' if items_count > 1 else ''} "
-                f"non acheté{'s' if items_count > 1 else ''} "
-                f"dans votre liste « {shopping_list .name} »."
-                )
-                route = f"/shopping-list/{shopping_list.id}"
-
-                notification_data = CreateNotificationSchema(
-                    body=notification_body,
-                    route=route
-                )
-
-                await self.notifications_repo.create(user_id, notification_data)
-
-                # send notification push 
-                devices = await self.device_repo.get_by_user_id(user_id)
-                    
-                for device in devices:
-                    try:
-                        await send_android_notification( 
-                            fcm_token=device.fcm_token,
-                            title="Des aliments non achetés en fin de semaine",
-                            body=notification_body,
-                            data={
-                                    "route" : route
-                            }
-                        )
-                    except Exception as e:
-                            print(f"Notification échouée pour device {device.id}: {e}")
         
-    
+        current_list = await self.shopping_list_repo.get_list_by_week(
+            week_number=current_week,
+            year=datetime.now().year,
+            user_id=user_id
+        )
+
+        items_count = len(current_list.items or [])
+
+        if items_count == 0:
+            return
+
+        body = (
+            f"La semaine touche à sa fin… "
+            f"Il reste encore {items_count} aliment{'s' if items_count > 1 else ''} "
+            f"non acheté{'s' if items_count > 1 else ''} "
+            f"dans votre liste « {current_list.name} »."
+        )
+
+        route = f"/shopping-list/{current_list.id}?name={current_list.name}&week={current_list.week_number}" 
+
+        await self._send_notification(
+            user_id=user_id,
+            title="Des aliments non achetés en fin de semaine",
+            body=body,
+            route=route,
+            type=NotificationType.LIST_EXPIRATION
+        )
                             
+    async def _send_notification(
+        self,
+        user_id: str,
+        title: str,
+        body: str,
+        route: str,
+        type: Optional[NotificationType]
+    ):
+        notification_data = CreateNotificationSchema(
+            body=body,
+            route=route,
+            type=type
+        )
+
+        # Save notification
+        await self.notifications_repo.create(user_id, notification_data)
+
+        # Push notification
+        devices = await self.device_repo.get_by_user_id(user_id)
+        
+        if len(devices) == 0:
+            return
+
+        for device in devices:
+            try:
+                await send_android_notification(
+                    fcm_token=device.fcm_token,
+                    title=title,
+                    body=body,
+                    data={"route": route}
+                )
+            except Exception as e:
+                print(f"Notification failed for device {device.id}: {e}")
+
 
 

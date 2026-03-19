@@ -1,8 +1,10 @@
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 import json
 import re
 from typing import List
 from fastapi import HTTPException
+from app.features.notifications.notifications_services import NotificationsServices
+from app.core.scheduler import add_job
 from app.core.redis_client import get_redis_client
 from app.features.devices.device_repository import DeviceRepository
 from app.core.notification_push import send_android_notification
@@ -22,7 +24,8 @@ class ShoppingItemsServices:
         image_repo : ImageRepository,
         user_repo: UserRepository,
         storage_provider: StorageProvider,
-        device_repo: DeviceRepository    
+        device_repo: DeviceRepository,
+        notifications_services: NotificationsServices
     ):
         self.shopping_list_repo = shopping_list_repo
         self.shopping_item_repo = shopping_item_repo
@@ -30,7 +33,8 @@ class ShoppingItemsServices:
         self.imageRepo = image_repo
         self.storage_provider = storage_provider
         self.device_repo = device_repo
-        self.redis_client = get_redis_client()        
+        self.redis_client = get_redis_client()    
+        self.notifications_services = notifications_services    
         
     async def search_food_by_name(self,  user_id: str, query: str):
         # get chached items if already cached
@@ -101,9 +105,9 @@ class ShoppingItemsServices:
         if shopping_items:
             raise HTTPException(409,detail="Cet aliment existe déja dans votre liste actuelle.")
         
-        item = await self.shopping_item_repo.create(list_id, user_id, payload)
+        created_item = await self.shopping_item_repo.create(list_id, user_id, payload)
         
-        if not item:
+        if not created_item:
             raise HTTPException(status_code=400, detail="Impossible d'ajouter l'aliment.")
         
         if payload.image:
@@ -122,13 +126,13 @@ class ShoppingItemsServices:
                 image_metadata.provider,
                 image_metadata.file_id,
                 image_metadata.delete_url,
-                str(item.id)
+                created_item.id
             )
         
             if not created_image:
                 raise HTTPException(status_code=400, detail="Impossible de télécharger l'image de l'aliment.")
             
-            item.image = created_image
+            created_item.image = created_image
                         
         await self.shopping_list_repo.rollback_list_to_unfinished(list_id, user_id)
 
@@ -136,7 +140,6 @@ class ShoppingItemsServices:
         total_list_prices = await self.shopping_item_repo.get_total_price(user_id, list_id)
         await self.shopping_list_repo.replace_total_cost(list_id, total_list_prices)
 
-        
         # invalidate cache
         await self.redis_client.delete(f"shopping-items:{user_id}")
         
@@ -144,8 +147,23 @@ class ShoppingItemsServices:
         
         if not len(devices):
             raise HTTPException(status_code=500, detail="Impossible de trouver le device")
+        
+        # schedule notification for food expiration
+        try:
+            expiration_day = created_item.default_shelf_life_day - 2 # 2 days before
+            run_time = datetime.now() + timedelta(day=expiration_day)
+            
+            await add_job(
+                func=self.notifications_services.check_near_expiry_food,
+                job_id=f"food_expiry_{created_item.id}",
+                trigger="date",
+                run_date=run_time,
+                args=[user_id, created_item.food_name, created_item.id]  
+            )
+        except Exception as e:
+            print(f"Failed to schedule expiration notification for this food")
                
-       # send notification
+        # send notification
         for device in devices:
             try:
                 await send_android_notification( 
@@ -153,16 +171,16 @@ class ShoppingItemsServices:
                         title="Aliment ajouté !",
                     body=f"« {payload.food_name} » a été ajouté à votre liste de courses.",
                     data={
-                        "route" : f"/shopping-list/{shopping_list.id}" 
+                        "route" : f"/shopping-list/{shopping_list.id}?name={shopping_list.name}&week={shopping_list.week_number}" 
                     }
                 )
             except Exception as e:
-                print(f"Notification échouée pour device {device.id}: {e}")
+                print(f"Notification failed for device {device.id}: {e}")
 
     async def get_all_items(self, list_id: int, user_id: str) -> list[dict]:
         shopping_list = await self.shopping_list_repo.get_by_id(list_id, user_id)
         
-        if len(shopping_list) == 0:
+        if not shopping_list:
             raise HTTPException(status_code=404, detail="Liste introuvable.")
                 
         return await self.shopping_item_repo.get_all(shopping_list.id)
@@ -171,17 +189,17 @@ class ShoppingItemsServices:
         return await self.shopping_item_repo.get_by_id(item_id, user_id)
                    
     async def get_available_items_count(self, user_id: str,week_number: int):
-        shopping_list = await self.shopping_list_repo.get_list_by_week(week_number, datetime.now().year, user_id)
+        shopping_list = await self.shopping_list_repo.get_list_by_week(week_number=week_number, year=datetime.now().year, user_id=user_id)
         
-        if len(shopping_list) == 0:
+        if not shopping_list:
             return 0
         
         return await self.shopping_item_repo.get_items_count(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
     
     async def get_available_items(self, user_id: str,week_number: int):
-        shopping_list = await self.shopping_list_repo.get_list_by_week(week_number, datetime.now().year, user_id)
+        shopping_list = await self.shopping_list_repo.get_list_by_week(week_number=week_number, year=datetime.now().year, user_id=user_id)
   
-        if len(shopping_list) == 0:
+        if not shopping_list:
             raise HTTPException(status_code=404, detail="Pas de liste disponible pour la semaine.")
         
         return await self.shopping_item_repo.get_items_of_list(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)

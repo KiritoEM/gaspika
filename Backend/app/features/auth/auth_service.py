@@ -24,7 +24,8 @@ class AuthServices:
                 
         # create device with FCM token if not exist
         try:
-            await self.device_repo.create(data.fcm_token, (str(user.id)))
+            if data.fcm_token:
+                await self.device_repo.create(data.fcm_token, (str(user.id)))
         except Exception as e:
             print(f"Impossible de créer le device: {str(e)}")
             raise HTTPException(status_code=500, detail="Impossible de créer le device")

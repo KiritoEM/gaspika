@@ -113,17 +113,19 @@ class ShoppingItemCard extends StatelessWidget {
                                 ),
                             ],
                           ),
-                          Text(
-                            '${item.totalPrice.toString()} Ar',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: isCompleted
-                                  ? Colors.white.withOpacity(0.8)
-                                  : AppColors.mutedForeground,
-                              fontWeight: FontWeight.w600,
+
+                          if (item.totalPrice > 0)
+                            Text(
+                              '${item.totalPrice.toString()} Ar',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: isCompleted
+                                    ? Colors.white.withOpacity(0.8)
+                                    : AppColors.mutedForeground,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),

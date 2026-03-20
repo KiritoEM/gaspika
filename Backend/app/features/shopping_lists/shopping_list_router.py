@@ -11,14 +11,13 @@ from app.core.database import db_session
 
 shopping_list_router = APIRouter(prefix="/shopping-lists", tags=["Shopping Lists"], dependencies=[Depends(require_user)])
 
-async def get_shopping_lists_services(db: AsyncSession = Depends(db_session)) -> ShoppingListServices:
+async def get_shopping_lists_service(db: AsyncSession = Depends(db_session)) -> ShoppingListServices:
     shoppingListRepo = ShoppingListRepository(db)
     userRepo = UserRepository(db)
     return ShoppingListServices(shoppingListRepo, userRepo)
 
 @shopping_list_router.get(
 "/",
-tags=["Shopping Lists"], 
 response_model=PagedResponseSchema[BaseShoppingList],
 summary="Obtenir la liste des listes de courses",
 responses={
@@ -26,16 +25,15 @@ responses={
     },  
 status_code=200
 )
-async def get_shopping_listss(
+async def get_shopping_lists(
     request: Request, 
     query: GetAllListsFilterParams = Depends(),
-    service: ShoppingListServices = Depends(get_shopping_lists_services)
+    service: ShoppingListServices = Depends(get_shopping_lists_service)
 ):
     return await service.get_all_lists(request.state.user.id, query)
 
 @shopping_list_router.post(
 "/generate", 
-tags=["Shopping Lists"], 
 response_model=CreateShoppingListOutDTO,
 summary="Générer une liste de courses",
 responses={
@@ -48,7 +46,7 @@ status_code=201
 async def create_shopping_list(
     request: Request,
     payload: CreateShoppingListDTO,
-    service: ShoppingListServices = Depends(get_shopping_lists_services)
+    service: ShoppingListServices = Depends(get_shopping_lists_service)
 ):
     created_list =  await service.generate_list(payload.week_number, request.state.user.id, payload.name)
     
@@ -60,7 +58,6 @@ async def create_shopping_list(
 
 @shopping_list_router.patch(
 "/{list_id}", 
-tags=["Shopping Lists"], 
 response_model=CreateShoppingListOutDTO,
 summary="Modifier une liste de courses",
 responses={
@@ -73,7 +70,7 @@ async def update_shopping_list(
     request: Request,
     payload: UpdateShoppingListDTO,
     list_id: Annotated[int, Path(..., ge=1)],
-    service: ShoppingListServices = Depends(get_shopping_lists_services)
+    service: ShoppingListServices = Depends(get_shopping_lists_service)
 ):
     updated_list =  await service.update_list(request.state.user.id, list_id, payload)
     
@@ -84,14 +81,13 @@ async def update_shopping_list(
 
 @shopping_list_router.delete(
     "/{list_id}",
-    tags=["Shopping Lists"],    
     summary="Supprimer une liste",
     status_code=204,
 )
 async def delete_shopping_lists(
     request: Request,
     list_id: Annotated[int, Path(..., ge=1)],
-    service: ShoppingListServices = Depends(get_shopping_lists_services)
+    service: ShoppingListServices = Depends(get_shopping_lists_service)
 ):
     success = await service.delete_list(request.state.user.id, list_id)
     if not success:

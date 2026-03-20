@@ -3,7 +3,7 @@ from typing import List, Optional
 import uuid
 from sqlalchemy import UUID, BigInteger, Float, ForeignKey, Integer, SmallInteger, String, Boolean, DateTime, Enum, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.core.enums import ShoppingListItemEnum, ShoppingListStatusEnum, UnitEnum
+from app.core.enums import NotificationType, ShoppingListItemEnum, ShoppingListStatusEnum, UnitEnum
 from app.core.database import Base
 
 class Image(Base):
@@ -53,6 +53,7 @@ class User(Base):
     shopping_lists: Mapped[List["ShoppingList"]] = relationship(back_populates="user", cascade="all, delete-orphan", lazy="selectin")
     shopping_items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     devices: Mapped[List["Device"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    notifications: Mapped[List["Notification"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
 class FoodCategory(Base):
@@ -167,3 +168,23 @@ class Device(Base):
     
     # Relations  
     user: Mapped["User"] = relationship(back_populates="devices")
+    
+    
+class Notification(Base):
+    __tablename__ = "notifications" 
+    
+    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4, server_default=text("gen_random_uuid()"))
+    body: Mapped[str] = mapped_column(Text, nullable=False)
+    image: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    route: Mapped[Optional[str]] = mapped_column(String(255), nullable=True) 
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False)
+    user_id: Mapped[str] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    type: Mapped[NotificationType] = mapped_column(Enum(NotificationType), nullable=False, default=NotificationType.LIST_EXPIRATION)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    
+    # Relations
+    user: Mapped["User"] = relationship(back_populates="notifications")

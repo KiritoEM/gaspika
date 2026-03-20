@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Device, User
+from typing import Sequence
 
 class DeviceRepository:
     def __init__(self, db: AsyncSession):
@@ -10,7 +11,7 @@ class DeviceRepository:
         """Create new device"""
         device = Device(
             fcm_token=fcm_token,
-            user_id=user_id,
+            user_id=user_id, 
         ) 
         
         self.db.add(device)
@@ -27,7 +28,7 @@ class DeviceRepository:
         
         return device.scalar_one_or_none()
     
-    async def get_by_user_id(self, user_id: str) -> list[Device]:
+    async def get_by_user_id(self, user_id: str) -> Sequence[Device]:
         """Find device by fcm_token"""
         device = await self.db.execute(
             select(Device)

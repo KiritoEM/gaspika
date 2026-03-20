@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Sequence
 from sqlalchemy.orm import joinedload
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -49,7 +49,7 @@ class ShoppingItemsRepository:
         
         return all_items.scalars().all()
     
-    async def get_all_by_user_id(self, user_id: int) -> list[ShoppingListItem]:
+    async def get_all_by_user_id(self, user_id: str) -> list[ShoppingListItem]:
         """Get all shopping items of an user"""                
         all_items = await self.db.execute(
             select(ShoppingListItem)
@@ -77,9 +77,9 @@ class ShoppingItemsRepository:
             .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
         )
         
-        return shopping_item.scalar_one_or_none()
+        return shopping_item.scalars().first()
     
-    async def get_items_count(self, user_id: str, list_id: int, status: Optional[str]) -> int :
+    async def get_items_count(self, user_id: str, list_id: int, status: Optional[ShoppingListItemEnum] = None) -> Optional[int]:
         """Get shopping items count of an list"""   
         
         query = (
@@ -100,7 +100,7 @@ class ShoppingItemsRepository:
 
         return items_count.scalar()
     
-    async def get_items_of_list(self, user_id: str, list_id: int, status: Optional[str]) -> list[ShoppingListItem] :
+    async def get_items_of_list(self, user_id: str, list_id: int, status: Optional[ShoppingListItemEnum]) -> list[ShoppingListItem] :
         """Get shopping items count of an list"""   
         
         query = (
@@ -128,8 +128,7 @@ class ShoppingItemsRepository:
         query = (
             select(ShoppingListItem)
             .join(ShoppingListItem.shopping_list)
-            .where(ShoppingListItem.food_name
-            .ilike(f"%{name}%"))
+            .where(ShoppingListItem.food_name.ilike(f"%{name}%"))
             .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
             .distinct(ShoppingListItem.food_name)
         )
@@ -140,10 +139,10 @@ class ShoppingItemsRepository:
         shopping_item = await self.db.execute(query)
         
         return shopping_item.scalars().all()
-    
+     
     
       
-    async def search_by_food_name_in_list(self, name: str, user_id: str, list_id: str) -> list[ShoppingListItem] :
+    async def search_by_food_name_in_list(self, name: str, user_id: str, list_id: int) -> list[ShoppingListItem] :
         """Get all items by food name in a list or global items or by item_id"""
         query = (
             select(ShoppingListItem)
@@ -228,19 +227,8 @@ class ShoppingItemsRepository:
     
     async def delete(self, item_id: int, user_id: str) -> bool:
         """Delete shopping item"""
-        result = await self.db.execute(
-            select(ShoppingListItem)
-            .join(ShoppingListItem.shopping_list)
-            .where(
-                and_(
-                    ShoppingList.user_id == user_id,
-                    ShoppingListItem.id == item_id
-                )
-            )
-        )
-        
-        shopping_item = result.scalar_one_or_none()
-        
+        shopping_item = await self.get_by_id(item_id, user_id)
+                
         if shopping_item:
             await self.db.delete(shopping_item)
             await self.db.commit()

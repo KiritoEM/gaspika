@@ -40,7 +40,7 @@ class CategoryServices:
         
         return categories
     
-    async def create_category(self, payload: CreateCategoryDTO):
+    async def create_category(self, payload: list[CreateCategoryDTO]):
         # invalidate cache
         await self.redis_client.delete(self.all_categories_cache_key)
         

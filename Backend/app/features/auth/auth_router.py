@@ -13,8 +13,8 @@ from app.core.utils.jwt import create_JWT
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 def get_user_services(db: AsyncSession = Depends(db_session)):
-    repo = UserRepository(db)
-    return UserServices(repo)
+    user_repo = UserRepository(db)
+    return UserServices(user_repo)
 
 def get_auth_services(db: AsyncSession = Depends(db_session)):
     user_repo = UserRepository(db)

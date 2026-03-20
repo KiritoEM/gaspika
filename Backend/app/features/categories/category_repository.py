@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import FoodCategory
@@ -7,7 +7,7 @@ class CategoryRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
     
-    async def get_all(self) -> list[FoodCategory]:
+    async def get_all(self) -> Sequence[FoodCategory]:
         """Get all categories"""
         result = await self.db.execute(select(FoodCategory))
         return result.scalars().all()

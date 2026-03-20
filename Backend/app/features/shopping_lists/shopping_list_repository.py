@@ -101,7 +101,7 @@ class ShoppingListRepository:
         await self.db.commit()
         await self.db.refresh(new_shopping_list) 
         
-    async def get_list_by_week(self, week_number: int, year: Optional[int], user_id: Optional[str]) -> ShoppingList | None:
+    async def get_list_by_week(self, week_number: int, year: Optional[int] = None, user_id: Optional[str] = None) -> ShoppingList | None:
         """Get List by specific week"""
         query = (
             select(ShoppingList)

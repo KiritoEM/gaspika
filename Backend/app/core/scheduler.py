@@ -1,12 +1,24 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.core.database import AsyncSessionLocal
+from apscheduler.jobstores.redis import RedisJobStore
 from app.features.notifications.notifications_service import NotificationsService
 from app.features.notifications.notifications_respository import NotificationsRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.devices.device_repository import DeviceRepository
 from app.features.users.user_repository import UserRepository
+from app.core.config import settings    
 
-scheduler = AsyncIOScheduler()
+jobstorages = {
+    "default" : RedisJobStore(
+        host=settings.redis_host,
+        port=settings.redis_port,
+        db=0,
+        jobs_key="apscheduler.jobs",
+        run_times_key="apscheduler.run_times"
+    )
+}
+
+scheduler = AsyncIOScheduler(jobstores=jobstorages)
 
 async def notifications_job():
     async with AsyncSessionLocal() as db:
@@ -33,6 +45,7 @@ async def add_job(func, job_id: str, trigger: str = None, args=None, kwargs=None
         kwargs=kwargs or {},
         coalesce=True,
         max_instances=1,
+        replace_existing=True,
         **trigger_kwargs
     )
 

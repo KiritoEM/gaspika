@@ -105,8 +105,8 @@ class NotificationsService:
         title: str,
         body: str,
         route: str,
-        type: Optional[NotificationType],
-        image: Optional[str]
+        type: Optional[NotificationType] = None,
+        image: Optional[str] = None
     ):
         notification_data = CreateNotificationSchema(
             body=body,

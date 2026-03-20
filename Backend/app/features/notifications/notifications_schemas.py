@@ -24,6 +24,14 @@ class CreateNotificationSchema(BaseModel):
     image: Optional[str] = Field(None)
     route: Optional[str] = Field(None)
     type: Optional[NotificationType] = Field(None)
+    
+# Get unread notifications
+class GetUnreadNotificationsCount(BaseModel):
+    message: str
+    count: int
+
+    class Config:
+        from_attributes = True
         
 # Get notifications filter params
 class GetNotificationsFilterParams(BaseModel):

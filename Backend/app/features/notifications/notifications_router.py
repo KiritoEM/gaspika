@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Request
-from app.features.notifications.notifications_schemas import BaseNotification, GetNotificationsFilterParams
+from app.features.notifications.notifications_schemas import BaseNotification, GetNotificationsFilterParams, GetUnreadNotificationsCount
 from app.core.schemas import PagedResponseSchema
 from app.features.users.user_repository import UserRepository
 from app.features.devices.device_repository import DeviceRepository
@@ -24,15 +24,12 @@ def get_notifications_service(db: AsyncSession = Depends(db_session)):
         device_repo,
         user_repo
     )
-
+    
 @notification_router.get(
     "/",
-    tags=["Notifications"],
     summary="Obtenir la liste des notifications d'un utilisateur",
     response_model=PagedResponseSchema[BaseNotification],
-    responses={
-        200: {"description": "Liste des notifications récupérée avec succés"}
-    },
+    responses={200: {"description": "Liste des notifications récupérée avec succés"}},
     status_code=200
 )
 async def get_notifications(
@@ -41,3 +38,21 @@ async def get_notifications(
     service: NotificationsService = Depends(get_notifications_service)
 ):
     return await service.get_all_notifications(request.state.user.id, query)
+
+@notification_router.get(
+    "/unread",
+    summary="Obtenir le nombre de notifications non lus",
+    response_model=GetUnreadNotificationsCount,
+    responses={200: {"description": "Nombre de notifications non lus récupéré avec succés"}},
+    status_code=200
+)
+async def get_unread_notifications_count(
+    request: Request,
+    service: NotificationsService = Depends(get_notifications_service)
+):
+    count = await service.get_unread_notifications_count(request.state.user.id)
+    
+    return {
+        "message": f"Vous avez {count} notifications",
+        "count": count
+    }

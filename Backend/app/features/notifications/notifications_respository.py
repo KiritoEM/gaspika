@@ -1,4 +1,4 @@
-from sqlalchemy import Sequence, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.schemas import PageParams
 from app.core.utils.pagination import paginate
@@ -18,6 +18,22 @@ class NotificationsRepository:
         )
         
         return await paginate(self.db, PageParams(page=page, limit=limit), query, BaseNotification)
+    
+    async def get_unread_notifications_count(self, user_id):
+        """Get unread notifications count"""
+        query = (
+            select(func.count())
+            .select_from(Notification)
+            .join(Notification.user)
+            .where(and_(
+                User.id == user_id,
+                Notification.is_read == False
+                
+            ))
+        )
+        result = await self.db.execute(query)
+        
+        return result.scalar()
       
     async def create(self, user_id: str, data: CreateNotificationSchema):
         """Create notification"""

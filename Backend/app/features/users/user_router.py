@@ -6,7 +6,7 @@ from app.core.database import db_session
 from app.core.middlewares.auth_middleware import require_user
 from sqlalchemy.ext.asyncio import AsyncSession
 
-user_router = APIRouter(prefix="/user", tags=["Users"], dependencies=[Depends(require_user)])
+user_router = APIRouter(prefix="/user", tags=["User"], dependencies=[Depends(require_user)])
 
 async def get_users_service(db: AsyncSession = Depends(db_session)) -> UserServices:
     user_repo = UserRepository(db)
@@ -15,7 +15,6 @@ async def get_users_service(db: AsyncSession = Depends(db_session)) -> UserServi
 
 @user_router.get(
 "/me",
-tags= ["Users"],
 response_model=GetUserDTO,
 summary="Obtenir les informations d'un utilisateur",
 responses={

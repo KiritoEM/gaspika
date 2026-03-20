@@ -43,7 +43,6 @@ async def get_shopping_items_service(db: AsyncSession = Depends(db_session)) -> 
 
 @shopping_items_router.post(
 "/{list_id}/add", 
-tags=["Shopping Items"],
 response_model=CreateShoppingItemOutDTO,
 summary="Ajouter un nouvel aliment dans une liste",
 responses={
@@ -68,7 +67,6 @@ async def add_new_shopping_item(
 
 @shopping_items_router.get(
 "/{list_id}/items",
-tags=["Shopping Items"], 
 response_model=GetAllShoppingItemsDTO,
 summary="Obtenir la liste des aliments dans une liste specifique",
 responses={
@@ -90,7 +88,6 @@ async def get_shopping_list_items(
 
 @shopping_items_router.get(
 "/items/{item_id}",
-tags=["Shopping Items"], 
 response_model=GetShoppingItemOutDTO,
 summary="Obtenir un aliment specifique dans une liste de courses",
 responses={
@@ -116,7 +113,6 @@ async def get_shopping_item(
 
 @shopping_items_router.get(
 "/suggestion",
-tags=["Shopping Items"], 
 response_model=GetAllShoppingItemsDTO,
 summary="Obtenir une suggestion d'aliment si l'utilisateur tape un nom d'aliment",
 responses={
@@ -137,7 +133,6 @@ async def get_food_suggestion(
 
 @shopping_items_router.get(
 "/{week_number}/available-product",
-tags=["Shopping Items"], 
 response_model=GetAllShoppingItemsDTO,
 summary="Récuperer les aliments disponibles d'une semaine donnée",
 responses={
@@ -159,7 +154,6 @@ async def get_available_shopping_items(
 
 @shopping_items_router.get(
 "/{week_number}/available-product/count", 
-tags=["Shopping Items"], 
 response_model=dict,
 summary="Récuperer le nombre total d'aliments disponibles d'une semaine donnée",
 responses={
@@ -181,7 +175,6 @@ async def get_available_shopping_items_count(
 
 @shopping_items_router.patch(
 "/items/{item_id}", 
-tags=["Shopping Items"],
 response_model=UpdateShoppingItemOutDTO,
 summary="Mettre a jour certaines informations d'un element dans une liste",
 responses={
@@ -205,9 +198,7 @@ async def update_shopping_item(
 
 
 @shopping_items_router.patch(
-"/items/{item_id}/complete", 
-tags=["Shopping Items"], 
-response_model=UpdateShoppingItemOutDTO, 
+"/items/{item_id}/complete", response_model=UpdateShoppingItemOutDTO, 
 summary="Marquer un aliment comme acheté",
 responses={
     200: {"description": "Aliment marqué comme acheté"},
@@ -230,7 +221,6 @@ async def mark_item_as_complete(
     
 @shopping_items_router.delete(
     "/items/{item_id}",
-    tags=["Shopping Items"],    
     summary="Supprimer un aliment de la liste",
     status_code=204,
 )

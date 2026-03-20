@@ -18,7 +18,6 @@ async def get_shopping_lists_service(db: AsyncSession = Depends(db_session)) -> 
 
 @shopping_list_router.get(
 "/",
-tags=["Shopping Lists"], 
 response_model=PagedResponseSchema[BaseShoppingList],
 summary="Obtenir la liste des listes de courses",
 responses={
@@ -35,7 +34,6 @@ async def get_shopping_lists(
 
 @shopping_list_router.post(
 "/generate", 
-tags=["Shopping Lists"], 
 response_model=CreateShoppingListOutDTO,
 summary="Générer une liste de courses",
 responses={
@@ -60,7 +58,6 @@ async def create_shopping_list(
 
 @shopping_list_router.patch(
 "/{list_id}", 
-tags=["Shopping Lists"], 
 response_model=CreateShoppingListOutDTO,
 summary="Modifier une liste de courses",
 responses={
@@ -84,7 +81,6 @@ async def update_shopping_list(
 
 @shopping_list_router.delete(
     "/{list_id}",
-    tags=["Shopping Lists"],    
     summary="Supprimer une liste",
     status_code=204,
 )

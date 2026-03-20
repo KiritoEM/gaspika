@@ -1,6 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.core.database import AsyncSessionLocal
-from app.features.notifications.notifications_services import NotificationsServices
+from app.features.notifications.notifications_service import NotificationsService
 from app.features.notifications.notifications_respository import NotificationsRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.devices.device_repository import DeviceRepository
@@ -15,7 +15,7 @@ async def notifications_job():
         device_repo = DeviceRepository(db)
         user_repo = UserRepository(db)
 
-        notifications_service = NotificationsServices(
+        notifications_service = NotificationsService(
             notifications_repo,
             shopping_list_repo,
             device_repo,

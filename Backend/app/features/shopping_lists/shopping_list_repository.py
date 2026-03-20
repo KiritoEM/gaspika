@@ -13,9 +13,11 @@ class ShoppingListRepository:
     def __init__(self, db: AsyncSession):
         self.db = db 
             
-    async def get_all(self, user_id: str, page: int, limit: int,
-                     status: Optional[ShoppingListStatusEnum] = None, 
-                     intervalDate: Optional[ShoppingListIntervalDateEnum] = None
+    async def get_all(self, user_id: str, 
+            page: int,
+            limit: int,
+            status: Optional[ShoppingListStatusEnum] = None, 
+            intervalDate: Optional[ShoppingListIntervalDateEnum] = None
         ):
         """Get all lists with optional filters"""
         query = (

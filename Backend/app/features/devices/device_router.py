@@ -12,7 +12,7 @@ device_router = APIRouter(
     dependencies=[Depends(require_user)]
 )
 
-async def get_device_services(db: AsyncSession = Depends(db_session)):
+async def get_device_service(db: AsyncSession = Depends(db_session)):
     device_repo = DeviceRepository(db)
     return DeviceServices(device_repo)
 
@@ -31,7 +31,7 @@ async def get_device_services(db: AsyncSession = Depends(db_session)):
 async def update_device(
     request: Request,
     payload: UpdateDeviceDTO,
-    service: DeviceServices = Depends(get_device_services)
+    service: DeviceServices = Depends(get_device_service)
 ):
     await service.update_device(request.state.user.id, payload)
 

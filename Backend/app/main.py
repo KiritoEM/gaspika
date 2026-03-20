@@ -10,6 +10,7 @@ from app.features.shopping_items.shopping_items_router import shopping_items_rou
 from app.features.food_ml.food_ml_router import food_ml_router
 from app.features.conservation_ml.conservation_ml_router import conservation_ml_router
 from app.features.devices.device_router import device_router
+from app.features.notifications.notifications_router import notification_router
 from contextlib import asynccontextmanager
 from app.core.scheduler import run_jobs, scheduler
 
@@ -51,6 +52,7 @@ api_router.include_router(user_router)
 api_router.include_router(food_ml_router)
 api_router.include_router(conservation_ml_router)
 api_router.include_router(device_router)
+api_router.include_router(notification_router)
 
 app.include_router(api_router)
 

@@ -128,8 +128,7 @@ class ShoppingItemsRepository:
         query = (
             select(ShoppingListItem)
             .join(ShoppingListItem.shopping_list)
-            .where(ShoppingListItem.food_name
-            .ilike(f"%{name}%"))
+            .where(ShoppingListItem.food_name.ilike(f"%{name}%"))
             .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
             .distinct(ShoppingListItem.food_name)
         )

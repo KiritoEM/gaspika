@@ -7,7 +7,7 @@ from app.features.categories.category_repository import CategoryRepository
 
 category_router = APIRouter(prefix="/categories", tags=["Categories"])
 
-async def get_category_services(db: AsyncSession = Depends(db_session)) -> CategoryServices:
+async def get_category_service(db: AsyncSession = Depends(db_session)) -> CategoryServices:
     repo = CategoryRepository(db)
     return CategoryServices(repo)
 
@@ -21,7 +21,7 @@ async def get_category_services(db: AsyncSession = Depends(db_session)) -> Categ
     }
 )
 async def list_categories(
-    service: CategoryServices = Depends(get_category_services)
+    service: CategoryServices = Depends(get_category_service)
 ):
     categories = await service.get_all_categories()
     
@@ -40,7 +40,7 @@ async def list_categories(
 )
 async def create_category(
     payload: list[CreateCategoryDTO],
-    service: CategoryServices = Depends(get_category_services)
+    service: CategoryServices = Depends(get_category_service)
 ):
     await service.create_category(payload)
     

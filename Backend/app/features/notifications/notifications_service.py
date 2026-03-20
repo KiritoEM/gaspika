@@ -8,9 +8,9 @@ from app.features.notifications.notifications_respository import NotificationsRe
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.core.date import get_week_number
 from datetime import date, datetime
-from app.features.notifications.notifications_schemas import CreateNotificationSchema
+from app.features.notifications.notifications_schemas import CreateNotificationSchema, GetNotificationsFilterParams
 
-class NotificationsServices:
+class NotificationsService:
     def __init__(
         self, 
         notifications_repo: NotificationsRepository,
@@ -50,6 +50,8 @@ class NotificationsServices:
             type=NotificationType.FOOD_EXPIRATION
         )
 
+    async def get_all_notifications(self, user_id: str, query: GetNotificationsFilterParams):
+        return await self.notifications_repo.get_all(user_id, query.page, query.limit)
     
     async def _create_shopping_list_remaining_notif(self, user_id: str):
         current_week = get_week_number(date.today())

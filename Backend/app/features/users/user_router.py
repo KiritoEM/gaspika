@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 user_router = APIRouter(prefix="/user", tags=["Users"], dependencies=[Depends(require_user)])
 
-async def get_users_services(db: AsyncSession = Depends(db_session)) -> UserServices:
+async def get_users_service(db: AsyncSession = Depends(db_session)) -> UserServices:
     user_repo = UserRepository(db)
     
     return UserServices(user_repo)
@@ -24,7 +24,7 @@ responses={
 },  
 status_code=200
 )
-async def get_user(request: Request, service: UserServices = Depends(get_users_services)):
+async def get_user(request: Request, service: UserServices = Depends(get_users_service)):
     user =  await service.get_user_by_id(request.state.user.id)
     
     if not user:

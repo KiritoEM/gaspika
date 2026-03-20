@@ -3,7 +3,7 @@ import json
 import re
 from typing import List
 from fastapi import HTTPException
-from app.features.notifications.notifications_services import NotificationsServices
+from app.features.notifications.notifications_service import NotificationsService
 from app.core.scheduler import add_job
 from app.core.redis_client import get_redis_client
 from app.features.devices.device_repository import DeviceRepository
@@ -25,7 +25,7 @@ class ShoppingItemsServices:
         user_repo: UserRepository,
         storage_provider: StorageProvider,
         device_repo: DeviceRepository,
-        notifications_services: NotificationsServices
+        notifications_services: NotificationsService
     ):
         self.shopping_list_repo = shopping_list_repo
         self.shopping_item_repo = shopping_item_repo

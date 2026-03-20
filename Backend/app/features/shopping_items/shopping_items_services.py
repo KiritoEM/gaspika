@@ -146,19 +146,25 @@ class ShoppingItemsServices:
         devices = await self.device_repo.get_by_user_id(user_id)
         
         if not len(devices):
-            raise HTTPException(status_code=500, detail="Impossible de trouver le device")
+            print(f"No devices found for user {user_id}, skipping notifications")
+            return
         
         # schedule notification for food expiration
         try:
             expiration_day = created_item.default_shelf_life_day - 2 # 2 days before
-            run_time = datetime.now() + timedelta(day=expiration_day)
+            run_time = datetime.now() + timedelta(days=expiration_day)
             
             await add_job(
                 func=self.notifications_services.check_near_expiry_food,
                 job_id=f"food_expiry_{created_item.id}",
                 trigger="date",
                 run_date=run_time,
-                args=[user_id, created_item.food_name, created_item.id]  
+                args=[
+                    user_id,
+                    created_item.food_name,
+                    created_item.id,
+                    created_item.image.path if created_item.image else None
+                ]  
             )
         except Exception as e:
             print(f"Failed to schedule expiration notification for this food")
@@ -166,7 +172,7 @@ class ShoppingItemsServices:
         # send notification
         for device in devices:
             try:
-                await send_android_notification( 
+                await send_android_notification(
                     fcm_token=device.fcm_token,
                         title="Aliment ajouté !",
                     body=f"« {payload.food_name} » a été ajouté à votre liste de courses.",

@@ -33,7 +33,8 @@ class NotificationsService:
         self,
         user_id: str,
         food_name: str,
-        shopping_item_id: int
+        shopping_item_id: int,
+        food_image: Optional[str]
     ):
         body = (
             f"L’aliment «{food_name}» arrive bientôt à expiration. "
@@ -47,7 +48,8 @@ class NotificationsService:
             title="Aliment proche de péremption",
             body=body,
             route=route,
-            type=NotificationType.FOOD_EXPIRATION
+            type=NotificationType.FOOD_EXPIRATION,
+            image=food_image
         )
 
     async def get_all_notifications(self, user_id: str, query: GetNotificationsFilterParams):
@@ -103,12 +105,14 @@ class NotificationsService:
         title: str,
         body: str,
         route: str,
-        type: Optional[NotificationType]
+        type: Optional[NotificationType],
+        image: Optional[str]
     ):
         notification_data = CreateNotificationSchema(
             body=body,
             route=route,
-            type=type
+            type=type,
+            image=image
         )
 
         # Save notification

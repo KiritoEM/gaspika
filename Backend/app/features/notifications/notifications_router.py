@@ -1,6 +1,8 @@
+from typing import Annotated
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, Request
-from app.features.notifications.notifications_schemas import BaseNotification, GetNotificationsFilterParams, GetUnreadNotificationsCount
+from fastapi import APIRouter, Depends, HTTPException, Path, Request
+from app.features.notifications.notifications_schemas import BaseNotification, GetNotificationsFilterParams, GetUnreadNotificationsCount, MarkAllAsReadResponse
 from app.core.schemas import PagedResponseSchema
 from app.features.users.user_repository import UserRepository
 from app.features.devices.device_repository import DeviceRepository
@@ -56,3 +58,36 @@ async def get_unread_notifications_count(
         "message": f"Vous avez {count} notifications",
         "count": count
     }
+    
+@notification_router.patch(
+    "/read-all",
+    response_model=MarkAllAsReadResponse,
+    summary="Marquer toutes les notifications d'un utilisateur comme lues",
+    responses={
+        200: {"description": "Toutes les notifications ont été marquées comme lues avec succès"},
+    },
+    status_code=200
+)
+async def mark_all_notifications_as_read(
+    request: Request,
+    service: NotificationsService = Depends(get_notifications_service)
+):
+    await service.mark_all_as_read(request.state.user.id)
+    
+    return {"message": "Toutes les notifications ont été marquées comme lues."}
+
+@notification_router.delete(
+    "/{notification_id}",
+    summary="Supprimer une notification",
+    status_code=204
+)
+async def mark_all_notifications_as_read(
+    notification_id: Annotated[str, Path(...)],
+    service: NotificationsService = Depends(get_notifications_service)
+):
+    success = await service.delete(notification_id)
+    
+    if not success:
+        raise HTTPException(400, "Impossible de supprimer la notification.")
+    
+    return None

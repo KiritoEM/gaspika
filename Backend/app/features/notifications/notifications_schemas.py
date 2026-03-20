@@ -25,7 +25,7 @@ class CreateNotificationSchema(BaseModel):
     route: Optional[str] = Field(None)
     type: Optional[NotificationType] = Field(None)
     
-# Get unread notifications
+# Get unread notifications response schema
 class GetUnreadNotificationsCount(BaseModel):
     message: str
     count: int
@@ -37,3 +37,8 @@ class GetUnreadNotificationsCount(BaseModel):
 class GetNotificationsFilterParams(BaseModel):
     page: int = Field(1, ge=1, description="Page")
     limit: int = Field(10, ge=1, le=100, description="Taille page")
+    
+
+# Mark all as notifications as read response schema
+class MarkAllAsReadResponse(BaseModel):
+    message: str

@@ -74,10 +74,10 @@ class ShoppingItemsRepository:
                     ShoppingListItem.id == item_id
                 )
             )
-            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))\
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
         )
         
-        return shopping_item.scalar_one_or_none()
+        return shopping_item.scalars().first()
     
     async def get_items_count(self, user_id: str, list_id: int, status: Optional[ShoppingListItemEnum] = None) -> Optional[int]:
         """Get shopping items count of an list"""   
@@ -227,19 +227,8 @@ class ShoppingItemsRepository:
     
     async def delete(self, item_id: int, user_id: str) -> bool:
         """Delete shopping item"""
-        result = await self.db.execute(
-            select(ShoppingListItem)
-            .join(ShoppingListItem.shopping_list)
-            .where(
-                and_(
-                    ShoppingList.user_id == user_id,
-                    ShoppingListItem.id == item_id
-                )
-            )
-        )
-        
-        shopping_item = result.scalar_one_or_none()
-        
+        shopping_item = await self.get_by_id(item_id, user_id)
+                
         if shopping_item:
             await self.db.delete(shopping_item)
             await self.db.commit()

@@ -56,6 +56,16 @@ class NotificationsService:
     async def get_unread_notifications_count(self, user_id: str):
         return await self.notifications_repo.get_unread_notifications_count(user_id)
     
+    async def mark_all_as_read(self, user_id: str):
+        notifications =  await self.notifications_repo.get_unread_notifications(user_id)
+        
+        for notif in notifications:
+            await self.notifications_repo.mark_as_read(notif.id)
+            
+    
+    async def delete(self, notification_id: str):
+        return await self.delete(notification_id)
+    
     async def _create_shopping_list_remaining_notif(self, user_id: str):
         current_week = get_week_number(date.today())
         

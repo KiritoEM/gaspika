@@ -8,7 +8,9 @@ import 'package:gaspika_mobile/features/shopping_list/widgets/update_list_dialog
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/bottomsheet_action.dart';
+import 'package:gaspika_mobile/utils/date.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList item;
@@ -23,7 +25,6 @@ class ShoppingListCard extends StatelessWidget {
   });
 
   bool get isCompleted => item.status == ShoppingListStatus.completed;
-
 
   @override
   Widget build(BuildContext context) {
@@ -116,17 +117,48 @@ class ShoppingListCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
-                          ' · ',
-                          style: TextStyle(
-                            fontSize: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.fontSize!,
-                            color: AppColors.mutedForeground,
+
+                        if (item.totalEstimatedCost > 0)
+                          Text(
+                            ' · ',
+                            style: TextStyle(
+                              fontSize: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.fontSize!,
+                              color: AppColors.mutedForeground,
+                            ),
                           ),
+
+                        if (item.totalEstimatedCost > 0)
+                          Text(
+                            '${item.totalEstimatedCost} Ar',
+                            style: TextStyle(
+                              fontSize: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.fontSize!,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.mutedForeground,
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Row(
+                      crossAxisAlignment: .center,
+                      spacing: 5,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/calendar.svg',
+                          colorFilter: ColorFilter.mode(
+                            AppColors.mutedForeground,
+                            BlendMode.srcIn,
+                          ),
+                          width: 18,
                         ),
                         Text(
-                          '${item.totalEstimatedCost} Ar',
+                          'Semaine du ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(DateTime.parse(item.createdAt)))}',
                           style: TextStyle(
                             fontSize: Theme.of(
                               context,

@@ -24,6 +24,7 @@ class ShoppingListCard extends StatelessWidget {
 
   bool get isCompleted => item.status == ShoppingListStatus.completed;
 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

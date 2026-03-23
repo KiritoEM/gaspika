@@ -139,6 +139,7 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
         onOpenAction: () {
           FoodDetailsBottomsheet.show(
             context: context,
+            isAvailable: foodDetailsVm.currentItem?.isAvailable ?? false,
             onUpdate: () =>
                 _handleUpdateItem(context, int.parse(widget.id), foodDetailsVm),
             onDelete: () =>
@@ -182,7 +183,9 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
       text: isPurchased ? 'Déjà acheté' : 'Marquer comme acheté',
       loadingText: 'Marquage en cours...',
       isLoading: isLoading,
-      onPressed: isPurchased ? null : () => _handleCompleteItem(foodDetailsVm),
+      onPressed: (isPurchased || item?.isAvailable == false)
+          ? null
+          : () => _handleCompleteItem(foodDetailsVm),
       style: isPurchased
           ? ElevatedButton.styleFrom(
               backgroundColor: AppColors.mutedForeground.withOpacity(0.3),

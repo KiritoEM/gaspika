@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
-import 'package:gaspika_mobile/configs/router_observer.dart';
+// import 'package:gaspika_mobile/configs/router_observer.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/shopping_items_skeleton.dart';
@@ -30,22 +30,21 @@ class ShoppingListItemsScreen extends StatefulWidget {
       _ShoppingListItemsScreenState();
 }
 
-class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
-    with RouteAware {
+class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen> {
   late ShoppingItemsViewModel _shoppingItemsVm;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _shoppingItemsVm = Provider.of<ShoppingItemsViewModel>(
-      context,
-      listen: false,
-    );
-
-    ModalRoute.of(context)?.settings.name != null
-        ? routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute)
-        : null;
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   _shoppingItemsVm = Provider.of<ShoppingItemsViewModel>(
+  //     context,
+  //     listen: false,
+  //   );
+  //
+  //   ModalRoute.of(context)?.settings.name != null
+  //       ? routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute)
+  //       : null;
+  // }
 
   @override
   void initState() {
@@ -55,17 +54,17 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
     });
   }
 
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    _shoppingItemsVm.refreshItems(int.parse(widget.listId));
-  }
+// @override
+ //  void dispose() {
+ //    routeObserver.unsubscribe(this);
+ //
+ //    super.dispose();
+ //  }
+ //
+ //  @override
+ //  void didPopNext() {
+ //    _shoppingItemsVm.refreshItems(int.parse(widget.listId));
+ //  } 
 
   @override
   Widget build(BuildContext context) {

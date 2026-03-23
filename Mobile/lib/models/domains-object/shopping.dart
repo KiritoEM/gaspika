@@ -21,6 +21,7 @@ class ShoppingListItem {
   final String createdAt;
   final String updatedAt;
   final Category category;
+  final bool isAvailable;
 
   ShoppingListItem({
     this.id,
@@ -35,6 +36,7 @@ class ShoppingListItem {
     this.storageTips,
     this.categoryId,
     required this.quantityUnit,
+    required this.isAvailable,
     required this.image,
     required this.category,
     this.conservationDuration,
@@ -65,6 +67,7 @@ class ShoppingListItem {
           : null,
       conservationDuration: json['default_shelf_life_day'] as int?,
       category: Category.fromJson(json['category'] as Map<String, dynamic>),
+      isAvailable: json['is_available'] as bool,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );

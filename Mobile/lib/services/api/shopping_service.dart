@@ -128,6 +128,8 @@ class ShoppingService {
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
     );
 
+    print('Data food: ${response.data['data']}');
+
     return response.data['data'];
   }
 

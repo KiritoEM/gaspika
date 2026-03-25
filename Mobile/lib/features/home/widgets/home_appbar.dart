@@ -7,11 +7,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final int notificationCount;
   final String userName;
   final bool isLoading;
 
   const HomeAppbar({
     super.key,
+    this.notificationCount = 0,
     required this.userName,
     required this.isLoading,
   });
@@ -71,7 +73,12 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
               homeVm.logout();
               context.go('/login');
             },
-            icon: Icon(Icons.logout),
+            icon: Badge(
+              label: Text(notificationCount.toString()),
+              backgroundColor: AppColors.accent,
+              isLabelVisible: notificationCount > 0,
+              child: SvgPicture.asset('assets/icons/bell.svg'),
+            ),
           ),
         ],
       ),

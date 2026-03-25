@@ -24,7 +24,7 @@ class ShoppingService {
     );
 
     return response.data['data'] as List<dynamic>;
-  }
+  } 
 
   Future<List<dynamic>> getShoppingList(String? status, String? period) async {
     Map<String, dynamic> query = {};
@@ -127,8 +127,6 @@ class ShoppingService {
     final response = await _dio.get(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
     );
-
-    print('Data food: ${response.data['data']}');
 
     return response.data['data'];
   }

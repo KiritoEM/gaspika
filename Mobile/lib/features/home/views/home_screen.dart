@@ -42,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
       await _homeVm.fetchUserInfo();
       await _homeVm.fetchAvailableFoodCount();
       await _homeVm.fetchShoppingWeekItems();
+      await _homeVm.fetchNotificationCount();
     });
   }
 
@@ -68,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         preferredSize: Size.fromHeight(65),
         child: HomeAppbar(
           userName: homeVm.userName ?? 'Utilisateur',
+          notificationCount: homeVm.notificationCount,
           isLoading: homeVm.isLoadingUser,
         ),
       ),

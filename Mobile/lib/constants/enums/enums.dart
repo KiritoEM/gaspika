@@ -20,3 +20,5 @@ enum ShoppingItemStatus { purchased, unpurchased }
 enum ShoppingListStatus { all, completed, unfinished }
 
 enum PeriodFilterEnum { lastYear, currentYear, currentMonth, last5Month }
+
+enum NotificationTypeEnum { food_expiration, list_expiration }

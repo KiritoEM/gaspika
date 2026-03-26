@@ -19,7 +19,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
-    final loginVm = context.watch<LoginViewModel>();
+    final loginVm = Provider.of<LoginViewModel>(context);
 
     return Form(
       key: loginVm.formkey,

@@ -8,4 +8,6 @@ class AppColors {
   static const Color background = Color(0xFFFDFDFD);
   static const Color secondary = Color(0xFFBBCB64);
   static const Color destructive = Color(0xFFFF5151);
+  static const Color accent = Color(0xFFE2852E);
+  static const Color inputPlaceholderColor = Color(0xFF9B9998);
 }

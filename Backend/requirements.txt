@@ -12,3 +12,15 @@ python-jose[cryptography]
 jose
 langchain
 langchain-groq
+httpx[http2]
+google-auth
+langchain_chroma
+langchain_huggingface
+langchain_text_splitters
+sentence_transformers
+redis
+apscheduler
+pandas
+python-multipart
+scikit-learn
+apscheduler[redis]

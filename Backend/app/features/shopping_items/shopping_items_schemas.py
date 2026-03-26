@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from app.features.images_upload.images_schemas import ImageSchema
-from app.features.categories.category_schemas import CategoryOutDTO
+from app.features.categories.category_schemas import BaseCategory, CategoryOutDTO
 from app.core.enums import ShoppingListItemEnum, UnitEnum
 from pydantic import AwareDatetime, UUID4
 from fastapi import File, Form, UploadFile
@@ -18,7 +18,7 @@ class CreateShoppingItemDTO(BaseModel):
     storage_tips: Optional[str] = Field(None)
     default_shelf_life_day: Optional[int] = Field(None, ge=1)
     food_category_id: Optional[int] = Field(None)
-    image: Optional[Annotated[UploadFile, File()]]
+    image: Optional[Annotated[UploadFile, File()]] = Field(None)
 
     class Config:
         from_attributes = True
@@ -63,6 +63,7 @@ class BaseShoppingListItem(BaseModel):
     default_shelf_life_day: Optional[int] = None
     shopping_list_id: int
     food_category_id: int
+    category: BaseCategory
     user_id: UUID4
     image: Optional[ImageSchema] 
     created_at: AwareDatetime
@@ -73,26 +74,20 @@ class BaseShoppingListItem(BaseModel):
 
 # Update shopping item schema
 class UpdateShoppingItemDTO(BaseModel):
-    food_name: Optional[str] = Field(None, max_length=100, description="Nom du produit")
-    price: Optional[float] = Field(None, gt=0, description="Prix unitaire")
-    unit: Optional[UnitEnum] = Field(None, description="Unité de mesure")
-    notes: Optional[str] = Field(None, description="Notes additionnelles")
+    food_name: Optional[str] = Field(None, max_length=100)
+    price: Optional[float] = Field(None, gt=0)
+    unit: Optional[UnitEnum] = Field(None)
+    recommanded_quantity: Optional[float] = Field(None, gt=0)
+    notes: Optional[str] = Field(None)
 
 # Update shopping item response schema
 class UpdateShoppingItemOutDTO(BaseModel):
     message: str
-        
-    class Config:
-        from_attributes = True
 
 
 # Create shopping item response schema
 class CreateShoppingItemOutDTO(BaseModel):
     message: str = Field(str, description="Message de confirmation")
-    data: Optional[BaseShoppingListItem]
-
-    class Config:
-        from_attributes = True
 
 # Get shopping item response schema
 class GetShoppingItemOutDTO(BaseModel):

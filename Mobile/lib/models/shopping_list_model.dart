@@ -24,8 +24,6 @@ class ShoppingListModel {
             : null,
       );
 
-      await Future.delayed(const Duration(seconds: 2));
-
       final items = response
           .map((e) => ShoppingList.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -60,12 +58,7 @@ class ShoppingListModel {
     try {
       await _shoppingService.generateShoppingList(weekNumber, listName);
 
-      await Future.delayed(const Duration(seconds: 2));
-
-      return ApiResponse(
-        data: 'success',
-        message: 'Liste de courses générée avec succès.',
-      );
+      return ApiResponse(message: 'Liste de courses générée avec succès.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while generating shopping list: ${err.response?.statusCode} - ${err.message}',
@@ -102,12 +95,7 @@ class ShoppingListModel {
     try {
       await _shoppingService.updateShoppingList(listId, newListName);
 
-      await Future.delayed(const Duration(seconds: 2));
-
-      return ApiResponse(
-        data: 'success',
-        message: 'Liste de courses modifiée avec succès.',
-      );
+      return ApiResponse(message: 'Liste de courses modifiée avec succès.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while updating shopping list: ${err.response?.statusCode} - ${err.message}',
@@ -132,10 +120,7 @@ class ShoppingListModel {
     try {
       await _shoppingService.deleteShoppingList(listId);
 
-      return ApiResponse(
-        data: 'success',
-        message: 'Liste de courses supprimée avec succès.',
-      );
+      return ApiResponse(message: 'Liste de courses supprimée avec succès.');
     } on DioException catch (err) {
       AppLogger.logger.e(
         'DioException while generating shopping list: ${err.response?.statusCode} - ${err.message}',

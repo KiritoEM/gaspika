@@ -15,6 +15,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       insetPadding: EdgeInsets.symmetric(horizontal: 23),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       title: const Text(
         'Supprimer la liste',
         style: TextStyle(fontWeight: .bold),
@@ -35,9 +36,6 @@ class DeleteConfirmationDialog extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.mutedForeground,
-                ),
                 child: const Text('Annuler'),
               ),
             ),

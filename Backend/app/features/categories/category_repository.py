@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import FoodCategory
@@ -7,14 +7,18 @@ class CategoryRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
     
-    async def get_all(self) -> list[FoodCategory]:
+    async def get_all(self) -> Sequence[FoodCategory]:
         """Get all categories"""
         result = await self.db.execute(select(FoodCategory))
         return result.scalars().all()
     
-    async def create(self, name: str, description: Optional[str] = None) -> FoodCategory:
+    async def create(self, name: str, ml_category: str, description: Optional[str] = None) -> FoodCategory:
         """Create new category"""
-        category = FoodCategory(name=name, description=description)
+        category = FoodCategory(
+            name=name,
+            description=description,
+            ml_category=ml_category
+        )
         self.db.add(category)
         await self.db.commit()
         await self.db.refresh(category)

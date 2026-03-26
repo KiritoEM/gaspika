@@ -19,6 +19,18 @@ class UploadImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final int imageSizeInBytes = image?.lengthSync() ?? 0;
+    final double sizeInKB = imageSizeInBytes / 1024;
+    final double sizeInMB = imageSizeInBytes / 1024 / 1024;
+
+    String getImageSize() {
+      if (sizeInMB >= 1) {
+        return '${sizeInMB.toStringAsFixed(2)} MB';
+      } else {
+        return '${sizeInKB.toStringAsFixed(2)} KB';
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,12 +43,12 @@ class UploadImage extends StatelessWidget {
               border: Border.all(
                 color: AppColors.mutedForeground.withOpacity(0.3),
               ),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(8),
                   child: Image.file(
                     image!,
                     width: 75,
@@ -59,10 +71,10 @@ class UploadImage extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'PNG, JPG',
+                        getImageSize(),
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade500,
+                          color: AppColors.mutedForeground,
                         ),
                       ),
                     ],
@@ -93,7 +105,7 @@ class UploadImage extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                margin: EdgeInsets.all(12),
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -102,7 +114,9 @@ class UploadImage extends StatelessWidget {
                       size: 64,
                       color: Colors.grey.shade600,
                     ),
+
                     const SizedBox(height: 16),
+
                     Text(
                       'Cliquez pour télécharger une image',
                       style: TextStyle(

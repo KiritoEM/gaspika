@@ -2,20 +2,28 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/create_shopping_item_form.dart';
+import 'package:gaspika_mobile/features/create_shopping_item/views/widgets/stepper_header.dart';
 import 'package:gaspika_mobile/shared/progress_indicator.dart';
 import 'package:go_router/go_router.dart';
 
 class CreateShoppingItemScreen extends StatelessWidget {
   final String listId;
+  final String listName;
+  final int weekNumber;
 
-  const CreateShoppingItemScreen({super.key, required this.listId});
+  const CreateShoppingItemScreen({
+    super.key,
+    required this.listId,
+    required this.listName,
+    required this.weekNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      extendBody: true,
       appBar: AppBar(
         scrolledUnderElevation: 0,
         elevation: 0,
@@ -54,30 +62,19 @@ class CreateShoppingItemScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //Header
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
-              children: [
-                Text(
-                  'Informations de l’aliment',
-                  style: TextStyle(
-                    fontSize: Theme.of(
-                      context,
-                    ).textTheme.headlineSmall?.fontSize!,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                Text(
+            StepperHeader(
+              title: 'Informations de l’aliment',
+              description:
                   'Entrez les informations principales de l’aliment que vous allez ajouter.',
-                  style: TextStyle(color: AppColors.mutedForeground),
-                ),
-              ],
             ),
 
             SizedBox(height: 32),
 
-            CreateShoppingItemForm(listId: int.parse(listId)),
+            CreateShoppingItemForm(
+              listId: int.parse(listId),
+              listName: listName,
+              weekNumber: weekNumber,
+            ),
           ],
         ),
       ),

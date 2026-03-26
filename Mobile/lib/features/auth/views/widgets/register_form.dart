@@ -19,7 +19,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
-    RegisterViewModel registerVm = context.watch<RegisterViewModel>();
+    RegisterViewModel registerVm = Provider.of<RegisterViewModel>(context);
 
     return Form(
       key: registerVm.formkey,

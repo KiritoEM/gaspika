@@ -6,13 +6,13 @@ from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 
 # Create Shopping list schema
 class CreateShoppingListDTO(BaseModel):
-    week_number: int = Field(..., ge=1, le=53, description="Numéro de semaine")
-    name: Optional[str] = Field(None, max_length=200, description="Nom de la liste")
+    week_number: int = Field(..., ge=1, le=53)
+    name: Optional[str] = Field(None, max_length=200)
 
 # Update Shopping list schema
 class UpdateShoppingListDTO(BaseModel):
-    week_number: Optional[int] = Field(None, ge=1, le=53, description="Numéro de semaine")
-    name: str = Field(None, max_length=200, description="Nom de la liste")
+    week_number: Optional[int] = Field(None, ge=1, le=53)
+    name: Optional[str]  = Field(None, max_length=200)
     
 #  ShoppingList base schema
 class BaseShoppingList(BaseModel): 
@@ -22,7 +22,6 @@ class BaseShoppingList(BaseModel):
     total_estimated_cost: float
     status: str
     items_count: Optional[int] = 0
-    created_at: str
     user_id: UUID
     created_at: datetime
     updated_at: datetime

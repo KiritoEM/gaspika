@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/configs/router_observer.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/widgets/avalaible_product_card.dart';
@@ -18,18 +19,43 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with RouteAware {
+  late HomeViewModel _homeVm;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _homeVm = Provider.of<HomeViewModel>(context, listen: false);
+
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() async {
-      final homeVm = Provider.of<HomeViewModel>(context, listen: false);
-
-      await homeVm.fetchUserInfo();
-      await homeVm.fetchAvailableFoodCount();
-      await homeVm.fetchShoppingWeekItems();
+      await _homeVm.fetchUserInfo();
+      await _homeVm.fetchAvailableFoodCount();
+      await _homeVm.fetchShoppingWeekItems();
+      await _homeVm.fetchNotificationCount();
     });
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _homeVm.refreshAll();
   }
 
   @override
@@ -43,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         preferredSize: Size.fromHeight(65),
         child: HomeAppbar(
           userName: homeVm.userName ?? 'Utilisateur',
+          notificationCount: homeVm.notificationCount,
           isLoading: homeVm.isLoadingUser,
         ),
       ),

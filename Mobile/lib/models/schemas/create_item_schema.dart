@@ -1,6 +1,5 @@
-// models/schemas/createItem.dart
-
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/domains-object/category.dart';
 
 extension QuantityUnitExtension on QuantityUnit {
   String toUpperCase() {
@@ -10,29 +9,31 @@ extension QuantityUnitExtension on QuantityUnit {
 
 class CreateShoppingItemSchema {
   String foodName = '';
-  double recommendedQuantity = 0.0;
+  double recommendedQuantity;
   QuantityUnit unit = QuantityUnit.unit;
-  double price = 0.0;
-  String notes = '';
-  int personNumber = 1;
-  String? storageTips = '';
-  int categoryId = 0;
-  int humidity = 10;
-  String backendCategory = '';
+  int price;
+  String notes;
+  int personNumber;
+  String? storageTips;
+  int humidity;
   int? conservationDuration;
+  Category? category;
+  String mealFrequency;
+  int consumptionDuration;
 
   CreateShoppingItemSchema({
     required this.foodName,
+    required this.personNumber,
+    required this.consumptionDuration,
     this.recommendedQuantity = 0.0,
     this.unit = QuantityUnit.unit,
-    this.price = 0.0,
+    this.price = 0,
     this.notes = '',
-    required this.personNumber,
     this.storageTips = '',
-    required this.categoryId,
-    this.humidity = 10,
-    this.backendCategory = '',
+    this.category,
+    this.humidity = 98,
     this.conservationDuration,
+    this.mealFrequency = 'petit_dejeuner',
   });
 
   @override
@@ -44,8 +45,8 @@ CreateShoppingItemSchema {
   unit: $unit
   price: ${price.toStringAsFixed(2)}€,
   personNumber: $personNumber,
-  categoryId: $categoryId,
-  backendCategory: "$backendCategory",
+  categoryId: ${category?.id},
+  backendCategory: "${category?.mlCategory}",
   humidity: $humidity%,
   notes: "$notes",
   storageTips: "$storageTips"
@@ -60,7 +61,7 @@ CreateShoppingItemSchema {
       'price': price,
       'person_number': personNumber,
       'unit': unit.toUpperCase(),
-      'food_category_id': categoryId,
+      'food_category_id': category?.id,
       'storage_tips': storageTips,
       'default_shelf_life_day': conservationDuration,
     };

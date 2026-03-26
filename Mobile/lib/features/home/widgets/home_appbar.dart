@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
-import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final int notificationCount;
   final String userName;
   final bool isLoading;
 
   const HomeAppbar({
     super.key,
+    this.notificationCount = 0,
     required this.userName,
     required this.isLoading,
   });
@@ -21,8 +22,6 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeVm = context.watch<HomeViewModel>();
-
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
       child: AppBar(
@@ -68,10 +67,14 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
         actions: [
           IconButton(
             onPressed: () {
-              homeVm.logout();
-              context.go('/login');
+              context.push(NavigationConstant.NOTIFICATION_ROUTE);
             },
-            icon: Icon(Icons.logout),
+            icon: Badge(
+              label: Text(notificationCount.toString()),
+              backgroundColor: AppColors.accent,
+              isLabelVisible: notificationCount > 0,
+              child: SvgPicture.asset('assets/icons/bell.svg'),
+            ),
           ),
         ],
       ),

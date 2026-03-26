@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:gaspika_mobile/configs/dio_config.dart';
 import 'package:gaspika_mobile/constants/api_constant.dart';
-import 'package:gaspika_mobile/models/schemas/createItem.dart';
+import 'package:gaspika_mobile/models/schemas/create_item_schema.dart';
+import 'package:gaspika_mobile/models/schemas/update_item_schema.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 
 class ShoppingService {
@@ -23,7 +24,7 @@ class ShoppingService {
     );
 
     return response.data['data'] as List<dynamic>;
-  }
+  } 
 
   Future<List<dynamic>> getShoppingList(String? status, String? period) async {
     Map<String, dynamic> query = {};
@@ -55,39 +56,6 @@ class ShoppingService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> updateShoppingList(
-    int listId,
-    String newListName,
-  ) async {
-    final response = await _dio.patch(
-      '${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId',
-      data: {'name': newListName},
-    );
-
-    return response.data;
-  }
-
-  Future deleteShoppingList(int listId) async {
-    await _dio.delete('${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId');
-  }
-
-  Future<List<dynamic>> getShoppingItemsById(int listId) async {
-    final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/items',
-    );
-
-    return response.data['data'] as List<dynamic>;
-  }
-
-  Future<List<dynamic>> getFoodSuggestion(String query) async {
-    final response = await _dio.get(
-      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/suggestion',
-      queryParameters: {'food_name': query},
-    );
-
-    return response.data['data'] as List<dynamic>;
-  }
-
   Future createShoppingItem(
     CreateShoppingItemSchema item,
     int listId,
@@ -113,17 +81,59 @@ class ShoppingService {
     );
   }
 
+  Future updateShoppingList(int listId, String newListName) async {
+    await _dio.patch(
+      '${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId',
+      data: {'name': newListName},
+    );
+  }
+
+  Future updateShoppingItem(
+    int itemId,
+    UpdateShoppingItemSchema newData,
+  ) async {
+    await _dio.patch(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
+      data: newData.toMap(),
+    );
+  }
+
+  Future deleteShoppingList(int listId) async {
+    await _dio.delete('${ApiConstant.SHOPPING_LISTS_ENDPOINT}/$listId');
+  }
+
+  Future deleteShoppingItem(int itemId) async {
+    await _dio.delete('${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId');
+  }
+
+  Future<List<dynamic>> getShoppingItemsById(int listId) async {
+    final response = await _dio.get(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/$listId/items',
+    );
+
+    return response.data['data'] as List<dynamic>;
+  }
+
+  Future<List<dynamic>> getFoodSuggestion(String query) async {
+    final response = await _dio.get(
+      '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/suggestion',
+      queryParameters: {'food_name': query},
+    );
+
+    return response.data['data'] as List<dynamic>;
+  }
+
   Future<Map<String, dynamic>> getShoppingItemById(int itemId) async {
     final response = await _dio.get(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId',
     );
+
     return response.data['data'];
   }
 
-  Future<Map<String, dynamic>> markItemAsComplete(int itemId) async {
-    final response = await _dio.patch(
+  Future markItemAsComplete(int itemId) async {
+    await _dio.patch(
       '${ApiConstant.SHOPPING_ITEMS_ENDPOINT}/items/$itemId/complete',
     );
-    return response.data;
   }
 }

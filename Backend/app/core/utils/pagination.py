@@ -24,7 +24,7 @@ async def paginate(
     items = results.unique().scalars().all()
     
     validated_items = []
-    for item in items:
+    for item in items: 
         schema = ResponseSchema.model_validate(item)
         if hasattr(item, 'items'): 
             schema.items_count = len(item.items)

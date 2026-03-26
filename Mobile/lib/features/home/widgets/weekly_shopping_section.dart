@@ -35,24 +35,19 @@ class WeeklyShoppingSection extends StatelessWidget {
 
                   isLoading
                       ? Container()
-                      : TextButton.icon(
-                          onPressed: () {
-                            context.go(NavigationConstant.SHOPPING_LISTS_ROUTE);
-                          },
-                          label: Text(
+                      : GestureDetector(
+                          onTap: () => context.go(
+                            NavigationConstant.SHOPPING_LISTS_ROUTE,
+                          ),
+                          child: Text(
                             'Voir tout',
                             style: TextStyle(color: Colors.orange),
-                          ),
-                          iconAlignment: IconAlignment.end,
-                          icon: Icon(
-                            Icons.arrow_right_alt,
-                            color: Colors.orange,
                           ),
                         ),
                 ],
               ),
 
-        SizedBox(height: isLoading ? 14 : 2),
+        SizedBox(height:12),
 
         // Shopping items list
         isLoading

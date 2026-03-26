@@ -1,11 +1,11 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Sequence
 from sqlalchemy.orm import joinedload
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.shopping_items.shopping_items_schemas import CreateShoppingItemDTO, UpdateShoppingItemDTO
 from app.core.enums import ShoppingListItemEnum
-from app.models import ShoppingList, ShoppingListItem
+from app.models import ShoppingList, ShoppingListItem, User
 
 class ShoppingItemsRepository:
     def __init__(self, db: AsyncSession):
@@ -38,7 +38,7 @@ class ShoppingItemsRepository:
         return shopping_item
     
     async def get_all(self, list_id: int) -> list[ShoppingListItem]:
-        """Get all shopping items of an user"""                
+        """Get all shopping items in a list"""                
         all_items = await self.db.execute(
             select(ShoppingListItem)
             .join(ShoppingListItem.shopping_list)
@@ -48,6 +48,20 @@ class ShoppingItemsRepository:
         )
         
         return all_items.scalars().all()
+    
+    async def get_all_by_user_id(self, user_id: str) -> list[ShoppingListItem]:
+        """Get all shopping items of an user"""                
+        all_items = await self.db.execute(
+            select(ShoppingListItem)
+            .join(ShoppingListItem.user)
+            .where(User.id == user_id)
+            .order_by(ShoppingListItem.food_name, ShoppingListItem.created_at.desc()) 
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
+            .distinct(ShoppingListItem.food_name)
+        )
+        
+        return all_items.scalars().all()
+    
     
     async def get_by_id(self, item_id: int, user_id: str) -> Optional[ShoppingListItem] :
         """Get item by id"""
@@ -63,9 +77,9 @@ class ShoppingItemsRepository:
             .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
         )
         
-        return shopping_item.scalar_one_or_none()
+        return shopping_item.scalars().first()
     
-    async def get_items_count(self, user_id: str, list_id: int, status: Optional[str]) -> int :
+    async def get_items_count(self, user_id: str, list_id: int, status: Optional[ShoppingListItemEnum] = None) -> Optional[int]:
         """Get shopping items count of an list"""   
         
         query = (
@@ -86,7 +100,7 @@ class ShoppingItemsRepository:
 
         return items_count.scalar()
     
-    async def get_items_of_list(self, user_id: str, list_id: int, status: Optional[str]) -> list[ShoppingListItem] :
+    async def get_items_of_list(self, user_id: str, list_id: int, status: Optional[ShoppingListItemEnum]) -> list[ShoppingListItem] :
         """Get shopping items count of an list"""   
         
         query = (
@@ -114,9 +128,31 @@ class ShoppingItemsRepository:
         query = (
             select(ShoppingListItem)
             .join(ShoppingListItem.shopping_list)
-            .where(ShoppingListItem.food_name
-            .ilike(f"%{name}%"))
+            .where(ShoppingListItem.food_name.ilike(f"%{name}%"))
             .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
+            .distinct(ShoppingListItem.food_name)
+        )
+        
+        if user_id:
+            query = query.where(ShoppingList.user_id == user_id)
+                
+        shopping_item = await self.db.execute(query)
+        
+        return shopping_item.scalars().all()
+     
+    
+      
+    async def search_by_food_name_in_list(self, name: str, user_id: str, list_id: int) -> list[ShoppingListItem] :
+        """Get all items by food name in a list or global items or by item_id"""
+        query = (
+            select(ShoppingListItem)
+            .join(ShoppingListItem.shopping_list)
+            .where(and_(
+                ShoppingList.id == list_id,
+                ShoppingListItem.food_name.ilike(f"%{name}%")),   
+            )
+            .options(joinedload(ShoppingListItem.category), joinedload(ShoppingListItem.image))
+            .distinct(ShoppingListItem.food_name)
         )
         
         if user_id:
@@ -170,25 +206,12 @@ class ShoppingItemsRepository:
         self, 
         item_id: int, 
         user_id: str, 
-        list_id: int, 
         item_data: UpdateShoppingItemDTO
     ) -> Optional[ShoppingListItem] :
         """Update Shopping item"""
-        result = await self.db.execute(
-            select(ShoppingListItem)
-            .join(ShoppingListItem.shopping_list)
-            .where(
-                and_(
-                    ShoppingList.user_id == user_id,
-                    ShoppingList.id == list_id,
-                    ShoppingListItem.id == item_id
-                )
-           )
-        )   
-        
-        shopping_item = result.scalar_one_or_none()
-        
-        # Update change field
+        shopping_item = await self.get_by_id(item_id, user_id)
+                
+        # Update changed field
         if shopping_item:
             for field, value in item_data.model_dump(exclude_unset=True).items():
                 setattr(shopping_item, field, value)
@@ -202,22 +225,10 @@ class ShoppingItemsRepository:
         
         return None
     
-    async def delete(self, item_id: int, user_id: str, list_id: int) -> bool:
+    async def delete(self, item_id: int, user_id: str) -> bool:
         """Delete shopping item"""
-        result = await self.db.execute(
-            select(ShoppingListItem)
-            .join(ShoppingListItem.shopping_list)
-            .where(
-                and_(
-                    ShoppingList.user_id == user_id,
-                    ShoppingList.id == list_id,
-                    ShoppingListItem.id == item_id
-                )
-            )
-        )
-        
-        shopping_item = result.scalar_one_or_none()
-        
+        shopping_item = await self.get_by_id(item_id, user_id)
+                
         if shopping_item:
             await self.db.delete(shopping_item)
             await self.db.commit()

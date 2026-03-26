@@ -20,7 +20,7 @@ class CreateListBottomsheet {
     return await AppBottomSheet.show(
       context: context,
       builder: (context, setModalState) {
-        final shoppingListVm = context.watch<ShoppingListViewModel>();
+        final shoppingListVm = Provider.of<ShoppingListViewModel>(context);
 
         return [
           Padding(

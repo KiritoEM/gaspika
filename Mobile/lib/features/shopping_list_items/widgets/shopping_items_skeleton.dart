@@ -8,7 +8,7 @@ class ShoppingItemsSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       itemCount: 7,
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      separatorBuilder: (context, index) => const SizedBox(height: 24),
       itemBuilder: (context, index) {
         return const SkeletonLine(
           style: SkeletonLineStyle(

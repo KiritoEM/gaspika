@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 from sqlalchemy import extract, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
@@ -6,16 +6,19 @@ from app.features.shopping_lists.shopping_list_schemas import BaseShoppingList, 
 from app.core.enums import ShoppingListIntervalDateEnum, ShoppingListStatusEnum
 from app.core.utils.pagination import paginate
 from app.core.schemas import PageParams
-from app.models import ShoppingList
+from app.models import ShoppingList, ShoppingListItem
 from sqlalchemy.orm import selectinload 
 
 class ShoppingListRepository:
     def __init__(self, db: AsyncSession):
-        self.db = db
+        self.db = db 
             
-    async def get_all(self, user_id: str, page: int, limit: int,
-                     status: Optional[str] = None, 
-                     intervalDate: Optional[ShoppingListIntervalDateEnum] = None):
+    async def get_all(self, user_id: str, 
+            page: int,
+            limit: int,
+            status: Optional[ShoppingListStatusEnum] = None, 
+            intervalDate: Optional[ShoppingListIntervalDateEnum] = None
+        ):
         """Get all lists with optional filters"""
         query = (
              select(ShoppingList)
@@ -56,58 +59,75 @@ class ShoppingListRepository:
         query = query.order_by(ShoppingList.created_at.desc())
                 
         # Pagination
-        return await paginate(self.db, PageParams(page=page, size=limit), query, BaseShoppingList)
+        return await paginate(self.db, PageParams(page=page, limit=limit), query, BaseShoppingList)
     
-    async def get_by_id(self, list_id: int, user_id: int) -> ShoppingList:
+    async def get_by_id(self, list_id: int, user_id: str) -> ShoppingList | None:
         """Get shopping list by Id"""
         shopping_list = await self.db.execute(
             select(ShoppingList).where(
+               and_(
                 ShoppingList.user_id == user_id,
                 ShoppingList.id == list_id
+               )
             )
         )
         
-        return shopping_list.scalar_one_or_none()
+        return shopping_list.scalars().first()
     
-    async def create(self, week_number: int, user_id: str, name: str) -> ShoppingList:
+    
+    async def get_by_item_id(self, item_id: int) -> ShoppingList:
+        """Get shopping list by item id"""
+        shopping_list = await self.db.execute(
+            select(ShoppingList)
+            .join(ShoppingList.items)
+            .where(
+               and_(
+                ShoppingListItem.id == item_id
+               )
+            )
+        )
+        
+        return shopping_list.scalars().first()
+    
+    async def create(self, week_number: int, user_id: str, name: str):
         """Create new shopping list"""
-        new_shopping_list = ShoppingList(user_id=user_id, week_number=week_number, name=name)
+        new_shopping_list = ShoppingList(
+            user_id=user_id,
+            week_number=week_number,
+            name=name
+        )
         
         self.db.add(new_shopping_list)
         await self.db.commit()
         await self.db.refresh(new_shopping_list) 
-        return new_shopping_list
         
-    async def get_list_by_week(self, week_number: int, user_id: str, year: Optional[int]) -> Optional[ShoppingList]:
+    async def get_list_by_week(self, week_number: int, year: Optional[int] = None, user_id: Optional[str] = None) -> ShoppingList | None:
         """Get List by specific week"""
         query = (
             select(ShoppingList)
             .where(
-                and_(
+                ShoppingList.week_number == week_number
+            )
+        )    
+
+        if user_id:
+            query = (
+                query
+                .join(ShoppingList.user)
+                .where(
                     ShoppingList.user_id == user_id,
-                    ShoppingList.week_number == week_number
                 )
             )
-        )     
-        
         if year:
             query = query.where(extract('year', ShoppingList.created_at) == year)
             
         shopping_list = await self.db.execute(query)            
         
-        return shopping_list.scalar_one_or_none()
+        return shopping_list.scalars().first()
     
-    async def update_list(self, shopping_lists_id: int, user_id: str, update_data: UpdateShoppingListDTO) -> Optional[ShoppingList]:
+    async def update_list(self, list_id: int, user_id: str, update_data: UpdateShoppingListDTO) -> Optional[ShoppingList]:
         """Update shopping list name or week_number"""
-        result = await self.db.execute(
-            select(ShoppingList)
-            .where(
-                and_(
-                    ShoppingList.id == shopping_lists_id,
-                    ShoppingList.user_id == user_id
-                )
-        ))
-        shopping_list = result.scalar_one_or_none()
+        shopping_list = await self.get_by_id(list_id, user_id)
         
         if shopping_list:
             shopping_list.name = update_data.name
@@ -123,7 +143,6 @@ class ShoppingListRepository:
             return shopping_list
         
         return None
-        
     
     async def update_total_cost(self, list_id: int, cost: float) -> Optional[ShoppingList]:
         """Update total cost of an list"""
@@ -157,17 +176,7 @@ class ShoppingListRepository:
      
     async def complete_list(self, list_id: int, user_id: str) -> Optional[ShoppingList]:
         """Change status of shopping list to complete"""
-        result = await self.db.execute(
-            select(ShoppingList)
-           .where(
-                and_(                    
-                    ShoppingList.id == list_id,
-                    ShoppingList.user_id == user_id
-                )
-           )
-        )
-        
-        shopping_list = result.scalar_one_or_none()
+        shopping_list = await self.get_by_id(list_id, user_id)
         
         if shopping_list:
             shopping_list.status = ShoppingListStatusEnum.COMPLETED
@@ -178,18 +187,24 @@ class ShoppingListRepository:
             return shopping_list
             
         return None
+    
+    async def rollback_list_to_unfinished(self, list_id: int, user_id: str) -> Optional[ShoppingList]:
+        """Change status of shopping list to unfinished"""
+        shopping_list = await self.get_by_id(list_id, user_id)
+        
+        if shopping_list:
+            shopping_list.status = ShoppingListStatusEnum.UNFINISHED
+            shopping_list.updated_at = datetime.now(timezone.utc)
+            
+            await self.db.commit()
+            
+            return shopping_list
+            
+        return None
 
     async def delete_list(self, list_id: int, user_id: str) -> bool:
         """Delete shopping list and cascade items"""
-        result = await self.db.execute(
-            select(ShoppingList)
-            .where(
-                and_(
-                    ShoppingList.id == list_id,
-                    ShoppingList.user_id == user_id
-                )    
-            ))
-        shopping_list = result.scalar_one_or_none()
+        shopping_list = await self.get_by_id(list_id, user_id)
         
         if shopping_list:
             await self.db.delete(shopping_list)
@@ -197,5 +212,3 @@ class ShoppingListRepository:
             return True
         
         return False
-    
-  

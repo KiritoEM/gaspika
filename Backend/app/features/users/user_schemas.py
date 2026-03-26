@@ -7,7 +7,7 @@ class UserCreateDTO(BaseModel):
     first_name: str 
     last_name: str
     email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
+    password: str = Field(min_length=8)
 
 # Get User schema
 class BaseUser(BaseModel):

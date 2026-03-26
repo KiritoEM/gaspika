@@ -10,6 +10,7 @@ class ApiConstant {
   static const Map<String, String> HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   };
 
   // Endpoints
@@ -23,4 +24,7 @@ class ApiConstant {
       '$SHOPPING_LISTS_ENDPOINT/generate';
   static const String PREDICT_QUANTITY = '/predict/quantite';
   static const String PREDICT_CONSERVATION = '/predict/conservation';
+  static const String CATEGORIES_ENDPOINT = '/categories';
+  static const String DEVICE_ENDPOINT = '/devices';
+  static const String NOTIFICATION_ENDPOINT = '/notifications';
 }

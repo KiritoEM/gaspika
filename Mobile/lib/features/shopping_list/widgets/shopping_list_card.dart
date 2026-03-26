@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/delete_confirmation_dialog.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/update_list_dialog.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
 import 'package:gaspika_mobile/shared/bottomsheet_action.dart';
+import 'package:gaspika_mobile/utils/date.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList item;
@@ -28,8 +31,7 @@ class ShoppingListCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         context.push(
-          '/shopping-list/${item.id}',
-          extra: {'name': item.name, 'week_number': item.weekNumber},
+          '${NavigationConstant.SHOPPING_LISTS_ROUTE}/${item.id}?name=${item.name}&week=${item.weekNumber}',
         );
       },
       child: Container(
@@ -100,16 +102,72 @@ class ShoppingListCard extends StatelessWidget {
                         ),
                       ],
                     ),
+
                     const SizedBox(height: 5),
-                    Text(
-                      '${item.itemsCount > 0 ? item.itemsCount : 'Aucun'} aliment${item.itemsCount > 1 ? 's' : ''}',
-                      style: TextStyle(
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.fontSize!,
-                        color: AppColors.mutedForeground,
-                        fontWeight: FontWeight.w600,
-                      ),
+
+                    Row(
+                      children: [
+                        Text(
+                          '${item.itemsCount > 0 ? item.itemsCount : 'Aucun'} aliment${item.itemsCount > 1 ? 's' : ''}',
+                          style: TextStyle(
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize!,
+                            color: AppColors.mutedForeground,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        if (item.totalEstimatedCost > 0)
+                          Text(
+                            ' · ',
+                            style: TextStyle(
+                              fontSize: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.fontSize!,
+                              color: AppColors.mutedForeground,
+                            ),
+                          ),
+
+                        if (item.totalEstimatedCost > 0)
+                          Text(
+                            '${item.totalEstimatedCost} Ar',
+                            style: TextStyle(
+                              fontSize: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.fontSize!,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.mutedForeground,
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Row(
+                      crossAxisAlignment: .center,
+                      spacing: 5,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/calendar.svg',
+                          colorFilter: ColorFilter.mode(
+                            AppColors.mutedForeground,
+                            BlendMode.srcIn,
+                          ),
+                          width: 18,
+                        ),
+                        Text(
+                          'Semaine du ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(DateTime.parse(item.createdAt)))}',
+                          style: TextStyle(
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize!,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -143,7 +201,7 @@ class ShoppingListCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: 8,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               BottomsheetAction(
                 label: 'Modifier',
                 icon: SvgPicture.asset('assets/icons/edit.svg', width: 18),

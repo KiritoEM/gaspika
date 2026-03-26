@@ -12,6 +12,7 @@ class NotificationCard extends StatelessWidget {
   String? image;
   NotificationTypeEnum type;
   String route;
+  bool isRead;
 
   NotificationCard({
     super.key,
@@ -20,16 +21,20 @@ class NotificationCard extends StatelessWidget {
     required this.type,
     required this.route,
     this.image,
+    this.isRead = true
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () { 
         context.push(route);
       },
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 23),
+      child: Container(
+      decoration: BoxDecoration(
+      color: isRead ? Colors.transparent : AppColors.surface,
+      ),
+        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 23),
         child: Row(
           spacing: 6,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +148,7 @@ class NotificationCard extends StatelessWidget {
         child: Container(
           width: 58,
           height: 58,
-          color: AppColors.secondary,
+          color: AppColors.primary,
           child: Center(
             child: SvgPicture.asset(
               'assets/icons/pajamas_planning.svg',

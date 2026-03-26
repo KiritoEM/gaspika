@@ -84,7 +84,6 @@ class _NotificationScreenState extends State<NotificationsScreen> {
 
   Widget _buildNotificationsList(NotificationViewModel notificationVm) {
     return Column(
-      spacing: 16,
       children: notificationVm.notifications
           .map(
             (notif) => NotificationCard(
@@ -92,6 +91,7 @@ class _NotificationScreenState extends State<NotificationsScreen> {
               details: notif.body,
               type: notif.type,
               route: notif.route ?? NavigationConstant.DEFAULT_ROUTE,
+              isRead: notif.isRead,
               createdAt: notif.createdAt,
             ),
           )

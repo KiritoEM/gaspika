@@ -58,7 +58,7 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
                     style: TextStyle(
                       fontSize: Theme.of(
                         context,
-                      ).textTheme.headlineSmall?.fontSize,
+                      ).textTheme.titleLarge?.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

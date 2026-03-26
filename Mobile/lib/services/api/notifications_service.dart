@@ -17,7 +17,8 @@ class NotificationsService {
       ApiConstant.NOTIFICATION_ENDPOINT,
       queryParameters: {'page': page, 'limit': limit},
     );
-    return response.data['data'] as List<dynamic>;
+    
+    return response.data['results'] as List<dynamic>;
   }
 
   Future markAllNotificationsAsRead() async {

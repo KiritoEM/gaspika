@@ -19,7 +19,7 @@ class ShoppingItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push(
+ context.push(
           '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/${item.id}',
         );
       },
@@ -49,8 +49,8 @@ class ShoppingItemCard extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(16),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+          spacing: 14,
+          children: [
               // Product info
               Expanded(
                 child: Row(
@@ -127,12 +127,11 @@ class ShoppingItemCard extends StatelessWidget {
                               ),
                             ),
                         ],
-                      ),
                     ),
+                  ),
                   ],
                 ),
               ),
-
               // Quantity
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),

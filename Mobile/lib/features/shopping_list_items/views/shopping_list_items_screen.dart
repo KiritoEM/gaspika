@@ -6,7 +6,7 @@ import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/configs/router_observer.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
-import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/shopping_items_skeleton.dart';
+import 'package:gaspika_mobile/features/shopping_list_items/widgets/shopping_items_skeleton.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:gaspika_mobile/utils/date.dart';
@@ -65,7 +65,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
 
   @override
   void didPopNext() {
-      _shoppingItemsVm.refreshItems(int.parse(widget.listId));
+    _shoppingItemsVm.refreshItems(int.parse(widget.listId));
   }
 
   @override
@@ -106,11 +106,7 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
 
                 const SizedBox(height: 20),
 
-                Expanded(
-                  child: shoppingItemsVm.isLoadingItems
-                      ? ShoppingItemsSkeleton()
-                      : _buildShoppingItems(shoppingItemsVm),
-                ),
+                Expanded(child: _buildBody(shoppingItemsVm)),
 
                 shoppingItemsVm.isLoadingItems
                     ? Container()
@@ -135,7 +131,11 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
     );
   }
 
-  Widget _buildShoppingItems(ShoppingItemsViewModel shoppingItemsVm) {
+  Widget _buildBody(ShoppingItemsViewModel shoppingItemsVm) {
+    if (shoppingItemsVm.isLoadingItems) {
+      return ShoppingItemsSkeleton();
+    }
+
     if (shoppingItemsVm.hasError) {
       return SizedBox(
         height: double.infinity,

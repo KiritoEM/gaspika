@@ -10,7 +10,7 @@ import 'package:gaspika_mobile/features/shopping_list/widgets/create_list_bottom
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_appbar.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_card.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_status_filter.dart';
-import 'package:gaspika_mobile/features/shopping_list_items/views/widgets/empty_state.dart';
+import 'package:gaspika_mobile/features/shopping_list_items/widgets/empty_state.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:gaspika_mobile/shared/loader_with_overlay.dart';
 import 'package:my_toastify/my_toastify.dart';
@@ -180,7 +180,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
         SizedBox(height: 24),
 
-        // Contenu scrollable
         Expanded(
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),

@@ -113,7 +113,12 @@ class _FoodDetailsViewScreenState extends State<FoodDetailsScreen> {
         message: 'Aliment marqué comme acheté',
         type: ToastType.success,
       );
-      context.pop(true);
+
+      if (context.canPop()) {
+        context.pop(true);
+      } else {
+        context.go(NavigationConstant.SHOPPING_LISTS_ROUTE); // fallback
+      }
     }
   }
 

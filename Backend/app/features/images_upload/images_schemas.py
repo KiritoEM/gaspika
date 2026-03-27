@@ -10,6 +10,7 @@ class ImageSchema(BaseModel):
     size: int
     provider: str
     file_id: Optional[str]
+    delete_url: str
     updated_at: AwareDatetime
     
     class Config:

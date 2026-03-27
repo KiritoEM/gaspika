@@ -21,6 +21,11 @@ class AuthServices:
         
         if not verify_hash(data.password, user.password):
             raise HTTPException(status_code=401, detail="Mot de passe incorrect.")
+        
+        # check if FCM token already exist
+        existing_device = await self.device_repo.get_by_fcm_token(data.fcm_token)
+        if existing_device:
+            return user
                 
         # create device with FCM token if not exist
         try:

@@ -20,6 +20,24 @@ jobstorages = {
 
 scheduler = AsyncIOScheduler(jobstores=jobstorages)
 
+async def food_expiry_job(user_id: str, food_name: str, item_id: int, image_path: str | None):
+    async with AsyncSessionLocal() as db:
+        notifications_repo = NotificationsRepository(db)
+        shopping_list_repo = ShoppingListRepository(db)
+        device_repo = DeviceRepository(db)
+        user_repo = UserRepository(db)
+
+        notifications_service = NotificationsService(
+            notifications_repo,
+            shopping_list_repo,
+            device_repo,
+            user_repo
+        )
+
+        await notifications_service.check_near_expiry_food(
+            user_id, food_name, item_id, image_path
+        )
+
 async def notifications_job():
     async with AsyncSessionLocal() as db:
         notifications_repo = NotificationsRepository(db)

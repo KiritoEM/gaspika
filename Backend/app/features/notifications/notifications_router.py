@@ -76,6 +76,23 @@ async def mark_all_notifications_as_read(
     
     return {"message": "Toutes les notifications ont été marquées comme lues."}
 
+@notification_router.patch(
+    "/{notification_id}/read",
+    summary="Marquer une notification comme lue",
+    responses={
+        200: {"description": "Notification marquée comme lue avec succès"},
+        404: {"description": "Notification introuvable"}
+    },
+    status_code=200
+)
+async def mark_notification_as_read(
+    notification_id: Annotated[str, Path(...)],
+    service: NotificationsService = Depends(get_notifications_service)
+):
+    await service.mark_as_read(notification_id)
+    
+    return {"message": "Notification marquée comme lue."}
+
 @notification_router.delete(
     "/{notification_id}",
     summary="Supprimer une notification",

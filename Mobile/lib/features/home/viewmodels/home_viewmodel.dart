@@ -97,12 +97,17 @@ class HomeViewModel extends ChangeNotifier {
 
   // Get notification count
   Future fetchNotificationCount() async {
+    _notificationCount = 0;
+    _isLoadingNotificationCount = true;
+    notifyListeners();
+
     final response = await _notificationModel.getNotificationsCount();
     if (response.hasError == true) {
       _isLoadingNotificationCount = false;
       notifyListeners();
       return;
     }
+
     _notificationCount = response.data ?? 0;
     _isLoadingNotificationCount = false;
     notifyListeners();
@@ -118,10 +123,13 @@ class HomeViewModel extends ChangeNotifier {
     _isLoadingFoodCount = true;
     _isLoadingShopping = true;
     _isLoadingNotificationCount = true;
+    _notificationCount = 0;
     _hasError = false;
     _errorMessage = '';
     _errorType = null;
+
     notifyListeners();
+
     await Future.wait([
       fetchUserInfo(),
       fetchAvailableFoodCount(),

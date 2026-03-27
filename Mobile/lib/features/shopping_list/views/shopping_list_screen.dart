@@ -220,11 +220,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           .map(
             (item) => ShoppingListCard(
               item: item,
-              onUpdate: (id) async {
-                handleUpdateList(id, shoppingListVm);
+              onUpdate: () async {
+                handleUpdateList(item.id!, shoppingListVm);
               },
-              onDelete: (id) async {
-                handleDeleteList(id, shoppingListVm);
+              onDelete: () async {
+                handleDeleteList(item.id!, shoppingListVm);
               },
             ),
           )

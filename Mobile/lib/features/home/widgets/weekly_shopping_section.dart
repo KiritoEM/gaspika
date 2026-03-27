@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
+import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_empty_state.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class WeeklyShoppingSection extends StatelessWidget {
   bool isLoading;
@@ -19,11 +21,12 @@ class WeeklyShoppingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isListEmpty = shoppingListItems.isEmpty;
+    HomeViewModel homeVm = Provider.of<HomeViewModel>(context);
 
     return Column(
       children: [
         // Header
-        isListEmpty
+        isListEmpty && !isLoading
             ? Container()
             : Row(
                 mainAxisAlignment: isLoading ? .start : .spaceBetween,
@@ -47,13 +50,13 @@ class WeeklyShoppingSection extends StatelessWidget {
                 ],
               ),
 
-        SizedBox(height:12),
+        SizedBox(height: 12), 
 
         // Shopping items list
         isLoading
             ? _buildWeeklyShoppingSkeleton()
             : !isListEmpty
-            ? _buildShoppingList()
+            ? _buildShoppingList(context, homeVm)
             : Container(),
 
         // Empty state
@@ -80,11 +83,19 @@ class WeeklyShoppingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildShoppingList() {
+  Widget _buildShoppingList(BuildContext context, HomeViewModel homeVm) {
     return Column(
       spacing: 16,
       children: shoppingListItems.map((item) {
-        return ShoppingItemCard(item: item);
+        return ShoppingItemCard(
+          item: item,
+          onTap: () async {
+            await context.push(
+              '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/${item.id}',
+            );
+            await homeVm.refreshAll();
+          },
+        );
       }).toList(),
     );
   }

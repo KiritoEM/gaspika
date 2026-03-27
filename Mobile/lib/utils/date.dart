@@ -21,7 +21,7 @@ class DateUtilities {
     }
 
     if (diff.inHours >= 1) {
-      return 'il y a ${diff.inDays} heure${diff.inDays == 1 ? '' : 's'}';
+      return 'il y a ${diff.inHours} heure${diff.inHours == 1 ? '' : 's'}';
     }
 
     if (diff.inMinutes >= 1) {

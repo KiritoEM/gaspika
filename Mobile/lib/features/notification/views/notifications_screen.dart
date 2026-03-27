@@ -5,6 +5,7 @@ import 'package:gaspika_mobile/features/notification/viewmodels/notification_vie
 import 'package:gaspika_mobile/features/notification/widgets/notification_card.dart';
 import 'package:gaspika_mobile/features/notification/widgets/notifications_list_skeleton.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_toastify/my_toastify.dart';
 import 'package:provider/provider.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -15,23 +16,58 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationsScreen> {
+  late NotificationViewModel _notificationVm;
+
+  Future handleDeleteList(
+    String notificationId,
+    NotificationViewModel notificationVm,
+  ) async {
+    await notificationVm.deleteNotification(notificationId);
+
+    if (!mounted) return;
+
+    if (!notificationVm.hasDeleteError &&
+        !notificationVm.isDeletingNotification) {
+      Toastify.show(
+        context,
+        message: 'Notification supprimée avec succès.',
+        type: ToastType.success,
+      );
+    } else {
+      Toastify.show(
+        context,
+        message: notificationVm.deleteErrorMessage,
+        type: ToastType.error,
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
-    Future.microtask(() async {
-      final notificationVm = Provider.of<NotificationViewModel>(
-        context,
-        listen: false,
-      );
+    _notificationVm = Provider.of<NotificationViewModel>(
+      context,
+      listen: false,
+    );
 
-      await notificationVm.fetchNotifications();
+    Future.microtask(() => _notificationVm.fetchNotifications());
+  }
+
+  @override
+  void dispose() {
+    // mark all notifications as read when leaving the widget
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _notificationVm.markAllAsRead();
     });
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final notificationVm = Provider.of<NotificationViewModel>(context);
+    NotificationViewModel notificationConsumerVm =
+        Provider.of<NotificationViewModel>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -53,10 +89,10 @@ class _NotificationScreenState extends State<NotificationsScreen> {
 
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => notificationVm.refreshAll(),
+          onRefresh: () => notificationConsumerVm.refreshAll(),
           child: Padding(
             padding: EdgeInsets.only(top: 12),
-            child: _buildBody(notificationVm),
+            child: _buildBody(notificationConsumerVm),
           ),
         ),
       ),
@@ -90,9 +126,15 @@ class _NotificationScreenState extends State<NotificationsScreen> {
               image: notif.image,
               details: notif.body,
               type: notif.type,
-              route: notif.route ?? NavigationConstant.DEFAULT_ROUTE,
               isRead: notif.isRead,
               createdAt: notif.createdAt,
+              onTap: () async {
+                await notificationVm.markNotificationAsRead(notif.id);
+                await context.push(
+                  notif.route ?? NavigationConstant.DEFAULT_ROUTE,
+                );
+              },
+              onDelete: () async => handleDeleteList(notif.id, notificationVm),
             ),
           )
           .toList(),

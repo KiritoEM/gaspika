@@ -171,7 +171,12 @@ class _ShoppingListItemsScreenState extends State<ShoppingListItemsScreen>
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final item = shoppingItemsVm.shoppingItems[index];
-        return ShoppingItemCard(item: item);
+        return ShoppingItemCard(
+          item: item,
+          onTap: () => context.push(
+            '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/${item.id}',
+          ),
+        );
       },
     );
   }

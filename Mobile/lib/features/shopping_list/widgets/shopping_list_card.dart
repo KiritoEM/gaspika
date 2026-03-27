@@ -14,8 +14,8 @@ import 'package:intl/intl.dart';
 
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList item;
-  final Function(int id) onDelete;
-  final Function(int id) onUpdate;
+  final VoidCallback onDelete;
+  final VoidCallback onUpdate;
 
   const ShoppingListCard({
     super.key,
@@ -228,7 +228,7 @@ class ShoppingListCard extends StatelessWidget {
       context: context,
       builder: (dialogContext) => UpdateListDialog(
         listName: item.name!,
-        onUpdate: () => onUpdate(item.id!),
+        onUpdate: () => onUpdate(),
       ),
     );
   }
@@ -238,7 +238,7 @@ class ShoppingListCard extends StatelessWidget {
       context: context,
       builder: (dialogContext) => DeleteConfirmationDialog(
         listName: item.name!,
-        onDelete: () => onDelete(item.id!),
+        onDelete: () => onDelete(),
       ),
     );
   }

@@ -2,14 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
-import 'package:gaspika_mobile/configs/router_observer.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/widgets/avalaible_product_card.dart';
 import 'package:gaspika_mobile/features/home/widgets/home_appbar.dart';
 import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_section.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,48 +20,26 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with RouteAware {
-  late HomeViewModel _homeVm;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    _homeVm = Provider.of<HomeViewModel>(context, listen: false);
-
-    final route = ModalRoute.of(context);
-    if (route is PageRoute) {
-      routeObserver.subscribe(this, route);
-    }
-  }
-
+class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
 
+    HomeViewModel homeVm = Provider.of<HomeViewModel>(context, listen: false);
+
     Future.microtask(() async {
-      await _homeVm.fetchUserInfo();
-      await _homeVm.fetchAvailableFoodCount();
-      await _homeVm.fetchShoppingWeekItems();
-      await _homeVm.fetchNotificationCount();
+      await Future.wait([
+        homeVm.fetchUserInfo(),
+        homeVm.fetchAvailableFoodCount(),
+        homeVm.fetchShoppingWeekItems(),
+        homeVm.fetchNotificationCount(),
+      ]);
     });
   }
 
   @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    _homeVm.refreshAll();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final HomeViewModel homeVm = Provider.of<HomeViewModel>(context);
+    final HomeViewModel homeConsumerVm = Provider.of<HomeViewModel>(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -68,12 +47,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(65),
         child: HomeAppbar(
-          userName: homeVm.userName ?? 'Utilisateur',
-          notificationCount: homeVm.notificationCount,
-          isLoading: homeVm.isLoadingUser,
+          userName: homeConsumerVm.userName ?? 'Utilisateur',
+          notificationCount: homeConsumerVm.notificationCount,
+          isLoading: homeConsumerVm.isLoadingUser,
+          onNavigateToNofication: () async {
+            await context.push(NavigationConstant.NOTIFICATION_ROUTE);
+            homeConsumerVm.refreshAll();
+            await homeConsumerVm.fetchNotificationCount();
+          },
         ),
       ),
-      body: SafeArea(child: _buildBody(homeVm)),
+      body: SafeArea(child: _buildBody(homeConsumerVm)),
     );
   }
 

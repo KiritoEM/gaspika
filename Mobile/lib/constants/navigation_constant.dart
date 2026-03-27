@@ -10,6 +10,7 @@ class NavigationConstant {
   static const String SHOPPING_LISTS_ITEMS_ROUTE = '/shopping-list-items';
   static const String CREATE_SHOPPING_ITEM_ROUTE = '/create-shopping-item';
   static const String NOTIFICATION_ROUTE = '/notification';
+  static const String SETTINGS_ROUTE = '/settings';
 
   // Bottom Navigation Routes
   static const List<Map<String, dynamic>> BOTTOM_NAVIGATION_ROUTES = [
@@ -27,7 +28,7 @@ class NavigationConstant {
     },
     {
       'route': HOME_ROUTE,
-      'label': 'Profil',
+      'label': 'Mon compte',
       'icon': 'assets/icons/person.svg',
       'icon_width': 24.0,
     },

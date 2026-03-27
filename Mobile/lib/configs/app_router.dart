@@ -11,6 +11,7 @@ import 'package:gaspika_mobile/features/food_details/views/food_details_screen.d
 import 'package:gaspika_mobile/features/home/views/home_screen.dart';
 import 'package:gaspika_mobile/features/notification/views/notifications_screen.dart';
 import 'package:gaspika_mobile/features/onboarding/views/onboarding_screen.dart';
+import 'package:gaspika_mobile/features/settings/views/settings_screen.dart';
 import 'package:gaspika_mobile/features/shopping_list/views/shopping_list_screen.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/shopping_list_items_screen.dart';
 import 'package:gaspika_mobile/shared/scaffold_navigation_bar.dart';
@@ -46,6 +47,13 @@ class AppRouter {
           GoRoute(
             path: NavigationConstant.SHOPPING_LISTS_ROUTE,
             builder: (_, state) => ShoppingListScreen(),
+            redirect: (context, state) => RoleGuard().checkAccess(),
+          ),
+          GoRoute(
+            path: NavigationConstant.SETTINGS_ROUTE,
+            builder: (context, state) {
+              return SettingsScreen();
+            },
             redirect: (context, state) => RoleGuard().checkAccess(),
           ),
         ],

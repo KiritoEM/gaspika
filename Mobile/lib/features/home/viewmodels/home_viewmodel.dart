@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
-import 'package:gaspika_mobile/models/auth_model.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/models/user_model.dart';
 import 'package:gaspika_mobile/models/shopping_items_model.dart';
@@ -10,15 +9,12 @@ import 'package:gaspika_mobile/utils/app_loger.dart';
 class HomeViewModel extends ChangeNotifier {
   // Models
   final UserModel _userModel = UserModel();
-  final AuthModel _authModel = AuthModel();
   final ShoppingItemsModel _shoppingItemsModel = ShoppingItemsModel();
   final NotificationModel _notificationModel = NotificationModel();
 
-  // User states
   bool _isLoadingUser = true;
   String? _userName;
 
-  // Shopping states
   bool _isLoadingShopping = true;
   bool _isLoadingFoodCount = true;
   bool _hasError = false;
@@ -111,10 +107,6 @@ class HomeViewModel extends ChangeNotifier {
     _notificationCount = response.data ?? 0;
     _isLoadingNotificationCount = false;
     notifyListeners();
-  }
-
-  Future logout() {
-    return _authModel.logout();
   }
 
   // Refresh all requests

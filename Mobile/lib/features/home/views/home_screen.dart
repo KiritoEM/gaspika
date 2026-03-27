@@ -52,8 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           isLoading: homeConsumerVm.isLoadingUser,
           onNavigateToNofication: () async {
             await context.push(NavigationConstant.NOTIFICATION_ROUTE);
-            homeConsumerVm.refreshAll();
-            await homeConsumerVm.fetchNotificationCount();
+            await homeConsumerVm.refreshAll();
           },
         ),
       ),

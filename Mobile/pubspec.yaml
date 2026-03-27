@@ -55,6 +55,7 @@ dependencies:
   firebase_core: ^4.4.0
   firebase_messaging: ^16.1.1
   flutter_local_notifications: ^21.0.0
+  name_avatar: ^0.0.1
   # flutter_local_notifications: ^20.1.0
 
 dev_dependencies:

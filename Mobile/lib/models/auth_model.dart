@@ -16,7 +16,6 @@ class AuthModel {
   final AuthService _authService = AuthService();
   final NotificationService _notificationService = NotificationService();
 
-  // Login
   Future<ApiResponse<dynamic>> login(LoginCredentials credentials) async {
     try {
       // register the device for push notification and get the FCM token
@@ -85,7 +84,6 @@ class AuthModel {
     }
   }
 
-  /// Register
   Future<ApiResponse<dynamic>> register(SignupCredentials credentials) async {
     try {
       await _authService.register(credentials);
@@ -130,7 +128,6 @@ class AuthModel {
     }
   }
 
-  // Check if user is authenticated
   Future<bool> isAuthenticated() async {
     final token = await SecureStorageService.read('access_token');
 
@@ -144,8 +141,14 @@ class AuthModel {
     return token != null;
   }
 
-  // Check if user is authenticated
   Future logout() async {
+    String? fcmToken = await SecureStorageService.read('fcm_token');
+
+    if (fcmToken != null) {
+      await _authService.logout(fcmToken);
+      await SecureStorageService.delete('fcm_token');
+    }
+
     await SecureStorageService.delete('access_token');
   }
 }

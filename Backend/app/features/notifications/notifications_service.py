@@ -1,6 +1,6 @@
 from typing import Optional
-
 from app.core.enums import NotificationType
+from app.core.redis_client import get_redis_client
 from app.features.users.user_repository import UserRepository
 from app.core.notification_push import send_android_notification
 from app.features.devices.device_repository import DeviceRepository
@@ -22,6 +22,7 @@ class NotificationsService:
       self.shopping_list_repo = shopping_list_repo
       self.device_repo = device_repo
       self.user_repo = user_repo 
+      self.redis_client = get_redis_client()    
       
     async def check_all_shopping_list(self):
         all_users = await self.user_repo.get_all()
@@ -51,22 +52,27 @@ class NotificationsService:
             type=NotificationType.FOOD_EXPIRATION,
             image=food_image
         )
+        
+        await self.redis_client.incr(f"notification_counter:{user_id}")
+
 
     async def get_all_notifications(self, user_id: str, query: GetNotificationsFilterParams):
         return await self.notifications_repo.get_all(user_id, query.page, query.limit)
     
     async def get_unread_notifications_count(self, user_id: str):
-        return await self.notifications_repo.get_unread_notifications_count(user_id)
+        count = await self.redis_client.get(f"notification_counter:{user_id}")
+        print(f"Notification count: {count}")
+        
+        return int(count) if count != None else 0
     
     async def mark_all_as_read(self, user_id: str):
-        notifications =  await self.notifications_repo.get_unread_notifications(user_id)
+        await self.redis_client.set(f"notification_counter:{user_id}", 0)   
         
-        for notif in notifications:
-            await self.notifications_repo.mark_as_read(notif.id)
-            
+    async def mark_as_read(self, notification_id):
+        await self.notifications_repo.mark_as_read(notification_id)
     
     async def delete(self, notification_id: str):
-        return await self.delete(notification_id)
+        return await self.notifications_repo.delete(notification_id)
     
     async def _create_shopping_list_remaining_notif(self, user_id: str):
         current_week = get_week_number(date.today())
@@ -83,10 +89,9 @@ class NotificationsService:
             return
 
         body = (
-            f"La semaine touche à sa fin… "
-            f"Il reste encore {items_count} aliment{'s' if items_count > 1 else ''} "
+            f"Il reste {items_count} aliment{'s' if items_count > 1 else ''} "
             f"non acheté{'s' if items_count > 1 else ''} "
-            f"dans votre liste « {current_list.name} »."
+            f"dans « {current_list.name} »."
         )
 
         route = f"/shopping-list/{current_list.id}?name={current_list.name}&week={current_list.week_number}" 
@@ -98,6 +103,8 @@ class NotificationsService:
             route=route,
             type=NotificationType.LIST_EXPIRATION
         )
+        
+        await self.redis_client.incr(f"notification_counter:{user_id}")
                             
     async def _send_notification(
         self,

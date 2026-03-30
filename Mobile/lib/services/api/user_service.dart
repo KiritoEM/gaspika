@@ -5,7 +5,7 @@ class UserService {
   final _dio = DioConfig.instance;
 
   Future<Map<String, dynamic>> getUserInfo() async {
-    final response = await _dio.get(ApiConstant.GET_USER_INFO_ENDPOINT);
+    final response = await _dio.get('${ApiConstant.USER_INFO_ENDPOINT}/me');
 
     return response.data['data'];
   }

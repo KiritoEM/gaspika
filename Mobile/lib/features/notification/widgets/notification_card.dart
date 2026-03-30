@@ -2,34 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
+import 'package:gaspika_mobile/shared/bottomsheet_action.dart';
 import 'package:gaspika_mobile/utils/date.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
-import 'package:go_router/go_router.dart';
 
 class NotificationCard extends StatelessWidget {
-  String details;
-  String createdAt;
-  String? image;
-  NotificationTypeEnum type;
-  String route;
+  final String details;
+  final String createdAt;
+  final String? image;
+  final NotificationTypeEnum type;
+  final bool isRead;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
 
-  NotificationCard({
+  const NotificationCard({
     super.key,
     required this.details,
     required this.createdAt,
     required this.type,
-    required this.route,
+    required this.onTap,
+    required this.onDelete,
     this.image,
+    this.isRead = true
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push(route);
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 23),
+      onTap: () => onTap(),
+      child: Container(
+      decoration: BoxDecoration(
+      color: isRead ? Colors.transparent : AppColors.surface,
+      ),
+        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 23),
         child: Row(
           spacing: 6,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +95,7 @@ class NotificationCard extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => {},
+              onTap: () => _buildBottomsheetActions(context),
               child: Container(
                 padding: const EdgeInsets.all(4),
                 child: const Icon(
@@ -117,8 +123,7 @@ class NotificationCard extends StatelessWidget {
             imagePath ?? '',
             fit: BoxFit.cover,
             loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child; // image chargée
-
+              if (loadingProgress == null) return child;
               return SkeletonLine(
                 style: SkeletonLineStyle(
                   height: double.infinity,
@@ -143,7 +148,7 @@ class NotificationCard extends StatelessWidget {
         child: Container(
           width: 58,
           height: 58,
-          color: AppColors.secondary,
+          color: AppColors.primary,
           child: Center(
             child: SvgPicture.asset(
               'assets/icons/pajamas_planning.svg',
@@ -154,5 +159,29 @@ class NotificationCard extends StatelessWidget {
         ),
       );
     }
+  }
+
+  Future _buildBottomsheetActions(BuildContext context) {
+    return AppBottomSheet.show(
+      context: context,
+      builder: (context, setModalState) {
+        return [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              const SizedBox(height: 8),
+
+              BottomsheetAction(
+                label: 'Supprimer cette notification',
+                icon: SvgPicture.asset('assets/icons/trash.svg', width: 20),
+                isDestructive: true,
+                onTap: () => onDelete(),
+              ),
+            ],
+          ),
+        ];
+      },
+    );
   }
 }

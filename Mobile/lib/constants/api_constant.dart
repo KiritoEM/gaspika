@@ -16,7 +16,7 @@ class ApiConstant {
   // Endpoints
   static const String LOGIN_ENDPOINT = '/auth/login';
   static const String REGISTER_ENDPOINT = '/auth/register';
-  static const String GET_USER_INFO_ENDPOINT = '/user/me';
+  static const String USER_INFO_ENDPOINT = '/user';
   static const String SHOPPING_ITEMS_ENDPOINT = '/shopping-items';
   static const String SHOPPING_LISTS_ENDPOINT = '/shopping-lists';
   static const String PREDICT_QUANTITY_ENDPOINT = '/shopping-lists';
@@ -26,5 +26,5 @@ class ApiConstant {
   static const String PREDICT_CONSERVATION = '/predict/conservation';
   static const String CATEGORIES_ENDPOINT = '/categories';
   static const String DEVICE_ENDPOINT = '/devices';
-  static const String NOTIFICATION_ENDPOINT = '/notifications';
+  static const String NOTIFICATION_ENDPOINT = '/notification';
 }

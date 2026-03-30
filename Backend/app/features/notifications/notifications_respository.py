@@ -9,12 +9,13 @@ class NotificationsRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
         
-    async def get_all(self, user_id: str, page: int, limit: int,):
+    async def get_all(self, user_id: str, page: int, limit: int):
         """Get all notifications of an user"""
         query = (
             select(Notification)
             .join(Notification.user)
             .where(User.id == user_id)
+            .order_by(Notification.created_at.desc())
         )
         
         return await paginate(self.db, PageParams(page=page, limit=limit), query, BaseNotification)

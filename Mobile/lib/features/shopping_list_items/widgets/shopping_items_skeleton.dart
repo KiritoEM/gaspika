@@ -12,7 +12,7 @@ class ShoppingItemsSkeleton extends StatelessWidget {
       itemBuilder: (context, index) {
         return const SkeletonLine(
           style: SkeletonLineStyle(
-            height: 100,
+            height: 85,
             width: double.infinity,
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),

@@ -9,12 +9,14 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
   final int notificationCount;
   final String userName;
   final bool isLoading;
+  final VoidCallback onNavigateToNofication;
 
   const HomeAppbar({
     super.key,
     this.notificationCount = 0,
     required this.userName,
     required this.isLoading,
+    required this.onNavigateToNofication
   });
 
   @override
@@ -44,7 +46,7 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
                 color: AppColors.mutedForeground,
               ),
             ),
-
+ 
             isLoading
                 ? SkeletonLine(
                     style: SkeletonLineStyle(
@@ -58,7 +60,7 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
                     style: TextStyle(
                       fontSize: Theme.of(
                         context,
-                      ).textTheme.headlineSmall?.fontSize,
+                      ).textTheme.titleLarge?.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -66,9 +68,7 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              context.push(NavigationConstant.NOTIFICATION_ROUTE);
-            },
+            onPressed: () => onNavigateToNofication(),
             icon: Badge(
               label: Text(notificationCount.toString()),
               backgroundColor: AppColors.accent,

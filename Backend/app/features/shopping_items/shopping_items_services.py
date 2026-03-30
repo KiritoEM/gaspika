@@ -3,8 +3,10 @@ import json
 import re
 from typing import List
 from fastapi import HTTPException
+from app.features.notifications.notifications_respository import NotificationsRepository
+from app.core.database import AsyncSessionLocal
 from app.features.notifications.notifications_service import NotificationsService
-from app.core.scheduler import add_job
+from app.core.scheduler import add_job, food_expiry_job
 from app.core.redis_client import get_redis_client
 from app.features.devices.device_repository import DeviceRepository
 from app.core.notification_push import send_android_notification
@@ -82,6 +84,7 @@ class ShoppingItemsServices:
                         "file_id": item.image.file_id, 
                         "provider": item.image.provider,
                         "updated_at":  item.image.updated_at.isoformat() if item.image.updated_at else None,
+                        "delete_url": item.image.delete_url, 
                     } if item.image else None,
                 }
                
@@ -92,7 +95,6 @@ class ShoppingItemsServices:
             await pipeline.execute()
         
         return await self.shopping_item_repo.search_by_food_name(query, user_id)
-    
 
     async def add_item_to_list(self, list_id: int, user_id: str, payload: CreateShoppingItemDTO):        
         shopping_list = await self.shopping_list_repo.get_by_id(list_id, user_id)
@@ -152,10 +154,10 @@ class ShoppingItemsServices:
         # schedule notification for food expiration
         try:
             expiration_day = created_item.default_shelf_life_day - 2 # 2 days before
-            run_time = datetime.now() + timedelta(days=expiration_day)
+            run_time = datetime.now() + timedelta(minutes=5)
             
             await add_job(
-                func=self.notifications_services.check_near_expiry_food,
+                func=food_expiry_job,
                 job_id=f"food_expiry_{created_item.id}",
                 trigger="date",
                 run_date=run_time,
@@ -167,7 +169,7 @@ class ShoppingItemsServices:
                 ]  
             )
         except Exception as e:
-            print(f"Failed to schedule expiration notification for this food")
+            print(f"Failed to schedule expiration notification for this food: {e}")
                
         # send notification
         for device in devices:
@@ -189,7 +191,7 @@ class ShoppingItemsServices:
         if not shopping_list:
             raise HTTPException(status_code=404, detail="Liste introuvable.")
                 
-        return await self.shopping_item_repo.get_all(shopping_list.id)
+        return await self.shopping_item_repo.get_all(shopping_list.id, shopping_list.week_number)
         
     async def get_shopping_item_by_id(self, item_id: int, user_id: str):
         return await self.shopping_item_repo.get_by_id(item_id, user_id)
@@ -208,7 +210,7 @@ class ShoppingItemsServices:
         if not shopping_list:
             raise HTTPException(status_code=404, detail="Pas de liste disponible pour la semaine.")
         
-        return await self.shopping_item_repo.get_items_of_list(user_id, shopping_list.id, ShoppingListItemEnum.UNPURCHASED)
+        return await self.shopping_item_repo.get_items_of_list(user_id, shopping_list.id, shopping_list.week_number, ShoppingListItemEnum.UNPURCHASED)
 
     async def complete_shopping_item(self, item_id: int, user_id: str):   
         shopping_item = await self.shopping_item_repo.complete_item(item_id, user_id)

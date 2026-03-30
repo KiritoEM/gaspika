@@ -25,7 +25,7 @@ class _ScaffoldNavigationBarState extends State<ScaffoldNavigationBar> {
   void _updateCurrentIndex() {
     final location = GoRouterState.of(context).uri.toString();
 
-    final routeIndexMap = {'/home': 0, '/shopping-list': 1};
+    final routeIndexMap = {'/home': 0, '/shopping-list': 1, '/settings': 2};
 
     int newIndex = 0;
     routeIndexMap.forEach((route, index) {
@@ -43,7 +43,7 @@ class _ScaffoldNavigationBarState extends State<ScaffoldNavigationBar> {
     if (index < 3) {
       setState(() => _currentIndex = index);
 
-      final routes = ['/home', '/shopping-list'];
+      final routes = ['/home', '/shopping-list', '/settings'];
       context.go(routes[index]);
     }
   }

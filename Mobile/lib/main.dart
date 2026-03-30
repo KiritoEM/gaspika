@@ -10,6 +10,7 @@ import 'package:gaspika_mobile/features/create_shopping_item/viewmodels/create_s
 import 'package:gaspika_mobile/features/food_details/viewmodels/food_details_viewmodel.dart';
 import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
 import 'package:gaspika_mobile/features/notification/viewmodels/notification_viewmodel.dart';
+import 'package:gaspika_mobile/features/settings/viewmodels/settings_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list/viewmodels/shopping_list_viewmodel.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/viewmodels/shopping_list_items_viewmodel.dart';
 import 'package:gaspika_mobile/firebase_options.dart';
@@ -49,6 +50,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => FoodDetailsViewmodel()),
         ChangeNotifierProvider(create: (_) => CreateShoppingItemViewModel()),
         ChangeNotifierProvider(create: (_) => NotificationViewModel()),
+        ChangeNotifierProvider(create: (_) => SettingsViewmodel()),
+
       ],
       child: const MyApp(),
     ),

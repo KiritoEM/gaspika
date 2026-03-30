@@ -68,6 +68,7 @@ class BaseShoppingListItem(BaseModel):
     image: Optional[ImageSchema] 
     created_at: AwareDatetime
     updated_at: AwareDatetime
+    is_available: bool = True
 
     class Config:
         from_attributes = True

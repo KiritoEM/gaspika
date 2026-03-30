@@ -2,27 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/constants/enums/enums.dart';
-import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/utils/unit_utils.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 
 class ShoppingItemCard extends StatelessWidget {
   final ShoppingListItem item;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
-  const ShoppingItemCard({super.key, required this.item, this.onTap});
+  const ShoppingItemCard({super.key, required this.item, required this.onTap});
 
   bool get isCompleted => item.status == ShoppingItemStatus.purchased;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
- context.push(
-          '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/${item.id}',
-        );
-      },
+      onTap: () => onTap(),
       child: Container(
         decoration: BoxDecoration(
           color: isCompleted ? AppColors.secondary : Colors.white,
@@ -49,8 +44,8 @@ class ShoppingItemCard extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(16),
           child: Row(
-          spacing: 14,
-          children: [
+            spacing: 14,
+            children: [
               // Product info
               Expanded(
                 child: Row(
@@ -65,6 +60,17 @@ class ShoppingItemCard extends StatelessWidget {
                         child: Image.network(
                           item.image?.path ?? '',
                           fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return SkeletonLine(
+                              style: SkeletonLineStyle(
+                                height: double.infinity,
+                                width: double.infinity,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
+
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
                               Icons.shopping_basket,
@@ -127,8 +133,8 @@ class ShoppingItemCard extends StatelessWidget {
                               ),
                             ),
                         ],
+                      ),
                     ),
-                  ),
                   ],
                 ),
               ),

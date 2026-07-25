@@ -5,8 +5,7 @@
 Gaspika is a mobile application that helps households reduce food waste. Users build weekly shopping lists, track the food they already own, and get notified before an item reaches its expiration date. The app relies on machine learning models to predict how long a food item can be kept and the quantity worth buying, so users shop for what they actually need. It is built as a monorepo with a Flutter mobile app, a FastAPI backend, and the trained ML models.
 
 ## Link for Video demo
-
-[Click to see demo](https://drive.google.com/file/d/1zC7e_3jmtBq5HtJbQv2Z-q7qqWJzwpzZ/view?usp=sharing)
+[Click to see demo](https://res.cloudinary.com/djviemljt/video/upload/v1784983705/demo_gaspika_xtsc19.mp4)
 
 ## Features
 
@@ -36,12 +35,11 @@ Gaspika is a mobile application that helps households reduce food waste. Users b
 - [x] Account deletion with soft delete and personal data purge
 - [x] Docker Compose setup for the API, PostgreSQL and Redis
 - [x] ML models served as prediction endpoints for food shelf life and recommended quantity
-- [x] Predicted shelf life sav
+- [x] Predicted shelf life saved on the item and used to schedule its expiration notification
 
 ## Tech stack
 
-|             |                                                                                 |
-| ----------- | ------------------------------------------------------------------------------- |
-| **Mobile**  | Flutter, Riverpod, GoRouter, Dio, Hive, Freezed                                 |
-| **Backend** | NestJS, Drizzle ORM, PostgreSQL, Redis, Supabase Storage, Nodemailer, Infisical | ed on the item and used to schedule its expiration notification |
-
+|             |                                                                                |
+| ----------- | ------------------------------------------------------------------------------ |
+| **Mobile**  | Flutter, Riverpod, GoRouter, Dio, Hive, Freezed                                |
+| **Backend** | NestJS, Drizzle ORM, PostgreSQL, Redis, Supabase Storage, Nodemailer, Infisical |

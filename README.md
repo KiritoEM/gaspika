@@ -5,7 +5,7 @@
 Gaspika is a mobile application that helps households reduce food waste. Users build weekly shopping lists, track the food they already own, and get notified before an item reaches its expiration date. The app relies on machine learning models to predict how long a food item can be kept and the quantity worth buying, so users shop for what they actually need. It is built as a monorepo with a Flutter mobile app, a FastAPI backend, and the trained ML models.
 
 ## Link for Video demo
-[Click to see demo](https://drive.google.com/file/d/1zC7e_3jmtBq5HtJbQv2Z-q7qqWJzwpzZ/view?usp=sharing)
+[Click to see demo](https://res.cloudinary.com/djviemljt/video/upload/v1784983705/demo_gaspika_xtsc19.mp4)
 
 ## Features
 

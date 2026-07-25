@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/constants/navigation_constant.dart';
 import 'package:gaspika_mobile/features/notification/viewmodels/notification_viewmodel.dart';
 import 'package:gaspika_mobile/features/notification/widgets/notification_card.dart';
+import 'package:gaspika_mobile/features/notification/widgets/notification_empty_state.dart';
 import 'package:gaspika_mobile/features/notification/widgets/notifications_list_skeleton.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_toastify/my_toastify.dart';
@@ -102,19 +103,33 @@ class _NotificationScreenState extends State<NotificationsScreen> {
   Widget _buildBody(NotificationViewModel notificationVm) {
     bool isListEmpty = notificationVm.notifications.isEmpty;
 
+    if (notificationVm.isLoadingNotifications) {
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(23, 12, 23, 23),
+          child: NotificationsListSkeleton(),
+        ),
+      );
+    }
+
+    if (isListEmpty) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: NotificationEmptyState(),
+            ),
+          );
+        },
+      );
+    }
+
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        children: [
-          if (notificationVm.isLoadingNotifications)
-            Padding(
-              padding: EdgeInsets.fromLTRB(23, 12, 23, 23),
-              child: NotificationsListSkeleton(),
-            )
-          else if (!isListEmpty)
-            _buildNotificationsList(notificationVm),
-        ],
-      ),
+      child: _buildNotificationsList(notificationVm),
     );
   }
 

@@ -44,6 +44,7 @@ class LogoutConfirmationDialog extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
+                  backgroundColor: AppColors.destructive,  
                 ),
                 child: const Text('Déconnexion'),
               ),

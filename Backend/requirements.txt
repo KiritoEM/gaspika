@@ -24,3 +24,5 @@ pandas
 python-multipart
 scikit-learn
 apscheduler[redis]
+pandas
+python-multipart

@@ -36,10 +36,8 @@ class AuthService {
 
   Future<Map<String, dynamic>> logout(String fcmToken) async {
     final response = await _dio.delete(
-     '${ ApiConstant.USER_INFO_ENDPOINT}/logout',
-      data: {
-        'fcm_token': fcmToken
-      },
+      ApiConstant.USER_LOGOUT_ENDPOINT,
+      data: {'fcm_token': fcmToken},
     );
 
     return response.data as Map<String, dynamic>;

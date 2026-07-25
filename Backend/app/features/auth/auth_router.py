@@ -14,7 +14,9 @@ auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 def get_user_services(db: AsyncSession = Depends(db_session)):
     user_repo = UserRepository(db)
-    return UserServices(user_repo)
+    device_repo = DeviceRepository(db)
+
+    return UserServices(user_repo, device_repo)
 
 def get_auth_services(db: AsyncSession = Depends(db_session)):
     user_repo = UserRepository(db)

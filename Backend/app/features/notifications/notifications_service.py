@@ -1,6 +1,7 @@
 from typing import Optional
 from app.core.enums import NotificationType
 from app.core.redis_client import get_redis_client
+from app.features.users.user_preference_repository import UserPreferenceRepository
 from app.features.users.user_repository import UserRepository
 from app.core.notification_push import send_android_notification
 from app.features.devices.device_repository import DeviceRepository
@@ -16,13 +17,15 @@ class NotificationsService:
         notifications_repo: NotificationsRepository,
         shopping_list_repo: ShoppingListRepository,
         device_repo: DeviceRepository,
-        user_repo: UserRepository
+        user_repo: UserRepository,
+        preference_repo: UserPreferenceRepository = None
     ):
       self.notifications_repo = notifications_repo
       self.shopping_list_repo = shopping_list_repo
       self.device_repo = device_repo
-      self.user_repo = user_repo 
-      self.redis_client = get_redis_client()    
+      self.user_repo = user_repo
+      self.preference_repo = preference_repo
+      self.redis_client = get_redis_client()
       
     async def check_all_shopping_list(self):
         all_users = await self.user_repo.get_all()
@@ -44,7 +47,7 @@ class NotificationsService:
         
         route = f"/shopping-list-items/{shopping_item_id}"
 
-        await self._send_notification(
+        sent = await self._send_notification(
             user_id=user_id,
             title="Aliment proche de péremption",
             body=body,
@@ -52,8 +55,9 @@ class NotificationsService:
             type=NotificationType.FOOD_EXPIRATION,
             image=food_image
         )
-        
-        await self.redis_client.incr(f"notification_counter:{user_id}")
+
+        if sent:
+            await self.redis_client.incr(f"notification_counter:{user_id}")
 
 
     async def get_all_notifications(self, user_id: str, query: GetNotificationsFilterParams):
@@ -96,16 +100,38 @@ class NotificationsService:
 
         route = f"/shopping-list/{current_list.id}?name={current_list.name}&week={current_list.week_number}" 
 
-        await self._send_notification(
+        sent = await self._send_notification(
             user_id=user_id,
             title="Des aliments non achetés en fin de semaine",
             body=body,
             route=route,
             type=NotificationType.LIST_EXPIRATION
         )
-        
-        await self.redis_client.incr(f"notification_counter:{user_id}")
-                            
+
+        if sent:
+            await self.redis_client.incr(f"notification_counter:{user_id}")
+
+    async def _is_notification_enabled(self, user_id: str, type: Optional[NotificationType]) -> bool:
+        """Check notification preferences of an user"""
+        if not self.preference_repo:
+            return True
+
+        preference = await self.preference_repo.get_by_user_id(user_id)
+
+        if not preference:
+            return True
+
+        if not preference.push_enabled:
+            return False
+
+        if type == NotificationType.FOOD_EXPIRATION:
+            return preference.food_expiration_enabled
+
+        if type == NotificationType.LIST_EXPIRATION:
+            return preference.list_expiration_enabled
+
+        return True
+
     async def _send_notification(
         self,
         user_id: str,
@@ -114,7 +140,10 @@ class NotificationsService:
         route: str,
         type: Optional[NotificationType] = None,
         image: Optional[str] = None
-    ):
+    ) -> bool:
+        if not await self._is_notification_enabled(user_id, type):
+            return False
+
         notification_data = CreateNotificationSchema(
             body=body,
             route=route,
@@ -127,9 +156,9 @@ class NotificationsService:
 
         # Push notification
         devices = await self.device_repo.get_by_user_id(user_id)
-        
+
         if len(devices) == 0:
-            return
+            return True
 
         for device in devices:
             try:
@@ -141,6 +170,8 @@ class NotificationsService:
                 )
             except Exception as e:
                 print(f"Notification failed for device {device.id}: {e}")
+
+        return True
 
 
 

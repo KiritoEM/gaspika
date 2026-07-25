@@ -5,6 +5,7 @@ from app.features.notifications.notifications_service import NotificationsServic
 from app.features.devices.device_repository import DeviceRepository
 from app.core.storages.imgbb import ImgBBProvider
 from app.features.images_upload.image_upload_repository import ImageRepository
+from app.features.users.user_preference_repository import UserPreferenceRepository
 from app.features.users.user_repository import UserRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.shopping_items.shopping_items_repository import ShoppingItemsRepository
@@ -24,11 +25,13 @@ async def get_shopping_items_service(db: AsyncSession = Depends(db_session)) -> 
     device_repo = DeviceRepository(db)
     storage_provider = ImgBBProvider()
     notifications_repo = NotificationsRepository(db)
+    preference_repo = UserPreferenceRepository(db)
     notifications_services = NotificationsService(
-        notifications_repo, 
+        notifications_repo,
         shopping_list_repo,
         device_repo,
-        user_repo
+        user_repo,
+        preference_repo
     )
     
     return ShoppingItemsServices(

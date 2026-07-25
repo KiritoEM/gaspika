@@ -154,7 +154,7 @@ class ShoppingItemsServices:
         # schedule notification for food expiration
         try:
             expiration_day = created_item.default_shelf_life_day - 2 # 2 days before
-            run_time = datetime.now() + timedelta(minutes=5)
+            run_time = datetime.now() + timedelta(days=expiration_day)
             
             await add_job(
                 func=food_expiry_job,

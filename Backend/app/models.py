@@ -54,6 +54,31 @@ class User(Base):
     shopping_items: Mapped[List["ShoppingListItem"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     devices: Mapped[List["Device"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     notifications: Mapped[List["Notification"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    notification_preference: Mapped[Optional["NotificationPreference"]] = relationship(back_populates="user", cascade="all, delete-orphan", uselist=False, lazy="selectin")
+
+
+class NotificationPreference(Base):
+    __tablename__ = "notification_preferences"
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4, server_default=text("gen_random_uuid()"))
+    user_id: Mapped[str] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    push_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
+    food_expiration_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
+    list_expiration_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    # Relations
+    user: Mapped["User"] = relationship(back_populates="notification_preference")
 
 
 class FoodCategory(Base):

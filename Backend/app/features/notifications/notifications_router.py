@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from app.features.notifications.notifications_schemas import BaseNotification, GetNotificationsFilterParams, GetUnreadNotificationsCount, MarkAllAsReadResponse
 from app.core.schemas import PagedResponseSchema
+from app.features.users.user_preference_repository import UserPreferenceRepository
 from app.features.users.user_repository import UserRepository
 from app.features.devices.device_repository import DeviceRepository
 from app.features.notifications.notifications_respository import NotificationsRepository
@@ -19,12 +20,14 @@ def get_notifications_service(db: AsyncSession = Depends(db_session)):
     notifications_repo = NotificationsRepository(db)
     device_repo = DeviceRepository(db)
     user_repo = UserRepository(db)
-    
+    preference_repo = UserPreferenceRepository(db)
+
     return NotificationsService(
         notifications_repo,
         shopping_list_repo,
         device_repo,
-        user_repo
+        user_repo,
+        preference_repo
     )
     
 @notification_router.get(

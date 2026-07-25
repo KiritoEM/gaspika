@@ -11,6 +11,9 @@ class NavigationConstant {
   static const String CREATE_SHOPPING_ITEM_ROUTE = '/create-shopping-item';
   static const String NOTIFICATION_ROUTE = '/notification';
   static const String SETTINGS_ROUTE = '/settings';
+  static const String SETTINGS_ACCOUNT_ROUTE = '/settings/account';
+  static const String SETTINGS_SECURITY_ROUTE = '/settings/security';
+  static const String SETTINGS_NOTIFICATIONS_ROUTE = '/settings/notifications';
 
   // Bottom Navigation Routes
   static const List<Map<String, dynamic>> BOTTOM_NAVIGATION_ROUTES = [

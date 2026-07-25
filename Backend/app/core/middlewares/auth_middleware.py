@@ -38,6 +38,10 @@ async def get_current_user(
         if not user_id:
             return None
         result = await userRepo.get_user_by_id(user_id)
+
+        if result and result.is_deleted:
+            return None
+
         return result if result else None
     except JWTError:
         return None

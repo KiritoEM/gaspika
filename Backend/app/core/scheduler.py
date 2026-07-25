@@ -5,8 +5,9 @@ from app.features.notifications.notifications_service import NotificationsServic
 from app.features.notifications.notifications_respository import NotificationsRepository
 from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
 from app.features.devices.device_repository import DeviceRepository
+from app.features.users.user_preference_repository import UserPreferenceRepository
 from app.features.users.user_repository import UserRepository
-from app.core.config import settings    
+from app.core.config import settings
 
 jobstorages = {
     "default" : RedisJobStore(
@@ -26,12 +27,14 @@ async def food_expiry_job(user_id: str, food_name: str, item_id: int, image_path
         shopping_list_repo = ShoppingListRepository(db)
         device_repo = DeviceRepository(db)
         user_repo = UserRepository(db)
+        preference_repo = UserPreferenceRepository(db)
 
         notifications_service = NotificationsService(
             notifications_repo,
             shopping_list_repo,
             device_repo,
-            user_repo
+            user_repo,
+            preference_repo
         )
 
         await notifications_service.check_near_expiry_food(
@@ -44,12 +47,14 @@ async def notifications_job():
         shopping_list_repo = ShoppingListRepository(db)
         device_repo = DeviceRepository(db)
         user_repo = UserRepository(db)
+        preference_repo = UserPreferenceRepository(db)
 
         notifications_service = NotificationsService(
             notifications_repo,
             shopping_list_repo,
             device_repo,
-            user_repo
+            user_repo,
+            preference_repo
         )
 
         await notifications_service.check_all_shopping_list()

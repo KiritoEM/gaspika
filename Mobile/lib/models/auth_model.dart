@@ -145,7 +145,13 @@ class AuthModel {
     String? fcmToken = await SecureStorageService.read('fcm_token');
 
     if (fcmToken != null) {
-      await _authService.logout(fcmToken);
+      // always clear the local session, even if the device is already gone
+      try {
+        await _authService.logout(fcmToken);
+      } catch (err) {
+        AppLogger.logger.e('Error while logging out the device: $err');
+      }
+
       await SecureStorageService.delete('fcm_token');
     }
 

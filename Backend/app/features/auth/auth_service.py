@@ -18,7 +18,10 @@ class AuthServices:
         
         if not user:
             raise HTTPException(status_code=404, detail="Adresse email invalide ou inexistante.")
-        
+
+        if user.is_deleted:
+            raise HTTPException(status_code=403, detail="Ce compte a été supprimé.")
+
         if not verify_hash(data.password, user.password):
             raise HTTPException(status_code=401, detail="Mot de passe incorrect.")
         

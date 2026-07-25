@@ -89,7 +89,7 @@ class ShoppingListRepository:
         
         return shopping_list.scalars().first()
     
-    async def create(self, week_number: int, user_id: str, name: str):
+    async def create(self, week_number: int, user_id: str, name: str) -> ShoppingList | None:
         """Create new shopping list"""
         new_shopping_list = ShoppingList(
             user_id=user_id,
@@ -100,6 +100,8 @@ class ShoppingListRepository:
         self.db.add(new_shopping_list)
         await self.db.commit()
         await self.db.refresh(new_shopping_list) 
+        
+        return new_shopping_list
         
     async def get_list_by_week(self, week_number: int, year: Optional[int] = None, user_id: Optional[str] = None) -> ShoppingList | None:
         """Get List by specific week"""

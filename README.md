@@ -31,9 +31,3 @@ Gaspika is a mobile application that helps households reduce food waste. Users b
 - [x] Docker Compose setup for the API, PostgreSQL and Redis
 - [x] ML models served as prediction endpoints for food shelf life and recommended quantity
 - [x] Predicted shelf life saved on the item and used to schedule its expiration notification
-
-## Todo
-- [ ] Expose the conservation assistant chatbot in the API
-- [ ] Email verification flow
-- [ ] Forgot password and reset flow
-- [ ] Automated tests for the backend and the mobile app

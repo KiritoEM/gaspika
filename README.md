@@ -39,7 +39,9 @@ Gaspika is a mobile application that helps households reduce food waste. Users b
 
 ## Tech stack
 
-|             |                                                                                |
-| ----------- | ------------------------------------------------------------------------------ |
-| **Mobile**  | Flutter, Riverpod, GoRouter, Dio, Hive, Freezed                                |
-| **Backend** | NestJS, Drizzle ORM, PostgreSQL, Redis, Supabase Storage, Nodemailer, Infisical |
+|             |                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------ |
+| **Mobile**  | Flutter, Provider, GoRouter, Dio, Firebase Messaging, Flutter Local Notifications       |
+| **Backend** | FastAPI, Uvicorn, SQLAlchemy + Alembic, PostgreSQL , Redis, APScheduler, JWT, Bcrypt, Firebase Cloud Messaging, ImgBB |
+| **AI / ML** | scikit-learn, pandas, LangChain + Groq, Chroma, Sentence Transformers                                          |
+| **Infra**   | Docker Compose                                                                                                 |

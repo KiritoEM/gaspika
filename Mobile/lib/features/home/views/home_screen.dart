@@ -9,6 +9,7 @@ import 'package:gaspika_mobile/features/home/widgets/avalaible_product_card.dart
 import 'package:gaspika_mobile/features/home/widgets/home_appbar.dart';
 import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_section.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
+import 'package:gaspika_mobile/shared/app_bottom_navigation.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -57,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: SafeArea(child: _buildBody(homeConsumerVm)),
+      bottomNavigationBar: const AppBottomNavigation(currentIndex: 0),
     );
   }
 

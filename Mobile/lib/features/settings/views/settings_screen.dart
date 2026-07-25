@@ -9,6 +9,7 @@ import 'package:gaspika_mobile/features/settings/widgets/logout_confirmation_dia
 import 'package:gaspika_mobile/features/settings/widgets/settings_appbar.dart';
 import 'package:gaspika_mobile/features/settings/widgets/settings_skeleton.dart';
 import 'package:gaspika_mobile/features/settings/widgets/user_infos.dart';
+import 'package:gaspika_mobile/shared/app_bottom_navigation.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:gaspika_mobile/shared/loader_with_overlay.dart';
 import 'package:go_router/go_router.dart';
@@ -90,6 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: _buildBody(settingsVm),
         ),
       ),
+      bottomNavigationBar: const AppBottomNavigation(currentIndex: 2),
     );
   }
 

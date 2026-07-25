@@ -11,6 +11,7 @@ import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_appb
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_card.dart';
 import 'package:gaspika_mobile/features/shopping_list/widgets/shopping_list_status_filter.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/widgets/empty_state.dart';
+import 'package:gaspika_mobile/shared/app_bottom_navigation.dart';
 import 'package:gaspika_mobile/shared/error_state.dart';
 import 'package:gaspika_mobile/shared/loader_with_overlay.dart';
 import 'package:my_toastify/my_toastify.dart';
@@ -122,7 +123,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBody: true,
       extendBodyBehindAppBar: true,
       appBar: ShoppingListAppbar(
         onFilter: () {
@@ -147,6 +147,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       floatingActionButton: shoppingListVm.hasFetchError
           ? null
           : _buildFloatingActionButton(shoppingListVm),
+      bottomNavigationBar: const AppBottomNavigation(currentIndex: 1),
     );
   }
 

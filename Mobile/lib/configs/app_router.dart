@@ -17,7 +17,6 @@ import 'package:gaspika_mobile/features/settings/views/security_screen.dart';
 import 'package:gaspika_mobile/features/settings/views/settings_screen.dart';
 import 'package:gaspika_mobile/features/shopping_list/views/shopping_list_screen.dart';
 import 'package:gaspika_mobile/features/shopping_list_items/views/shopping_list_items_screen.dart';
-import 'package:gaspika_mobile/shared/scaffold_navigation_bar.dart';
 import 'package:gaspika_mobile/utils/guards/role_guard.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,27 +38,22 @@ class AppRouter {
         path: NavigationConstant.REGISTER_ROUTE,
         builder: (_, state) => RegisterScreen(),
       ),
-      ShellRoute(
-        builder: (context, state, child) => ScaffoldNavigationBar(child: child),
-        routes: [
-          GoRoute(
-            path: NavigationConstant.HOME_ROUTE,
-            builder: (_, state) => HomeScreen(),
-            redirect: (context, state) => RoleGuard().checkAccess(),
-          ),
-          GoRoute(
-            path: NavigationConstant.SHOPPING_LISTS_ROUTE,
-            builder: (_, state) => ShoppingListScreen(),
-            redirect: (context, state) => RoleGuard().checkAccess(),
-          ),
-          GoRoute(
-            path: NavigationConstant.SETTINGS_ROUTE,
-            builder: (context, state) {
-              return SettingsScreen();
-            },
-            redirect: (context, state) => RoleGuard().checkAccess(),
-          ),
-        ],
+      GoRoute(
+        path: NavigationConstant.HOME_ROUTE,
+        builder: (_, state) => HomeScreen(),
+        redirect: (context, state) => RoleGuard().checkAccess(),
+      ),
+      GoRoute(
+        path: NavigationConstant.SHOPPING_LISTS_ROUTE,
+        builder: (_, state) => ShoppingListScreen(),
+        redirect: (context, state) => RoleGuard().checkAccess(),
+      ),
+      GoRoute(
+        path: NavigationConstant.SETTINGS_ROUTE,
+        builder: (context, state) {
+          return SettingsScreen();
+        },
+        redirect: (context, state) => RoleGuard().checkAccess(),
       ),
       GoRoute(
         path: '${NavigationConstant.SHOPPING_LISTS_ROUTE}/:listId',

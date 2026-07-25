@@ -24,13 +24,13 @@ class NavigationConstant {
       'icon_width': 24.0,
     },
     {
-      'route': HOME_ROUTE,
+      'route': SHOPPING_LISTS_ROUTE,
       'label': 'Listes de courses',
       'icon': 'assets/icons/shopping-list.svg',
       'icon_width': 28.0,
     },
     {
-      'route': HOME_ROUTE,
+      'route': SETTINGS_ROUTE,
       'label': 'Mon compte',
       'icon': 'assets/icons/person.svg',
       'icon_width': 24.0,

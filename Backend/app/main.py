@@ -1,29 +1,64 @@
+import logging
 from fastapi import FastAPI, APIRouter
-from app.database import Base, engine
-from app.routers import auth, users, categories, products, shopping_lists, shopping_items, predictions
+from fastapi.middleware.cors import CORSMiddleware
+from app.features.food_ml import food_ml_router
+from app.features.users.user_router import user_router
+from app.features.auth.auth_router import auth_router
+from app.features.shopping_lists.shopping_list_router import shopping_list_router
+from app.features.categories.category_router import category_router
+from app.features.shopping_items.shopping_items_router import shopping_items_router
+from app.features.food_ml.food_ml_router import food_ml_router
+from app.features.conservation_ml.conservation_ml_router import conservation_ml_router
+from app.features.devices.device_router import device_router
+from app.features.notifications.notifications_router import notification_router
+from contextlib import asynccontextmanager
+from app.core.scheduler import run_jobs, scheduler
+
+logging.basicConfig(
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+# cron jobs  
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Running jobs...")
+    
+    await run_jobs()               
+    yield
+    
+    logger.info("Stopping jobs...")
+    scheduler.shutdown()    
 
 app = FastAPI(
-    title="Grocery Planner API",
-    description="API pour gérer les courses : utilisateurs, catégories, produits, listes et items."
+    title="Gaspika API",
+    description="API pour l'application Gaspika",
+    lifespan=lifespan
 )
 
-# Création des tables au démarrage
-@app.on_event("startup")
-async def startup_event():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True
+)
 
 api_router = APIRouter(prefix="/api")
-api_router.include_router(auth.router)
-api_router.include_router(users.router)
-api_router.include_router(categories.router)
-api_router.include_router(products.router)
-api_router.include_router(shopping_lists.router)
-api_router.include_router(shopping_items.router)
-api_router.include_router(predictions.router)
+api_router.include_router(auth_router)
+api_router.include_router(shopping_list_router)
+api_router.include_router(category_router)
+api_router.include_router(shopping_items_router)
+api_router.include_router(user_router)
+api_router.include_router(food_ml_router)
+api_router.include_router(conservation_ml_router)
+api_router.include_router(device_router)
+api_router.include_router(notification_router)
 
 app.include_router(api_router)
 
-@app.get("/", tags=["Root"])
+@app.get("/")
 async def root():
-    return {"message": "Bienvenue sur ton API de gestion des courses 🚀"}
+    return {"message": "Server is running !!!"}
+
+@app.get("/health")
+async def root():
+  return {"status": "healthy"}

@@ -4,7 +4,8 @@ import 'package:gaspika_mobile/configs/app_colors.dart';
 
 class ShoppingListAppbar extends StatelessWidget
     implements PreferredSizeWidget {
-  const ShoppingListAppbar({super.key});
+  final VoidCallback onFilter;
+  const ShoppingListAppbar({super.key, required this.onFilter});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -12,19 +13,19 @@ class ShoppingListAppbar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 14),
       child: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         title: Text(
-          'Liste de courses',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+          'Listes de courses',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset('assets/icons/arrow-sort.svg', width: 24),
+            onPressed: () => onFilter(),
+            icon: SvgPicture.asset('assets/icons/filter.svg', width: 24),
             style: IconButton.styleFrom(
               foregroundColor: AppColors.primary,
               backgroundColor: AppColors.surface,

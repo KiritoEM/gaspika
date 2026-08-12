@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaspika_mobile/utils/date.dart';
 import 'package:intl/intl.dart';
 
 class DatePicker extends StatelessWidget {
@@ -7,13 +8,9 @@ class DatePicker extends StatelessWidget {
 
   const DatePicker({super.key, required this.onSelectDate, this.value});
 
-  Future<void> _handlePickDate(BuildContext context) async {
+  Future _handlePickDate(BuildContext context) async {
     final DateTime now = DateTime.now();
-    final startOfCurrentWeek = DateTime(
-      now.year,
-      now.month,
-      now.day - (now.weekday - 1),
-    );
+    final startOfCurrentWeek = DateUtilities.startOfWeek(now);
 
     bool isPastWeek(DateTime date) {
       final normalizedDate = DateTime(date.year, date.month, date.day);
@@ -47,13 +44,12 @@ class DatePicker extends StatelessWidget {
     return TextFormField(
       readOnly: true,
       decoration: const InputDecoration(
-        suffixIcon: Icon(Icons.calendar_today, size: 25),
+        suffixIcon: Icon(Icons.calendar_today, size: 20),
       ),
       controller: TextEditingController(
         text: value != null ? DateFormat('dd/MM/yyyy').format(value!) : '',
       ),
       onTap: () {
-        print('TextFormField tapped');
         _handlePickDate(context);
       },
     );

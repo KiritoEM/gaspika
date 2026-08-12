@@ -36,7 +36,7 @@ class AvalaibleProductCard extends StatelessWidget {
             // Text info
             Expanded(
               child: Text(
-                '${productCount > 0 ? productCount : 'Aucun'} aliment${productCount > 1 ? 's' : ''} disponible${productCount > 1 ? 's' : ''} dans ton planning',
+                '${productCount > 0 ? productCount : 'Aucun'} aliment${productCount > 1 ? 's' : ''} disponible${productCount > 1 ? 's' : ''} dans votre planning',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

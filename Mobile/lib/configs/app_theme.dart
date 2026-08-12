@@ -25,6 +25,7 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
+        hintStyle: TextStyle(color: AppColors.inputPlaceholderColor),
         labelStyle: TextStyle(
           fontWeight: FontWeight.w600,
           color: Colors.grey[500],
@@ -33,7 +34,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.red, width: 1.5),
@@ -56,18 +57,29 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          textStyle: GoogleFonts.montserrat(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          textStyle: GoogleFonts.montserrat(fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          elevation: 0.5,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          elevation: 0.3,
           disabledForegroundColor: AppColors.mutedForeground,
         ),
       ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          textStyle: GoogleFonts.montserrat(fontWeight: FontWeight.w600),
+          foregroundColor: AppColors.foreground,
+          side: BorderSide(color: Colors.grey[400]!),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          elevation: 0.3,
+        ),
+      ),
+
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
         indicatorColor: Colors.transparent,

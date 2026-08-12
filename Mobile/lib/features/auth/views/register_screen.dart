@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
 import 'package:gaspika_mobile/features/auth/views/widgets/linear_bg.dart';
 import 'package:gaspika_mobile/features/auth/views/widgets/register_form.dart';
@@ -17,7 +18,7 @@ class RegisterScreen extends StatelessWidget {
 
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.chevron_left, size: 32),
+          icon: SvgPicture.asset('assets/icons/chevron-left.svg', width: 42),
           onPressed: () {
             context.go('/login');
           },

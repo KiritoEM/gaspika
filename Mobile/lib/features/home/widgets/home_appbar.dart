@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final int notificationCount;
   final String userName;
+  final bool isLoading;
+  final VoidCallback onNavigateToNofication;
 
-  const HomeAppbar({super.key, required this.userName});
+  const HomeAppbar({
+    super.key,
+    this.notificationCount = 0,
+    required this.userName,
+    required this.isLoading,
+    required this.onNavigateToNofication
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -34,19 +46,35 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
                 color: AppColors.mutedForeground,
               ),
             ),
-            Text(
-              userName,
-              style: TextStyle(
-                fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+ 
+            isLoading
+                ? SkeletonLine(
+                    style: SkeletonLineStyle(
+                      height: 20,
+                      width: 100,
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  )
+                : Text(
+                    userName,
+                    style: TextStyle(
+                      fontSize: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
           ],
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset('assets/icons/bell.svg', width: 26),
+            onPressed: () => onNavigateToNofication(),
+            icon: Badge(
+              label: Text(notificationCount.toString()),
+              backgroundColor: AppColors.accent,
+              isLabelVisible: notificationCount > 0,
+              child: SvgPicture.asset('assets/icons/bell.svg'),
+            ),
           ),
         ],
       ),

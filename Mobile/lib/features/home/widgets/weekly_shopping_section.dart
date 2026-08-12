@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
+import 'package:gaspika_mobile/features/home/viewmodels/home_viewmodel.dart';
+import 'package:gaspika_mobile/features/home/widgets/weekly_shopping_empty_state.dart';
 import 'package:gaspika_mobile/models/domains-object/shopping.dart';
 import 'package:gaspika_mobile/shared/shopping_item_card.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class WeeklyShoppingSection extends StatelessWidget {
   bool isLoading;
@@ -17,11 +21,12 @@ class WeeklyShoppingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isListEmpty = shoppingListItems.isEmpty;
+    HomeViewModel homeVm = Provider.of<HomeViewModel>(context);
 
     return Column(
       children: [
         // Header
-        isListEmpty
+        isListEmpty && !isLoading
             ? Container()
             : Row(
                 mainAxisAlignment: isLoading ? .start : .spaceBetween,
@@ -33,40 +38,37 @@ class WeeklyShoppingSection extends StatelessWidget {
 
                   isLoading
                       ? Container()
-                      : TextButton.icon(
-                          onPressed: () {},
-                          label: Text(
+                      : GestureDetector(
+                          onTap: () => context.go(
+                            NavigationConstant.SHOPPING_LISTS_ROUTE,
+                          ),
+                          child: Text(
                             'Voir tout',
                             style: TextStyle(color: Colors.orange),
-                          ),
-                          iconAlignment: IconAlignment.end,
-                          icon: Icon(
-                            Icons.arrow_right_alt,
-                            color: Colors.orange,
                           ),
                         ),
                 ],
               ),
 
-        SizedBox(height: isLoading ? 14 : 2),
+        SizedBox(height: 12), 
 
         // Shopping items list
         isLoading
-            ? _weeklyShoppingSkeleton()
+            ? _buildWeeklyShoppingSkeleton()
             : !isListEmpty
-            ? _buildShoppingList()
+            ? _buildShoppingList(context, homeVm)
             : Container(),
 
         // Empty state
-        !isLoading && isListEmpty ? _emptyState(context) : Container(),
+        !isLoading && isListEmpty ? WeeklyShoppingEmptyState() : Container(),
       ],
     );
   }
 
-  Widget _weeklyShoppingSkeleton() {
+  Widget _buildWeeklyShoppingSkeleton() {
     return Column(
       children: List.generate(
-        5,
+        7,
         (index) => const Padding(
           padding: EdgeInsets.only(bottom: 12),
           child: SkeletonLine(
@@ -81,45 +83,20 @@ class WeeklyShoppingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildShoppingList() {
+  Widget _buildShoppingList(BuildContext context, HomeViewModel homeVm) {
     return Column(
-      spacing: 14,
+      spacing: 16,
       children: shoppingListItems.map((item) {
         return ShoppingItemCard(
-          productName: item.productName,
-          price: item.price,
-          quantity: item.estimatedQuantity.toDouble(),
-          quantityUnit: item.quantityUnit!,
+          item: item,
+          onTap: () async {
+            await context.push(
+              '${NavigationConstant.SHOPPING_LISTS_ITEMS_ROUTE}/${item.id}',
+            );
+            await homeVm.refreshAll();
+          },
         );
       }).toList(),
-    );
-  }
-
-  Widget _emptyState(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 32),
-      child: Column(
-        children: [
-          Text(
-            'Aucun aliment disponible pour vos courses de la semaine',
-            style: TextStyle(
-              fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          SizedBox(height: 16),
-
-          ElevatedButton.icon(
-            onPressed: () {
-              context.go('/shopping-list');
-            },
-            label: Text('Consulter la liste', style: TextStyle(fontSize: 14)),
-            icon: Icon(Icons.arrow_right_alt, size: 20),
-            iconAlignment: IconAlignment.end,
-          ),
-        ],
-      ),
     );
   }
 }

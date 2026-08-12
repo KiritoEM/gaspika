@@ -1,33 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gaspika_mobile/configs/app_colors.dart';
+import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/constants/navigation_constant.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/delete_confirmation_dialog.dart';
+import 'package:gaspika_mobile/features/shopping_list/widgets/update_list_dialog.dart';
+import 'package:gaspika_mobile/models/domains-object/shopping.dart';
+import 'package:gaspika_mobile/shared/app_bottomsheet.dart';
+import 'package:gaspika_mobile/shared/bottomsheet_action.dart';
+import 'package:gaspika_mobile/utils/date.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class ShoppingListCard extends StatelessWidget {
-  final int id;
-  final String listName;
-  final int itemsCount;
-  final bool isCompleted;
+  final ShoppingList item;
+  final VoidCallback onDelete;
+  final VoidCallback onUpdate;
 
   const ShoppingListCard({
     super.key,
-    required this.id,
-    required this.listName,
-    required this.itemsCount,
-    this.isCompleted = false,
+    required this.item,
+    required this.onDelete,
+    required this.onUpdate,
   });
+
+  bool get isCompleted => item.status == ShoppingListStatus.completed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push('/shopping-list/$id', extra: listName);
+        context.push(
+          '${NavigationConstant.SHOPPING_LISTS_ROUTE}/${item.id}?name=${item.name}&week=${item.weekNumber}',
+        );
       },
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: const Color.fromARGB(255, 243, 242, 242),
             width: 1,
@@ -58,65 +69,176 @@ class ShoppingListCard extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            'Courses ${listName[0].toLowerCase()}${listName.substring(1)}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          child: Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  item.name!,
+                                  style: TextStyle(
+                                    fontSize: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium?.fontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (isCompleted)
+                                Container(
+                                  margin: const EdgeInsets.only(left: 8),
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.secondary,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/icons/check-double.svg',
+                                    width: 14,
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                        if (isCompleted)
-                          Container(
-                            margin: const EdgeInsets.only(left: 6),
-                            padding: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.secondary,
+                      ],
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    Row(
+                      children: [
+                        Text(
+                          '${item.itemsCount > 0 ? item.itemsCount : 'Aucun'} aliment${item.itemsCount > 1 ? 's' : ''}',
+                          style: TextStyle(
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize!,
+                            color: AppColors.mutedForeground,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        if (item.totalEstimatedCost > 0)
+                          Text(
+                            ' · ',
+                            style: TextStyle(
+                              fontSize: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.fontSize!,
+                              color: AppColors.mutedForeground,
                             ),
-                            child: SvgPicture.asset(
-                              'assets/icons/check-double.svg',
-                              width: 14,
+                          ),
+
+                        if (item.totalEstimatedCost > 0)
+                          Text(
+                            '${item.totalEstimatedCost} Ar',
+                            style: TextStyle(
+                              fontSize: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.fontSize!,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.mutedForeground,
                             ),
                           ),
                       ],
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      '$itemsCount course${itemsCount > 1 ? 's' : ''}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColors.mutedForeground,
-                        fontWeight: FontWeight.w600,
-                      ),
+
+                    const SizedBox(height: 6),
+
+                    Row(
+                      crossAxisAlignment: .center,
+                      spacing: 5,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/calendar.svg',
+                          colorFilter: ColorFilter.mode(
+                            AppColors.mutedForeground,
+                            BlendMode.srcIn,
+                          ),
+                          width: 18,
+                        ),
+                        Text(
+                          'Semaine du ${DateFormat('dd/MM/yyyy').format(DateUtilities.startOfWeek(DateTime.parse(item.createdAt)))}',
+                          style: TextStyle(
+                            fontSize: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.fontSize!,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
 
               // Right actions
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, size: 22),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    // Action pour modifier
-                  } else if (value == 'delete') {
-                    // Action pour supprimer
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Modifier')),
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Text('Supprimer'),
+              GestureDetector(
+                onTap: () => _buildBottomsheetActions(context),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  child: const Icon(
+                    Icons.more_vert,
+                    size: 22,
+                    color: AppColors.mutedForeground,
                   ),
-                ],
+                ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future _buildBottomsheetActions(BuildContext context) {
+    return AppBottomSheet.show(
+      context: context,
+      builder: (context, setModalState) {
+        return [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 8,
+            children: [
+              const SizedBox(height: 8),
+              BottomsheetAction(
+                label: 'Modifier',
+                icon: SvgPicture.asset('assets/icons/edit.svg', width: 18),
+                onTap: () => _showEditDialog(context),
+              ),
+
+              const SizedBox(height: 16),
+
+              BottomsheetAction(
+                label: 'Supprimer',
+                icon: SvgPicture.asset('assets/icons/trash.svg', width: 20),
+                isDestructive: true,
+                onTap: () => _showDeleteConfirmationDialog(context),
+              ),
+            ],
+          ),
+        ];
+      },
+    );
+  }
+
+  void _showEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => UpdateListDialog(
+        listName: item.name!,
+        onUpdate: () => onUpdate(),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => DeleteConfirmationDialog(
+        listName: item.name!,
+        onDelete: () => onDelete(),
       ),
     );
   }

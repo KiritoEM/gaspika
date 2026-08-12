@@ -1,0 +1,177 @@
+from typing import Optional
+from app.core.enums import NotificationType
+from app.core.redis_client import get_redis_client
+from app.features.users.user_preference_repository import UserPreferenceRepository
+from app.features.users.user_repository import UserRepository
+from app.core.notification_push import send_android_notification
+from app.features.devices.device_repository import DeviceRepository
+from app.features.notifications.notifications_respository import NotificationsRepository
+from app.features.shopping_lists.shopping_list_repository import ShoppingListRepository
+from app.core.date import get_week_number
+from datetime import date, datetime
+from app.features.notifications.notifications_schemas import CreateNotificationSchema, GetNotificationsFilterParams
+
+class NotificationsService:
+    def __init__(
+        self, 
+        notifications_repo: NotificationsRepository,
+        shopping_list_repo: ShoppingListRepository,
+        device_repo: DeviceRepository,
+        user_repo: UserRepository,
+        preference_repo: UserPreferenceRepository = None
+    ):
+      self.notifications_repo = notifications_repo
+      self.shopping_list_repo = shopping_list_repo
+      self.device_repo = device_repo
+      self.user_repo = user_repo
+      self.preference_repo = preference_repo
+      self.redis_client = get_redis_client()
+      
+    async def check_all_shopping_list(self):
+        all_users = await self.user_repo.get_all()
+        
+        for user in all_users:
+            await self._create_shopping_list_remaining_notif(user.id)
+            
+    async def check_near_expiry_food(
+        self,
+        user_id: str,
+        food_name: str,
+        shopping_item_id: int,
+        food_image: Optional[str]
+    ):
+        body = (
+            f"L’aliment «{food_name}» arrive bientôt à expiration. "
+            f"Pensez à le consommer rapidement."
+        )
+        
+        route = f"/shopping-list-items/{shopping_item_id}"
+
+        sent = await self._send_notification(
+            user_id=user_id,
+            title="Aliment proche de péremption",
+            body=body,
+            route=route,
+            type=NotificationType.FOOD_EXPIRATION,
+            image=food_image
+        )
+
+        if sent:
+            await self.redis_client.incr(f"notification_counter:{user_id}")
+
+
+    async def get_all_notifications(self, user_id: str, query: GetNotificationsFilterParams):
+        return await self.notifications_repo.get_all(user_id, query.page, query.limit)
+    
+    async def get_unread_notifications_count(self, user_id: str):
+        count = await self.redis_client.get(f"notification_counter:{user_id}")
+        print(f"Notification count: {count}")
+        
+        return int(count) if count != None else 0
+    
+    async def mark_all_as_read(self, user_id: str):
+        await self.redis_client.set(f"notification_counter:{user_id}", 0)   
+        
+    async def mark_as_read(self, notification_id):
+        await self.notifications_repo.mark_as_read(notification_id)
+    
+    async def delete(self, notification_id: str):
+        return await self.notifications_repo.delete(notification_id)
+    
+    async def _create_shopping_list_remaining_notif(self, user_id: str):
+        current_week = get_week_number(date.today())
+        
+        current_list = await self.shopping_list_repo.get_list_by_week(
+            week_number=current_week,
+            year=datetime.now().year,
+            user_id=user_id
+        )
+
+        items_count = len(current_list.items or [])
+
+        if items_count == 0:
+            return
+
+        body = (
+            f"Il reste {items_count} aliment{'s' if items_count > 1 else ''} "
+            f"non acheté{'s' if items_count > 1 else ''} "
+            f"dans « {current_list.name} »."
+        )
+
+        route = f"/shopping-list/{current_list.id}?name={current_list.name}&week={current_list.week_number}" 
+
+        sent = await self._send_notification(
+            user_id=user_id,
+            title="Des aliments non achetés en fin de semaine",
+            body=body,
+            route=route,
+            type=NotificationType.LIST_EXPIRATION
+        )
+
+        if sent:
+            await self.redis_client.incr(f"notification_counter:{user_id}")
+
+    async def _is_notification_enabled(self, user_id: str, type: Optional[NotificationType]) -> bool:
+        """Check notification preferences of an user"""
+        if not self.preference_repo:
+            return True
+
+        preference = await self.preference_repo.get_by_user_id(user_id)
+
+        if not preference:
+            return True
+
+        if not preference.push_enabled:
+            return False
+
+        if type == NotificationType.FOOD_EXPIRATION:
+            return preference.food_expiration_enabled
+
+        if type == NotificationType.LIST_EXPIRATION:
+            return preference.list_expiration_enabled
+
+        return True
+
+    async def _send_notification(
+        self,
+        user_id: str,
+        title: str,
+        body: str,
+        route: str,
+        type: Optional[NotificationType] = None,
+        image: Optional[str] = None
+    ) -> bool:
+        if not await self._is_notification_enabled(user_id, type):
+            return False
+
+        notification_data = CreateNotificationSchema(
+            body=body,
+            route=route,
+            type=type,
+            image=image
+        )
+
+        # Save notification
+        await self.notifications_repo.create(user_id, notification_data)
+
+        # Push notification
+        devices = await self.device_repo.get_by_user_id(user_id)
+
+        if len(devices) == 0:
+            return True
+
+        for device in devices:
+            try:
+                await send_android_notification(
+                    fcm_token=device.fcm_token,
+                    title=title,
+                    body=body,
+                    data={"route": route}
+                )
+            except Exception as e:
+                print(f"Notification failed for device {device.id}: {e}")
+
+        return True
+
+
+

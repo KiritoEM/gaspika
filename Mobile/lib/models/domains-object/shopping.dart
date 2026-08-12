@@ -1,104 +1,103 @@
 import 'package:gaspika_mobile/constants/enums/enums.dart';
+import 'package:gaspika_mobile/models/domains-object/category.dart';
+import 'package:gaspika_mobile/models/domains-object/image.dart';
 
 // ========= ShoppingListItem =========
 class ShoppingListItem {
-  final int? id;
-  final String productName;
+  final String? id;
+  final String foodName;
   final int? shoppingListId;
-  final int estimatedQuantity;
+  final double recommendedQuantity;
   final int price;
-  final bool isPurchased;
+  final ShoppingItemStatus status;
+  final int personNumber;
   final String? notes;
   final String? storageTips;
+  final int? defaultShelfLifeDay;
   final int? categoryId;
-  final String? category;
-  final QuantityUnit? quantityUnit;
+  final QuantityUnit quantityUnit;
+  final Image? image;
+  final int? conservationDuration;
+  final String createdAt;
+  final String updatedAt;
+  final Category category;
+  final bool isAvailable;
 
   ShoppingListItem({
     this.id,
-    required this.productName,
+    required this.foodName,
     this.shoppingListId,
-    required this.estimatedQuantity,
+    required this.recommendedQuantity,
     required this.price,
-    required this.isPurchased,
+    required this.personNumber,
+    required this.status,
+    this.defaultShelfLifeDay,
     this.notes,
     this.storageTips,
     this.categoryId,
-    this.category,
-    this.quantityUnit,
+    required this.quantityUnit,
+    required this.isAvailable,
+    required this.image,
+    required this.category,
+    this.conservationDuration,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) {
     return ShoppingListItem(
-      id: json['id'] as int?,
-      productName: json['product_name'] ?? '',
+      id: json['id']?.toString(),
+      foodName: json['food_name'] ?? '',
       shoppingListId: json['shopping_list_id'] as int?,
-      estimatedQuantity: (json['estimated_quantity'] as int?) ?? 1,
-      price: (json['price'] as int?) ?? 0,
-      isPurchased: json['is_purchased'] ?? false,
+      recommendedQuantity:
+          (json['recommended_quantity'] as num?)?.toDouble() ?? 1,
+      price: (json['price'] as num?)?.toInt() ?? 0,
       notes: json['notes'] as String?,
       storageTips: json['storage_tips'] as String?,
-      categoryId: json['category_id'] as int?,
-      category: json['category'] as String?,
-      quantityUnit: json['unit'] != null
-          ? _mapIntoQuantityUnit(json['unit'])
+      categoryId: json['food_category_id'] as int?,
+      status: ShoppingItemStatus.values.byName(
+        (json['status'] ?? 'UNPURCHASED').toLowerCase(),
+      ),
+      quantityUnit: QuantityUnit.values.byName(
+        (json['unit'] ?? 'UNIT').toLowerCase(),
+      ),
+      personNumber: (json['person_number'] as num?)?.toInt() ?? 1,
+      image: json['image'] != null
+          ? Image.fromJson(json['image'] as Map<String, dynamic>)
           : null,
+      conservationDuration: json['default_shelf_life_day'] as int?,
+      category: Category.fromJson(json['category'] as Map<String, dynamic>),
+      isAvailable: json['is_available'] as bool,
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
-  }
-
-  static QuantityUnit _mapIntoQuantityUnit(String? quantityUnit) {
-    switch (quantityUnit) {
-      case 'unit':
-        return QuantityUnit.piece;
-      case 'kg':
-        return QuantityUnit.kilogram;
-      case 'l':
-        return QuantityUnit.liter;
-      case 'g':
-        return QuantityUnit.gram;
-      case 'ml':
-        return QuantityUnit.milliliter;
-      default:
-        return QuantityUnit.piece;
-    }
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'product_name': productName,
+      'food_name': foodName,
       'shopping_list_id': shoppingListId,
-      'estimated_quantity': estimatedQuantity,
+      'recommended_quantity': recommendedQuantity,
       'price': price,
-      'is_purchased': isPurchased,
+      'status': status.name.toUpperCase(),
+      'person_number': personNumber,
       'notes': notes,
       'storage_tips': storageTips,
-      'category_id': categoryId,
-      'category': category,
-      'unit': quantityUnit != null
-          ? _mapQuantityUnitToString(quantityUnit!)
-          : null,
+      'default_shelf_life_day': defaultShelfLifeDay,
+      'food_category_id': categoryId,
+      'quantity_unit': quantityUnit.name.toUpperCase(),
+      // 'image': image.toJson(),
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 
-  static String _mapQuantityUnitToString(QuantityUnit unit) {
-    switch (unit) {
-      case QuantityUnit.piece:
-        return 'unit';
-      case QuantityUnit.kilogram:
-        return 'kg';
-      case QuantityUnit.liter:
-        return 'l';
-      case QuantityUnit.gram:
-        return 'g';
-      case QuantityUnit.milliliter:
-        return 'ml';
-    }
-  }
+  int get totalPrice => (recommendedQuantity * price).toInt();
 
   @override
   String toString() {
-    return 'ShoppingListItem{id: $id, productName: $productName, shoppingListId: $shoppingListId, estimatedQuantity: $estimatedQuantity, price: $price, isPurchased: $isPurchased, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, category: $category, unit: $quantityUnit}';
+    return 'ShoppingListItem{id: $id, foodName: $foodName, shoppingListId: $shoppingListId, recommendedQuantity: $recommendedQuantity, price: $price, status: $status, notes: $notes, storageTips: $storageTips, categoryId: $categoryId, categoryId: $categoryId, unit: $quantityUnit}';
   }
 }
 
@@ -107,21 +106,23 @@ class ShoppingList {
   final int? id;
   final int weekNumber;
   final String? name;
-  final String? status;
+  final ShoppingListStatus status;
   final int totalEstimatedCost;
-  final int? userId;
-  final bool isCompleted;
-  final List<ShoppingListItem>? items;
+  final String? userId;
+  final int itemsCount;
+  final String createdAt;
+  final String updatedAt;
 
   ShoppingList({
     this.id,
     required this.weekNumber,
     this.name,
-    this.status,
+    required this.status,
     this.totalEstimatedCost = 0,
     this.userId,
-    this.isCompleted = false,
-    this.items,
+    this.itemsCount = 0,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory ShoppingList.fromJson(Map<String, dynamic> json) {
@@ -129,15 +130,14 @@ class ShoppingList {
       id: json['id'] as int?,
       weekNumber: json['week_number'] as int,
       name: json['name'] as String?,
-      status: json['status'] as String?,
-      totalEstimatedCost: (json['total_estimated_cost'] as int?) ?? 0,
-      userId: json['user_id'] as int?,
-      isCompleted: json['is_completed'] ?? false,
-      items: json['items'] != null
-          ? (json['items'] as List)
-                .map((item) => ShoppingListItem.fromJson(item))
-                .toList()
-          : null,
+      status: ShoppingListStatus.values.byName(
+        (json['status'] ?? 'UNFINISHED').toLowerCase(),
+      ),
+      totalEstimatedCost: (json['total_estimated_cost'] as num?)?.toInt() ?? 0,
+      userId: json['user_id'] as String?,
+      itemsCount: (json['items_count'] as int?) ?? 0,
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
@@ -146,19 +146,12 @@ class ShoppingList {
       'id': id,
       'week_number': weekNumber,
       'name': name,
-      'status': status,
+      'status': status.name.toUpperCase(),
       'total_estimated_cost': totalEstimatedCost,
       'user_id': userId,
-      'is_completed': isCompleted,
-      'items': items?.map((item) => item.toJson()).toList(),
+      'items_count': itemsCount,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
-  }
-
-  // Return the number of items in the shopping list
-  int get itemCount => items?.length ?? 0;
-
-  @override
-  String toString() {
-    return 'ShoppingList{id: $id, weekNumber: $weekNumber, name: $name, status: $status, totalEstimatedCost: $totalEstimatedCost, userId: $userId, isCompleted: $isCompleted, itemCount: $itemCount}';
   }
 }
